@@ -7,17 +7,17 @@ import {
 function hideBlockedLinks() {
   const links = [...document.querySelectorAll('a')]
 
-  let blocked = 0
+  let numBlocked = 0
   for (const link of links) {
     if (isUrlBlockedAsString(link.href)) {
       const parent = link.closest('li') || link.closest('div') || link
       parent.style.display = 'none'
-      ++blocked
+      ++numBlocked
       // parent.style.backgroundColor = 'red'
     }
   }
 
-  console.log('internet diet blocked', blocked, 'links')
+  console.log('internet diet blocked', numBlocked, 'links')
 }
 
 function update() {

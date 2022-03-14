@@ -16,6 +16,7 @@ Then here's an easy way to block yourself from ordering any of the crap.
 
 - individual restaurants
 - individual menu items
+- individual grocery items
 - individual URLs
 - entire websites
 
@@ -27,6 +28,10 @@ When blocking individual restaurants and menu items, it will remove them from th
 - block all soda on amazon fresh
 - block all of drizly.com
 - etc.
+
+## TODO
+
+This project is a WIP and lacks UI / polish / tests / etc.
 
 ## License
 
