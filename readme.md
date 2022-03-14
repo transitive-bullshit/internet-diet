@@ -8,9 +8,9 @@
 
 I order online food all the time.
 
-And a lot of the options are unhealthy — which is always tempting for me.
+But a lot of the options are unhealthy — which is a constant temptation.
 
-So I built an easy way to block myself from seeing any of the crap.
+So I built an easy way to block all the unwanted crap.
 
 ## What can it block?
 
@@ -33,7 +33,7 @@ When blocking individual restaurants and menu items, it will remove them from th
 
 This project is a WIP and lacks UI / polish / tests / etc.
 
-- [ ] handle page updates and slow client-side refresh
+- [x] handle page updates and slow client-side refresh
 - [ ] add popup UI
 - [ ] add options UI
 - [ ] make block rules customizable

@@ -13,11 +13,11 @@
     "diet"
   ],
   "scripts": {
+    "dev": "run-s watch",
+    "start": "run-s watch",
     "build": "run-p build:* --continue-on-error",
     "build:typescript": "tsc --noEmit",
     "build:webpack": "cross-env NODE_OPTIONS=\"--loader ts-node/esm --no-warnings\" webpack --mode=production",
-    "dev": "run-s watch",
-    "start": "run-s watch",
     "test": "run-s test:*",
     "test:prettier": "prettier '**/*.{js,jsx,ts,tsx}' --check",
     "watch": "run-p watch:* --continue-on-error",
@@ -25,11 +25,14 @@
     "watch:webpack": "cross-env NODE_OPTIONS=\"--loader ts-node/esm --no-warnings\" webpack --mode=development --watch"
   },
   "dependencies": {
-    "normalize-url": "^7.0.3"
+    "lodash.throttle": "^4.1.1",
+    "normalize-url": "^7.0.3",
+    "select-dom": "^7.1.1"
   },
   "devDependencies": {
     "@sindresorhus/tsconfig": "^2.0.0",
     "@types/chrome": "^0.0.179",
+    "@types/lodash.throttle": "^4.1.6",
     "@types/react": "^17.0.40",
     "copy-webpack-plugin": "^10.2.4",
     "cross-env": "^7.0.3",
