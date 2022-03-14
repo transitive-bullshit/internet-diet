@@ -20,12 +20,14 @@ So I built an easy way to block all the unwanted crap.
 - individual URLs
 - entire websites
 
-When blocking individual restaurants and menu items, it will remove them from the page so you won't even see them as options.
+When blocking individual restaurants and menu items, it will blur them on the page so you won't even see them as options.
 
 ## Example use cases
 
 - block all mcdonalds restaurants on postmates
-- block all soda results on amazon fresh
+- block that one chinese place on doordash
+- block any soda menu items on grubhub
+- block all candy results on amazon fresh
 - block all of drizly.com
 - etc.
 
