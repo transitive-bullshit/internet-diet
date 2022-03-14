@@ -24,6 +24,9 @@
     "watch:typescript": "tsc --noEmit --watch --preserveWatchOutput",
     "watch:webpack": "cross-env NODE_OPTIONS=\"--loader ts-node/esm --no-warnings\" webpack --mode=development --watch"
   },
+  "dependencies": {
+    "normalize-url": "^7.0.3"
+  },
   "devDependencies": {
     "@sindresorhus/tsconfig": "^2.0.0",
     "@types/chrome": "^0.0.179",

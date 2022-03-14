@@ -1,11 +1,8 @@
-const blacklist = [
-  'mcdonalds',
-  '7-eleven',
-  'burger-king',
-  '99-cent-supreme-pizza',
-  'marthas-breakfast-sandwiches-1117-broadway',
-  'LPAvJw9xUn-qcF9uAhfUcA'
-]
+import {
+  isBlockingEnabledForHost,
+  isUrlBlocked,
+  isUrlBlockedAsString
+} from './utils'
 
 function hideStores() {
   const stores = [...document.querySelectorAll('a')].filter(
@@ -13,19 +10,21 @@ function hideStores() {
   )
 
   for (const store of stores) {
-    for (const item of blacklist) {
-      if (store.href.includes(item)) {
-        const parent = store.closest('li') || store.closest('div') || store
-        parent.style.display = 'none'
-        break
-      }
+    if (isUrlBlockedAsString(store.href)) {
+      const parent = store.closest('li') || store.closest('div') || store
+      parent.style.display = 'none'
+      // parent.style.backgroundColor = 'red'
     }
   }
 }
 
 function update() {
-  if (document.location.hostname !== 'postmates.com') {
+  if (!isBlockingEnabledForHost(document.location)) {
     return
+  }
+
+  if (isUrlBlocked(document.location)) {
+    document.location.href = chrome.runtime.getURL('blocked.html')
   }
 
   hideStores()
@@ -34,8 +33,10 @@ function update() {
 update()
 window.addEventListener('load', update)
 
-chrome.runtime.onMessage.addListener((request) => {
+chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
   if (request.message === 'update') {
     update()
   }
+
+  sendResponse({ received: true })
 })

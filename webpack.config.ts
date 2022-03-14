@@ -54,6 +54,9 @@ const config: Configuration = {
           }
         },
         {
+          from: 'src/blocked.html'
+        },
+        {
           from: resolvePackage('webextension-polyfill')
         }
       ]
