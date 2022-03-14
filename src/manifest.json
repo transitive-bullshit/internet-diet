@@ -1,0 +1,17 @@
+{
+  "name": "Internet Diet",
+  "version": "0.0.0",
+  "description": "Remove unhealthy food options from the web.",
+  "manifest_version": 3,
+  "permissions": ["storage", "tabs"],
+  "background": {
+    "service_worker": "./background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.postmates.com/*"],
+      "js": ["./content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

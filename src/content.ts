@@ -23,8 +23,7 @@ function hideStores() {
   }
 }
 
-function main() {
-  console.log('internet diet')
+function update() {
   if (document.location.hostname !== 'postmates.com') {
     return
   }
@@ -32,5 +31,11 @@ function main() {
   hideStores()
 }
 
-main()
-window.addEventListener('load', main)
+update()
+window.addEventListener('load', update)
+
+chrome.runtime.onMessage.addListener((request) => {
+  if (request.message === 'update') {
+    update()
+  }
+})

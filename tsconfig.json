@@ -1,0 +1,12 @@
+{
+  "extends": "@sindresorhus/tsconfig/tsconfig.json",
+  "compilerOptions": {
+    "target": "es2020",
+    "declaration": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "noUncheckedIndexedAccess": false,
+    "noPropertyAccessFromIndexSignature": false
+  },
+  "include": ["src", "webpack.config.ts"]
+}
