@@ -4,14 +4,15 @@ export const blockRules: BlockRule[] = [
   {
     hostname: 'postmates.com',
     type: 'pathname',
-    pathnameBlockedWords: [
+    blockedPathnameWords: [
       'mcdonalds',
-      '7-eleven',
       'burger-king',
+      '7-eleven',
       '99-cent-supreme-pizza',
       'marthas-breakfast-sandwiches-1117-broadway',
       'LPAvJw9xUn-qcF9uAhfUcA'
-    ]
+    ],
+    blockedItems: ['coke', 'soda', 'pepsi']
   },
   {
     hostname: 'digg.com',

@@ -6,11 +6,11 @@
 
 ## Intro
 
-If you order a lot of online food.
+I order online food all the time.
 
-And a lot of it is unhealthy.
+And a lot of the options are unhealthy — which is always tempting for me.
 
-Then here's an easy way to block yourself from ordering any of the crap.
+So I built an easy way to block myself from seeing any of the crap.
 
 ## What can it block?
 
@@ -20,18 +20,26 @@ Then here's an easy way to block yourself from ordering any of the crap.
 - individual URLs
 - entire websites
 
-When blocking individual restaurants and menu items, it will remove them from the page so you won't even see them as tempting options.
+When blocking individual restaurants and menu items, it will remove them from the page so you won't even see them as options.
 
 ## Example use cases
 
 - block all mcdonalds restaurants on postmates
-- block all soda on amazon fresh
+- block all soda results on amazon fresh
 - block all of drizly.com
 - etc.
 
 ## TODO
 
 This project is a WIP and lacks UI / polish / tests / etc.
+
+- [ ] handle page updates and slow client-side refresh
+- [ ] add popup UI
+- [ ] add options UI
+- [ ] make block rules customizable
+- [ ] make block redirect customizable
+- [ ] track the number of links and items blocked
+- [ ] add examples
 
 ## License
 

@@ -11,7 +11,8 @@ export interface BlockRuleHost extends BlockRuleBase {
 
 export interface BlockRulePathname extends BlockRuleBase {
   type: 'pathname'
-  pathnameBlockedWords: string[]
+  blockedPathnameWords: string[]
+  blockedItems: string[]
 }
 
 export interface BlockRuleUrl extends BlockRuleBase {
