@@ -4,7 +4,29 @@
 
 [![Build Status](https://github.com/transitive-bullshit/internet-diet/actions/workflows/test.yml/badge.svg)](https://github.com/transitive-bullshit/internet-diet/actions/workflows/test.yml) [![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg)](https://prettier.io)
 
-TODO: this project is a WIP
+## Intro
+
+If you order a lot of online food.
+
+And a lot of it is unhealthy.
+
+Then here's an easy way to block yourself from ordering any of the crap.
+
+## What can it block?
+
+- individual restaurants
+- individual menu items
+- individual URLs
+- entire websites
+
+When blocking individual restaurants and menu items, it will remove them from the page so you won't even see them as tempting options.
+
+## Example use cases
+
+- block all mcdonalds restaurants on postmates
+- block all soda on amazon fresh
+- block all of drizly.com
+- etc.
 
 ## License
 
