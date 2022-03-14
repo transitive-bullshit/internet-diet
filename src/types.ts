@@ -1,4 +1,4 @@
-export type BlockType = 'host' | 'partial' | 'url'
+export type BlockType = 'host' | 'pathname' | 'url'
 
 export interface BlockRuleBase {
   hostname: string
@@ -9,8 +9,8 @@ export interface BlockRuleHost extends BlockRuleBase {
   type: 'host'
 }
 
-export interface BlockRulePartial extends BlockRuleBase {
-  type: 'partial'
+export interface BlockRulePathname extends BlockRuleBase {
+  type: 'pathname'
   pathnameBlockedWords: string[]
 }
 
@@ -19,4 +19,4 @@ export interface BlockRuleUrl extends BlockRuleBase {
   url: string
 }
 
-export type BlockRule = BlockRuleHost | BlockRulePartial | BlockRuleUrl
+export type BlockRule = BlockRuleHost | BlockRulePathname | BlockRuleUrl

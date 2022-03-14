@@ -4,18 +4,20 @@ import {
   isUrlBlockedAsString
 } from './utils'
 
-function hideStores() {
-  const stores = [...document.querySelectorAll('a')].filter(
-    (a) => a.href.indexOf('/store/') >= 0
-  )
+function hideBlockedLinks() {
+  const links = [...document.querySelectorAll('a')]
 
-  for (const store of stores) {
-    if (isUrlBlockedAsString(store.href)) {
-      const parent = store.closest('li') || store.closest('div') || store
+  let blocked = 0
+  for (const link of links) {
+    if (isUrlBlockedAsString(link.href)) {
+      const parent = link.closest('li') || link.closest('div') || link
       parent.style.display = 'none'
+      ++blocked
       // parent.style.backgroundColor = 'red'
     }
   }
+
+  console.log('internet diet blocked', blocked, 'links')
 }
 
 function update() {
@@ -27,7 +29,7 @@ function update() {
     document.location.href = chrome.runtime.getURL('blocked.html')
   }
 
-  hideStores()
+  hideBlockedLinks()
 }
 
 update()

@@ -4,7 +4,7 @@ import normalizeUrlImpl from 'normalize-url'
 const blockRules: BlockRule[] = [
   {
     hostname: 'postmates.com',
-    type: 'partial',
+    type: 'pathname',
     pathnameBlockedWords: [
       'mcdonalds',
       '7-eleven',
@@ -66,13 +66,13 @@ export function isUrlBlocked(url: URL | Location): boolean {
 
     switch (blockRule.type) {
       case 'host':
-        console.log('blocking host', url)
+        console.log('blocking host', url.toString())
         return true
 
-      case 'partial':
+      case 'pathname':
         for (const keyword of blockRule.pathnameBlockedWords) {
           if (url.pathname.includes(keyword)) {
-            console.log('blocking partial', url)
+            console.log('blocking pathname', url.pathname)
             return true
           }
         }
@@ -81,7 +81,7 @@ export function isUrlBlocked(url: URL | Location): boolean {
       case 'url': {
         const normalizedUrl = normalizeUrl(url.toString())
         if (normalizedUrl.startsWith(normalizeUrl(blockRule.url))) {
-          console.log('blocking url', { url, normalizedUrl })
+          console.log('blocking url', { url: url.toString(), normalizedUrl })
           return true
         }
 
