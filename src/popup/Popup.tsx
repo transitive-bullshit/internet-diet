@@ -4,7 +4,7 @@ import styles from './Popup.module.css'
 
 export const Popup = () => {
   const [tabTitle, setTabTitle] = React.useState('')
-  const [tabQuery, setTabQuery] = React.useState({
+  const [tabBlockInfo, setTabBlockInfo] = React.useState({
     numBlockedItems: 0,
     numBlockedLinks: 0
   })
@@ -27,14 +27,31 @@ export const Popup = () => {
         chrome.tabs.sendMessage(
           activeTab.id!,
           {
-            message: 'query'
+            type: 'tabBlockInfoQuery'
           },
           (response) => {
-            setTabQuery(response)
+            setTabBlockInfo(response.tabBlockInfo)
           }
         )
       }
     })
+
+    chrome.runtime.onMessage.addListener(
+      async (message, sender, sendResponse) => {
+        switch (message.type) {
+          case 'tabBlockInfo':
+            const tabId = sender?.tab?.id
+            if (!tabId || !sender?.tab?.active) {
+              break
+            }
+            setTabBlockInfo(message.tabBlockInfo)
+            break
+        }
+
+        sendResponse()
+        return true
+      }
+    )
   }, [])
 
   return (
@@ -58,12 +75,12 @@ export const Popup = () => {
 
         <div className={styles.row}>
           <div>Blocked links</div>
-          <div>{tabQuery.numBlockedLinks} on this page</div>
+          <div>{tabBlockInfo.numBlockedLinks} on this page</div>
         </div>
 
         <div className={styles.row}>
           <div>Blocked items</div>
-          <div>{tabQuery.numBlockedItems} on this page</div>
+          <div>{tabBlockInfo.numBlockedItems} on this page</div>
         </div>
       </div>
     </div>

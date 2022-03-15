@@ -8,7 +8,7 @@ import {
 } from './utils'
 
 let observer: MutationObserver | null = null
-let tabBlockUpdate: {
+let tabBlockInfo: {
   numBlockedLinks: number
   numBlockedItems: number
 }
@@ -94,15 +94,14 @@ async function updateHiddenBlockedLinksAndItemsForce() {
   console.log('internet diet blocked', numBlockedLinks, 'links')
   console.log('internet diet blocked', numBlockedItems, 'items')
 
-  tabBlockUpdate = {
+  tabBlockInfo = {
     numBlockedItems,
     numBlockedLinks
   }
 
   chrome.runtime.sendMessage({
-    message: 'tabBlockUpdate',
-    numBlockedItems,
-    numBlockedLinks
+    type: 'tabBlockInfo',
+    tabBlockInfo
   })
 
   console.timeEnd('internet diet update')
@@ -151,14 +150,14 @@ function update() {
 update()
 window.addEventListener('load', update)
 
-chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
-  switch (request.message) {
+chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
+  switch (message.type) {
     case 'update':
       update()
-      sendResponse({ received: true })
+      sendResponse()
       break
-    case 'query':
-      sendResponse(tabBlockUpdate)
+    case 'tabBlockInfoQuery':
+      sendResponse({ tabBlockInfo })
       break
   }
 })
