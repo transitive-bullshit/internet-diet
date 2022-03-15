@@ -37,24 +37,24 @@ When blocking individual restaurants and menu items, they will be blurred on the
 
 ## Which services does it support?
 
-- postmates
-- grubhub
-- seamless
-- doordash
-- uber eats
-- caviar
-- delivery.com
-- instacart
-- amazon
-- etc.
+**Currently all block rules are hard-coded to postmates, but this limitation will go away soon.**
+
+- [x] postmates
+- [ ] grubhub
+- [ ] seamless
+- [ ] doordash
+- [ ] uber eats
+- [ ] caviar
+- [ ] delivery.com
+- [ ] instacart
+- [ ] amazon
+- [ ] etc.
 
 The extension is designed to work on any website where you want to restrict access to certain URL patterns and HTML elements containing keywords.
 
 ## TODO
 
 This project is a WIP and lacks UI / polish / etc.
-
-**Currently all block rules are hard-coded to postmates, but this limitation will go away soon.**
 
 - [x] handle page updates and slow client-side refresh
 - [x] add popup UI
