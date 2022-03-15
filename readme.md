@@ -4,32 +4,32 @@
 
 # Internet Diet
 
-> Chrome extension to remove unhealthy food options from the web.
+> Chrome extension to remove unhealthy foods from the web.
 
 [![Build Status](https://github.com/transitive-bullshit/internet-diet/actions/workflows/test.yml/badge.svg)](https://github.com/transitive-bullshit/internet-diet/actions/workflows/test.yml) [![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg)](https://prettier.io)
 
 ## Intro
 
-I order online food all the time.
+I order a lot of online food.
 
-But a lot of the options are unhealthy — which is a constant temptation.
+But there are so many unhealthy options, restaurants, and foods that I'd rather avoid.
 
 So I built an easy way to block all the unwanted crap.
 
 ## What can it block?
 
 - individual restaurants
-- individual menu items
-- individual grocery items
-- individual URLs
+- specific menu items
+- grocery items
+- specific URLs
 - entire websites
 
-When blocking individual restaurants and menu items, it will blur them on the page so you won't even see them as options.
+When blocking individual restaurants and menu items, they will be blurred on the page so you can be sure it's working without being tempted by them.
 
 ## Example use cases
 
 - block all mcdonalds restaurants on postmates
-- block that one chinese place on doordash
+- block a particular chinese place on doordash
 - block any soda menu items on grubhub
 - block all candy results on amazon fresh
 - block all of drizly.com
@@ -52,7 +52,9 @@ The extension is designed to work on any website where you want to restrict acce
 
 ## TODO
 
-This project is a WIP and lacks UI / polish / tests / etc.
+This project is a WIP and lacks UI / polish / etc.
+
+**Currently all block rules are hard-coded to postmates, but this limitation will go away soon.**
 
 - [x] handle page updates and slow client-side refresh
 - [x] add popup UI
@@ -65,6 +67,7 @@ This project is a WIP and lacks UI / polish / tests / etc.
 - [x] track the number of links and items blocked
 - [ ] add inline tooltip on blocked items for context and pausing
 - [ ] add support for pausing a site
+- [ ] add linting
 - [x] add icon and design
 - [ ] add examples
 
