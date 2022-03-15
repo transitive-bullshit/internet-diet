@@ -8,79 +8,78 @@ import {
 } from './utils'
 
 let observer: MutationObserver | null = null
-let tabBlockInfo: {
-  numBlockedLinks: number
-  numBlockedItems: number
+let tabBlockInfo = {
+  numBlockedLinks: 0,
+  numBlockedItems: 0
 }
 
 function hideBlockedLinks() {
   const links = select.all('a')
 
   let numBlockedLinks = 0
+  let numBlockedLinksFresh = 0
+
   for (const link of links) {
     if (isUrlBlockedAsString(link.href)) {
-      const parent = link.closest('li') || link.closest('div') || link
-      hideElement(parent)
+      const element = link.closest('li') || link.closest('div') || link
+      if (hideElement(element)) {
+        ++numBlockedLinksFresh
+      }
+
       ++numBlockedLinks
     }
   }
 
-  return numBlockedLinks
+  return { numBlockedLinks, numBlockedLinksFresh }
 }
 
 function hideBlockedItems() {
   const items = select.all('li')
 
   let numBlockedItems = 0
+  let numBlockedItemsFresh = 0
+
   for (const item of items) {
     if (
       isItemBlocked(document.location, item.textContent) ||
       isItemBlocked(document.location, item.querySelector('span')?.textContent)
     ) {
-      hideElement(item)
+      if (hideElement(item)) {
+        ++numBlockedItemsFresh
+      }
+
       ++numBlockedItems
     }
   }
 
-  return numBlockedItems
+  return { numBlockedItems, numBlockedItemsFresh }
 }
 
 function hideElement(
   element: HTMLElement,
   { remove = false }: { remove?: boolean } = {}
-) {
+): boolean {
   if (!element) {
-    return
+    return false
   }
 
-  // let isReplaced = false
-
-  // if (replace) {
-  //   const picture = element.querySelectorAll('picture')[0]
-  //   const replacementImage = document.createElement('img')
-  //   replacementImage.style.objectFit = 'cover'
-  //   replacementImage.style.maxWidth = '100%'
-  //   replacementImage.src = chrome.runtime.getURL('assets/healthy-bg.jpg')
-
-  //   if (picture) {
-  //     picture.replaceWith(replacementImage)
-  //     isReplaced = true
-  //   } else {
-  //     const img = element.querySelectorAll('img')[0]
-  //     if (img) {
-  //       img.replaceWith(replacementImage)
-  //       isReplaced = true
-  //     }
-  //   }
-  // }
-
   if (remove) {
+    const isHidden = element.style.display === 'none'
     element.style.display = 'none'
     // element.style.backgroundColor = 'red'
+
+    return !isHidden
   } else {
+    const isHidden =
+      element.style.pointerEvents === 'none' &&
+      element.style.filter === 'blur(16px)' &&
+      element.style.userSelect === 'none'
+
     element.style.pointerEvents = 'none'
     element.style.filter = 'blur(16px)'
     element.style.userSelect = 'none'
+
+    return !isHidden
   }
 }
 
@@ -88,8 +87,8 @@ async function updateHiddenBlockedLinksAndItemsForce() {
   console.log('>>> internet diet updating')
   console.time('internet diet update')
 
-  const numBlockedLinks = hideBlockedLinks()
-  const numBlockedItems = hideBlockedItems()
+  const { numBlockedLinks, numBlockedLinksFresh } = hideBlockedLinks()
+  const { numBlockedItems, numBlockedItemsFresh } = hideBlockedItems()
 
   console.log('internet diet blocked', numBlockedLinks, 'links')
   console.log('internet diet blocked', numBlockedItems, 'items')
@@ -101,8 +100,26 @@ async function updateHiddenBlockedLinksAndItemsForce() {
 
   chrome.runtime.sendMessage({
     type: 'tabBlockInfo',
-    tabBlockInfo
+    ...tabBlockInfo
   })
+
+  if (numBlockedLinksFresh > 0) {
+    const { numBlockedLinksTotal = 0 } = await chrome.storage.sync.get([
+      'numBlockedLinksTotal'
+    ])
+    await chrome.storage.sync.set({
+      numBlockedLinksTotal: numBlockedLinksTotal + numBlockedLinksFresh
+    })
+  }
+
+  if (numBlockedItemsFresh > 0) {
+    const { numBlockedItemsTotal = 0 } = await chrome.storage.sync.get([
+      'numBlockedItemsTotal'
+    ])
+    await chrome.storage.sync.set({
+      numBlockedItemsTotal: numBlockedItemsTotal + numBlockedItemsFresh
+    })
+  }
 
   console.timeEnd('internet diet update')
   console.log('<<< internet diet updating')
@@ -157,7 +174,7 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
       sendResponse()
       break
     case 'tabBlockInfoQuery':
-      sendResponse({ tabBlockInfo })
+      sendResponse(tabBlockInfo)
       break
   }
 })

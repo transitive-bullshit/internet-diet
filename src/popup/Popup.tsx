@@ -4,10 +4,10 @@ import styles from './Popup.module.css'
 
 export const Popup = () => {
   const [tabTitle, setTabTitle] = React.useState('')
-  const [tabBlockInfo, setTabBlockInfo] = React.useState({
-    numBlockedItems: 0,
-    numBlockedLinks: 0
-  })
+  const [numBlockedItems, setNumBlockedItems] = React.useState(0)
+  const [numBlockedLinks, setNumBlockedLinks] = React.useState(0)
+  const [numBlockedItemsTotal, setNumBlockedItemsTotal] = React.useState(0)
+  const [numBlockedLinksTotal, setNumBlockedLinksTotal] = React.useState(0)
 
   React.useEffect(() => {
     chrome.tabs.query({ currentWindow: true, active: true }).then((tabs) => {
@@ -30,7 +30,8 @@ export const Popup = () => {
             type: 'tabBlockInfoQuery'
           },
           (response) => {
-            setTabBlockInfo(response.tabBlockInfo)
+            setNumBlockedItems(response.numBlockedItems)
+            setNumBlockedLinks(response.numBlockedLinks)
           }
         )
       }
@@ -44,7 +45,8 @@ export const Popup = () => {
             if (!tabId || !sender?.tab?.active) {
               break
             }
-            setTabBlockInfo(message.tabBlockInfo)
+            setNumBlockedItems(message.numBlockedItems)
+            setNumBlockedLinks(message.numBlockedLinks)
             break
         }
 
@@ -52,6 +54,30 @@ export const Popup = () => {
         return true
       }
     )
+
+    // fetch total blocked numbers from storage
+    ;(async function () {
+      const { numBlockedLinksTotal = 0, numBlockedItemsTotal = 0 } =
+        await chrome.storage.sync.get([
+          'numBlockedLinksTotal',
+          'numBlockedItemsTotal'
+        ])
+
+      setNumBlockedItemsTotal(numBlockedItemsTotal)
+      setNumBlockedLinksTotal(numBlockedLinksTotal)
+
+      chrome.storage.onChanged.addListener((changes, area) => {
+        if (area !== 'sync') return
+
+        if (changes.numBlockedLinksTotal) {
+          setNumBlockedLinksTotal(changes.numBlockedLinksTotal.newValue)
+        }
+
+        if (changes.numBlockedItemsTotal) {
+          setNumBlockedItemsTotal(changes.numBlockedItemsTotal.newValue)
+        }
+      })
+    })()
   }, [])
 
   return (
@@ -75,12 +101,14 @@ export const Popup = () => {
 
         <div className={styles.row}>
           <div>Blocked links</div>
-          <div>{tabBlockInfo.numBlockedLinks} on this page</div>
+          <div>{numBlockedLinks} on this page</div>
+          <div>{numBlockedLinksTotal} total</div>
         </div>
 
         <div className={styles.row}>
           <div>Blocked items</div>
-          <div>{tabBlockInfo.numBlockedItems} on this page</div>
+          <div>{numBlockedItems} on this page</div>
+          <div>{numBlockedItemsTotal} total</div>
         </div>
       </div>
     </div>

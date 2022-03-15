@@ -51,16 +51,26 @@ The extension is designed to work on any website where you want to restrict acce
 This project is a WIP and lacks UI / polish / tests / etc.
 
 - [x] handle page updates and slow client-side refresh
-- [ ] add popup UI
+- [x] add popup UI
+- [x] add badge UI
 - [ ] add options UI
 - [ ] make block rules customizable
 - [ ] make block redirect customizable
 - [ ] track the number of links and items blocked
 - [ ] add inline tooltip on blocked items for context and undo
-- [ ] add icon and design
-- [ ] design block page
+- [x] add icon and design
+- [ ] add styles to default blocked page
 - [ ] inject content script dynamically
 - [ ] add examples
+
+## Development
+
+```bash
+npm install
+npm start
+```
+
+Then load the unpacked extension into chrome from the `build` folder.
 
 ## License
 

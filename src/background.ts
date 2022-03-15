@@ -16,7 +16,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         break
       }
 
-      const { numBlockedItems, numBlockedLinks } = message.tabBlockInfo
+      const { numBlockedItems, numBlockedLinks } = message
 
       const text =
         numBlockedItems + numBlockedLinks > 0

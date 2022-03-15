@@ -58,10 +58,15 @@ const config: Configuration = {
       patterns: [
         resolvePackage('webextension-polyfill'),
         {
-          from: 'dist'
+          from: 'assets',
+          to: 'assets'
         },
         {
-          from: 'dist/manifest.json',
+          from: 'src/blocked/index.html',
+          to: 'blocked.html'
+        },
+        {
+          from: 'manifest.json',
           force: true,
           transform: function (content) {
             return Buffer.from(
