@@ -10,6 +10,7 @@ export const Popup = () => {
   const [numBlockedLinksTotal, setNumBlockedLinksTotal] = React.useState(0)
 
   React.useEffect(() => {
+    // fetch the number of blocked items for the current tab
     chrome.tabs.query({ currentWindow: true, active: true }).then((tabs) => {
       const activeTab = tabs[0]
 
@@ -37,6 +38,7 @@ export const Popup = () => {
       }
     })
 
+    // ensure the stats stay up-to-date as the current tab changes
     chrome.runtime.onMessage.addListener(
       async (message, sender, sendResponse) => {
         switch (message.type) {
@@ -54,9 +56,8 @@ export const Popup = () => {
         return true
       }
     )
-
-    // fetch total blocked numbers from storage
     ;(async function () {
+      // fetch the total blocked stats from storage
       const { numBlockedLinksTotal = 0, numBlockedItemsTotal = 0 } =
         await chrome.storage.sync.get([
           'numBlockedLinksTotal',
@@ -66,6 +67,7 @@ export const Popup = () => {
       setNumBlockedItemsTotal(numBlockedItemsTotal)
       setNumBlockedLinksTotal(numBlockedLinksTotal)
 
+      // ensure the total stats stay up-to-date with storage
       chrome.storage.onChanged.addListener((changes, area) => {
         if (area !== 'sync') return
 

@@ -56,7 +56,7 @@ This project is a WIP and lacks UI / polish / tests / etc.
 - [ ] add options UI
 - [ ] make block rules customizable
 - [ ] make block redirect customizable
-- [ ] track the number of links and items blocked
+- [x] track the number of links and items blocked
 - [ ] add inline tooltip on blocked items for context and undo
 - [x] add icon and design
 - [ ] add styles to default blocked page
