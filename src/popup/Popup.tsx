@@ -102,15 +102,31 @@ export const Popup = () => {
         <div className={styles.spacer} />
 
         <div className={styles.row}>
-          <div>Blocked links</div>
-          <div>{numBlockedLinks} on this page</div>
-          <div>{numBlockedLinksTotal} total</div>
+          <div>Blocked links:</div>
+          <div className={styles.subRow}>
+            <div>
+              <span className={styles.stat}>{numBlockedLinks}</span> on this
+              page
+            </div>
+            <div>
+              <span className={styles.stat}>{numBlockedLinksTotal}</span> in
+              total
+            </div>
+          </div>
         </div>
 
         <div className={styles.row}>
-          <div>Blocked items</div>
-          <div>{numBlockedItems} on this page</div>
-          <div>{numBlockedItemsTotal} total</div>
+          <div>Blocked items:</div>
+          <div className={styles.subRow}>
+            <div>
+              <span className={styles.stat}>{numBlockedItems}</span> on this
+              page
+            </div>
+            <div>
+              <span className={styles.stat}>{numBlockedItemsTotal}</span> in
+              total
+            </div>
+          </div>
         </div>
       </div>
     </div>

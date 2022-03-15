@@ -39,3 +39,23 @@
   background: #e6e6e6;
   margin: 12px 0;
 }
+
+.row {
+  margin: 0 0 12px;
+}
+
+.row:last-child {
+  margin-bottom: 0;
+}
+
+.subRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0 24px;
+}
+
+.stat {
+  font-weight: 600;
+  color: #e40e0b;
+}
