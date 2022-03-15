@@ -1,19 +1,15 @@
 import debounce from 'lodash.debounce'
-import throttle from 'lodash.throttle'
 import select from 'select-dom'
-import {
-  isBlockingEnabledForHost,
-  isUrlBlocked,
-  isUrlBlockedAsString,
-  isItemBlocked
-} from './utils'
+import { BlockRulesEngine, normalizeUrl } from './block-rules-engine'
+import * as log from './log'
 
 const selectedNodeClassName = 'internet-diet-selected'
 const stylesNodeId = 'internet-diet-styles-0'
 
+const blockRulesEngine = new BlockRulesEngine()
 let observer: MutationObserver | null = null
 let selectedElement: HTMLElement | null = null
-let selectedLink: HTMLElement | null = null
+let selectedLink: HTMLAnchorElement | null = null
 let numUpdates = 0
 let tabBlockInfo = {
   numBlockedLinks: 0,
@@ -28,7 +24,7 @@ function hideBlockedLinks() {
   let numBlockedLinksFresh = 0
 
   for (const link of links) {
-    if (isUrlBlockedAsString(link.href)) {
+    if (blockRulesEngine.isUrlBlockedAsString(link.href)) {
       const element = getClosestLinkBlockCandidate(link)
       if (hideElement(element)) {
         ++numBlockedLinksFresh
@@ -49,8 +45,11 @@ function hideBlockedItems() {
 
   for (const item of items) {
     if (
-      isItemBlocked(document.location, item.textContent) ||
-      isItemBlocked(document.location, item.querySelector('span')?.textContent)
+      blockRulesEngine.isItemBlocked(document.location, item.textContent) ||
+      blockRulesEngine.isItemBlocked(
+        document.location,
+        item.querySelector('span')?.textContent
+      )
     ) {
       const element = getClosestItemBlockCandidate(item)
       if (hideElement(element)) {
@@ -103,14 +102,14 @@ function getClosestItemBlockCandidate(element: HTMLElement) {
 async function updateHiddenBlockedLinksAndItemsForce() {
   ++numUpdates
 
-  console.log('>>> internet diet updating')
-  console.time(`internet diet update ${numUpdates}`)
+  log.info('>>> updating')
+  log.time(`update ${numUpdates}`)
 
   const { numBlockedLinks, numBlockedLinksFresh } = hideBlockedLinks()
   const { numBlockedItems, numBlockedItemsFresh } = hideBlockedItems()
 
-  console.log('internet diet blocked', numBlockedLinks, 'links')
-  console.log('internet diet blocked', numBlockedItems, 'items')
+  log.info('blocked', numBlockedLinks, 'links')
+  log.info('blocked', numBlockedItems, 'items')
 
   tabBlockInfo = {
     numBlockedItems,
@@ -122,8 +121,8 @@ async function updateHiddenBlockedLinksAndItemsForce() {
     ...tabBlockInfo
   })
 
-  console.timeEnd(`internet diet update ${numUpdates}`)
-  console.log('<<< internet diet updating')
+  log.timeEnd(`update ${numUpdates}`)
+  log.info('<<< updating')
 
   if (numBlockedLinksFresh > 0) {
     const { numBlockedLinksTotal = 0 } = await chrome.storage.sync.get([
@@ -144,7 +143,7 @@ async function updateHiddenBlockedLinksAndItemsForce() {
   }
 }
 
-const updateHiddenBlockedLinksAndItems = throttle(
+const updateHiddenBlockedLinksAndItems = debounce(
   updateHiddenBlockedLinksAndItemsForce,
   10,
   {
@@ -153,9 +152,9 @@ const updateHiddenBlockedLinksAndItems = throttle(
 )
 
 function update() {
-  if (!isBlockingEnabledForHost(document.location)) {
+  if (!blockRulesEngine.isBlockingEnabledForHost(document.location)) {
     return
-  } else if (isUrlBlocked(document.location)) {
+  } else if (blockRulesEngine.isUrlBlocked(document.location)) {
     document.location.href = chrome.runtime.getURL('blocked.html')
   } else {
     if (!document.body) {
@@ -184,32 +183,61 @@ function update() {
 }
 
 function selectElementImpl(event: Event) {
-  if (selectedElement === event.target || !event.target) {
+  if (!event.target || selectedLink === event.target) {
+    return
+  }
+
+  const target = event.target as HTMLElement
+  const link = target.closest('a')
+
+  if (selectedLink === link) {
     return
   }
 
   clearElementImpl()
 
-  const target = event.target as HTMLElement
-  selectedLink = target.closest('a')
-
-  if (selectedLink) {
-    selectedElement = getClosestLinkBlockCandidate(selectedLink)
-
-    if (selectedElement) {
-      selectedElement.classList.add(selectedNodeClassName)
-    }
-  }
-}
-
-function clearElementImpl() {
-  if (!selectedElement && !selectedLink) {
+  if (!link || !normalizeUrl(link.href)) {
     return
   }
 
-  selectedElement?.classList?.remove(selectedNodeClassName)
+  const element = getClosestLinkBlockCandidate(link)
+  if (!element) {
+    return
+  }
+
+  selectedLink = link
+  selectedElement = element
+  selectedElement.classList.add(selectedNodeClassName)
+}
+
+function clearElementImpl() {
+  if (!selectedElement || !selectedLink) {
+    return
+  }
+
+  selectedElement.classList.remove(selectedNodeClassName)
   selectedElement = null
   selectedLink = null
+}
+
+async function blockElement(event: Event) {
+  if (!selectedElement || !selectedLink) {
+    return
+  }
+
+  event.preventDefault()
+  event.stopPropagation()
+
+  await blockRulesEngine.addBlockLinkRule({
+    hostname: document.location.hostname,
+    url: selectedLink.href
+  })
+
+  chrome.runtime.sendMessage({
+    type: 'event:stopIsAddingLinkBlock'
+  })
+
+  clearElementImpl()
 }
 
 const selectElement = debounce(selectElementImpl, 1)
@@ -219,6 +247,7 @@ function updateIsAddingLinkBlock() {
   const action = isAddingLinkBlock ? 'addEventListener' : 'removeEventListener'
   document[action]('mouseover', selectElement)
   document[action]('mouseout', clearElement)
+  document[action]('click', blockElement)
   clearElementImpl()
 }
 
@@ -240,7 +269,6 @@ function initStyles() {
 .${selectedNodeClassName} {
   background: repeating-linear-gradient(135deg, rgba(225, 225, 226, 0.3), rgba(229, 229, 229, 0.3) 10px, rgba(173, 173, 173, 0.3) 10px, rgba(172, 172, 172, 0.3) 20px);
   box-shadow: inset 0px 0px 0px 1px #d7d7d7;
-  pointer-events: none;
 }
 
 .${selectedNodeClassName} img {
@@ -260,7 +288,7 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
     case 'tabBlockInfoQuery':
       sendResponse(tabBlockInfo)
       break
-    case 'tab:event:toggleIsAddingLinkBlock':
+    case 'event:updateIsAddingLinkBlock':
       isAddingLinkBlock = !!message.isAddingLinkBlock
       updateIsAddingLinkBlock()
       break
@@ -268,5 +296,6 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
 })
 
 update()
+blockRulesEngine.on('update', update)
 window.addEventListener('load', update)
 window.addEventListener('DOMContentLoaded', initStyles)

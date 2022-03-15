@@ -81,17 +81,21 @@ export const Popup = () => {
 
     chrome.runtime.onMessage.addListener(
       async (message, sender, sendResponse) => {
+        const tabId = sender?.tab?.id
+        if (!tabId || !sender?.tab?.active) {
+          sendResponse()
+          return
+        }
+
+        // TODO: verify tabInfo.id matches sender.tab.id?
+
         switch (message.type) {
           case 'tabBlockInfo':
-            const tabId = sender?.tab?.id
-            if (!tabId || !sender?.tab?.active) {
-              break
-            }
-
-            // TODO: verify tabInfo.id matches sender.tab.id?
-
             setNumBlockedItems(message.numBlockedItems)
             setNumBlockedLinks(message.numBlockedLinks)
+            break
+          case 'event:stopIsAddingLinkBlock':
+            setIsAddingLinkBlock(false)
             break
         }
 
@@ -135,7 +139,7 @@ export const Popup = () => {
     }
 
     chrome.tabs.sendMessage(tabInfo.id, {
-      type: 'tab:event:toggleIsAddingLinkBlock',
+      type: 'event:updateIsAddingLinkBlock',
       isAddingLinkBlock
     })
   }, [tabInfo, isAddingLinkBlock])

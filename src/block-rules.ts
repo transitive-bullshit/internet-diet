@@ -4,24 +4,51 @@ export const blockRules: BlockRule[] = [
   {
     hostname: 'postmates.com',
     type: 'pathname',
-    blockedPathnameWords: [
-      'mcdonalds',
-      'burger-king',
-      '7-eleven',
-      'dunkin',
-      '99-cent-supreme-pizza',
-      'marthas-breakfast-sandwiches-1117-broadway',
-      'LPAvJw9xUn-qcF9uAhfUcA'
-    ],
-    blockedItems: ['coke', 'soda', 'pepsi']
+    pathname: 'mcdonalds'
   },
   {
-    hostname: 'digg.com',
-    type: 'host'
+    hostname: 'postmates.com',
+    type: 'pathname',
+    pathname: 'burger-king'
   },
   {
-    hostname: 'discord.com',
-    type: 'url',
-    url: 'https://discord.com/channels/908462637761826896/908462638541963285'
+    hostname: 'postmates.com',
+    type: 'pathname',
+    pathname: '7-eleven'
+  },
+  {
+    hostname: 'postmates.com',
+    type: 'pathname',
+    pathname: 'dunkin'
+  },
+  {
+    hostname: 'postmates.com',
+    type: 'pathname',
+    pathname: '99-cent-supreme-pizza'
+  },
+  {
+    hostname: 'postmates.com',
+    type: 'pathname',
+    pathname: 'marthas-breakfast-sandwiches-1117-broadway'
+  },
+  {
+    hostname: 'postmates.com',
+    type: 'pathname',
+    pathname: 'LPAvJw9xUn-qcF9uAhfUcA'
+  },
+  {
+    hostname: 'postmates.com',
+    type: 'item',
+    item: 'coke'
+  },
+  {
+    hostname: 'postmates.com',
+    type: 'item',
+    item: 'soda'
+  },
+  {
+    hostname: 'postmates.com',
+    type: 'item',
+    item: 'pepsi'
   }
 ]

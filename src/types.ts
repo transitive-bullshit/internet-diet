@@ -1,4 +1,4 @@
-export type BlockType = 'host' | 'pathname' | 'url'
+export type BlockType = 'host' | 'pathname' | 'item' | 'url'
 
 export interface BlockRuleBase {
   hostname: string
@@ -11,8 +11,12 @@ export interface BlockRuleHost extends BlockRuleBase {
 
 export interface BlockRulePathname extends BlockRuleBase {
   type: 'pathname'
-  blockedPathnameWords: string[]
-  blockedItems: string[]
+  pathname: string
+}
+
+export interface BlockRuleItem extends BlockRuleBase {
+  type: 'item'
+  item: string
 }
 
 export interface BlockRuleUrl extends BlockRuleBase {
@@ -20,4 +24,8 @@ export interface BlockRuleUrl extends BlockRuleBase {
   url: string
 }
 
-export type BlockRule = BlockRuleHost | BlockRulePathname | BlockRuleUrl
+export type BlockRule =
+  | BlockRuleHost
+  | BlockRulePathname
+  | BlockRuleItem
+  | BlockRuleUrl

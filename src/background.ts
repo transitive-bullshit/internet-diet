@@ -1,7 +1,12 @@
-import { isBlockingEnabledForHost } from './utils'
+import { BlockRulesEngine } from './block-rules-engine'
+
+const blockRulesEngine = new BlockRulesEngine()
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
-  if (changeInfo.url && isBlockingEnabledForHost(new URL(changeInfo.url))) {
+  if (
+    changeInfo.url &&
+    blockRulesEngine.isBlockingEnabledForHost(new URL(changeInfo.url))
+  ) {
     chrome.tabs.sendMessage(tabId, {
       type: 'update'
     })
