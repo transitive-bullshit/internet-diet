@@ -60,7 +60,7 @@ This project is a WIP and lacks UI / polish / etc.
 - [x] add popup UI
 - [x] add badge UI
 - [x] add styles to default blocked page
-- [ ] inject content script dynamically
+- [ ] inject content script dynamically (using declarative content)
 - [ ] add options UI
 - [ ] make block rules customizable
 - [ ] make block page customizable

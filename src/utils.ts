@@ -1,6 +1,9 @@
 import normalizeUrlImpl from 'normalize-url'
 import { blockRules } from './block-rules'
 
+export const cs = (...classes: Array<string | undefined | false>) =>
+  classes.filter((a) => !!a).join(' ')
+
 export function normalizeUrl(url: string): string {
   return normalizeUrlImpl(url, {
     forceHttps: true,

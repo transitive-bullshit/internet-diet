@@ -1,3 +1,4 @@
+import debounce from 'lodash.debounce'
 import throttle from 'lodash.throttle'
 import select from 'select-dom'
 import {
@@ -7,12 +8,18 @@ import {
   isItemBlocked
 } from './utils'
 
+const selectedNodeClassName = 'internet-diet-selected'
+const stylesNodeId = 'internet-diet-styles-0'
+
 let observer: MutationObserver | null = null
+let selectedElement: HTMLElement | null = null
+let selectedLink: HTMLElement | null = null
 let numUpdates = 0
 let tabBlockInfo = {
   numBlockedLinks: 0,
   numBlockedItems: 0
 }
+let isAddingLinkBlock = false
 
 function hideBlockedLinks() {
   const links = select.all('a')
@@ -22,7 +29,7 @@ function hideBlockedLinks() {
 
   for (const link of links) {
     if (isUrlBlockedAsString(link.href)) {
-      const element = link.closest('li') || link.closest('div') || link
+      const element = getClosestLinkBlockCandidate(link)
       if (hideElement(element)) {
         ++numBlockedLinksFresh
       }
@@ -45,7 +52,8 @@ function hideBlockedItems() {
       isItemBlocked(document.location, item.textContent) ||
       isItemBlocked(document.location, item.querySelector('span')?.textContent)
     ) {
-      if (hideElement(item)) {
+      const element = getClosestItemBlockCandidate(item)
+      if (hideElement(element)) {
         ++numBlockedItemsFresh
       }
 
@@ -82,6 +90,14 @@ function hideElement(
 
     return !isHidden
   }
+}
+
+function getClosestLinkBlockCandidate(element: HTMLElement) {
+  return element.closest('li') || element.closest('div') || element
+}
+
+function getClosestItemBlockCandidate(element: HTMLElement) {
+  return element.closest('li') || element.closest('div') || element
 }
 
 async function updateHiddenBlockedLinksAndItemsForce() {
@@ -167,8 +183,73 @@ function update() {
   }
 }
 
-update()
-window.addEventListener('load', update)
+function selectElementImpl(event: Event) {
+  if (selectedElement === event.target || !event.target) {
+    return
+  }
+
+  clearElementImpl()
+
+  const target = event.target as HTMLElement
+  selectedLink = target.closest('a')
+
+  if (selectedLink) {
+    selectedElement = getClosestLinkBlockCandidate(selectedLink)
+
+    if (selectedElement) {
+      selectedElement.classList.add(selectedNodeClassName)
+    }
+  }
+}
+
+function clearElementImpl() {
+  if (!selectedElement && !selectedLink) {
+    return
+  }
+
+  selectedElement?.classList?.remove(selectedNodeClassName)
+  selectedElement = null
+  selectedLink = null
+}
+
+const selectElement = debounce(selectElementImpl, 1)
+const clearElement = debounce(clearElementImpl, 1)
+
+function updateIsAddingLinkBlock() {
+  const action = isAddingLinkBlock ? 'addEventListener' : 'removeEventListener'
+  document[action]('mouseover', selectElement)
+  document[action]('mouseout', clearElement)
+  clearElementImpl()
+}
+
+function addStyles(css: string) {
+  clearStyles()
+  const style = document.createElement('style')
+  style.id = stylesNodeId
+  style.textContent = css
+  document.head?.appendChild(style)
+}
+
+function clearStyles() {
+  const stylesNode = document.getElementById(stylesNodeId)
+  stylesNode?.parentNode?.removeChild(stylesNode)
+}
+
+function initStyles() {
+  const css = `
+.${selectedNodeClassName} {
+  background: repeating-linear-gradient(135deg, rgba(225, 225, 226, 0.3), rgba(229, 229, 229, 0.3) 10px, rgba(173, 173, 173, 0.3) 10px, rgba(172, 172, 172, 0.3) 20px);
+  box-shadow: inset 0px 0px 0px 1px #d7d7d7;
+  pointer-events: none;
+}
+
+.${selectedNodeClassName} img {
+  filter: blur(16px);
+}
+`
+
+  addStyles(css)
+}
 
 chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
   switch (message.type) {
@@ -179,5 +260,13 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
     case 'tabBlockInfoQuery':
       sendResponse(tabBlockInfo)
       break
+    case 'tab:event:toggleIsAddingLinkBlock':
+      isAddingLinkBlock = !!message.isAddingLinkBlock
+      updateIsAddingLinkBlock()
+      break
   }
 })
+
+update()
+window.addEventListener('load', update)
+window.addEventListener('DOMContentLoaded', initStyles)

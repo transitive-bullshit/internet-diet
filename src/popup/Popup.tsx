@@ -1,11 +1,21 @@
 import React from 'react'
 import { FaCog } from '@react-icons/all-files/fa/FaCog'
 import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
+import { FaUnlink } from '@react-icons/all-files/fa/FaUnlink'
 
+import { cs } from '../utils'
 import styles from './Popup.module.css'
 
+interface TabInfo {
+  id: number
+  title: string
+  hostname: string
+  url: string
+}
+
 export const Popup = () => {
-  const [tabTitle, setTabTitle] = React.useState('')
+  const [isAddingLinkBlock, setIsAddingLinkBlock] = React.useState(false)
+  const [tabInfo, setTabInfo] = React.useState<TabInfo | null>(null)
   const [numBlockedItems, setNumBlockedItems] = React.useState(0)
   const [numBlockedLinks, setNumBlockedLinks] = React.useState(0)
   const [numBlockedItemsTotal, setNumBlockedItemsTotal] = React.useState(0)
@@ -21,36 +31,54 @@ export const Popup = () => {
     chrome.runtime.openOptionsPage()
   }, [])
 
+  const onClickToggleAddLinkBlock = React.useCallback(() => {
+    setIsAddingLinkBlock(!isAddingLinkBlock)
+  }, [isAddingLinkBlock])
+
   React.useEffect(() => {
     // fetch the number of blocked items for the current tab
     chrome.tabs.query({ currentWindow: true, active: true }).then((tabs) => {
       const activeTab = tabs[0]
 
       if (activeTab) {
-        let title = activeTab.title || ''
+        let hostname = activeTab.title || 'active tab'
         try {
           const url = new URL(activeTab.url!)
           if (url.hostname) {
-            title = url.hostname
+            hostname = url.hostname
           }
         } catch (err) {}
 
-        setTabTitle(title)
-
-        chrome.tabs.sendMessage(
-          activeTab.id!,
-          {
-            type: 'tabBlockInfoQuery'
-          },
-          (response) => {
-            setNumBlockedItems(response.numBlockedItems)
-            setNumBlockedLinks(response.numBlockedLinks)
-          }
-        )
+        setTabInfo({
+          title: activeTab.title!,
+          id: activeTab.id!,
+          url: activeTab.url!,
+          hostname
+        })
       }
     })
 
-    // ensure the stats stay up-to-date as the current tab changes
+    // TODO: is it necessary to handle active tab onChanged event?
+  }, [])
+
+  React.useEffect(() => {
+    if (!tabInfo) {
+      setNumBlockedItems(0)
+      setNumBlockedLinks(0)
+      return
+    }
+
+    chrome.tabs.sendMessage(
+      tabInfo.id,
+      {
+        type: 'tabBlockInfoQuery'
+      },
+      (response) => {
+        setNumBlockedItems(response.numBlockedItems)
+        setNumBlockedLinks(response.numBlockedLinks)
+      }
+    )
+
     chrome.runtime.onMessage.addListener(
       async (message, sender, sendResponse) => {
         switch (message.type) {
@@ -59,6 +87,9 @@ export const Popup = () => {
             if (!tabId || !sender?.tab?.active) {
               break
             }
+
+            // TODO: verify tabInfo.id matches sender.tab.id?
+
             setNumBlockedItems(message.numBlockedItems)
             setNumBlockedLinks(message.numBlockedLinks)
             break
@@ -68,6 +99,10 @@ export const Popup = () => {
         return true
       }
     )
+  }, [tabInfo])
+
+  // ensure the stats stay up-to-date
+  React.useEffect(() => {
     ;(async function () {
       // fetch the total blocked stats from storage
       const { numBlockedLinksTotal = 0, numBlockedItemsTotal = 0 } =
@@ -93,6 +128,17 @@ export const Popup = () => {
       })
     })()
   }, [])
+
+  React.useEffect(() => {
+    if (!tabInfo) {
+      return
+    }
+
+    chrome.tabs.sendMessage(tabInfo.id, {
+      type: 'tab:event:toggleIsAddingLinkBlock',
+      isAddingLinkBlock
+    })
+  }, [tabInfo, isAddingLinkBlock])
 
   return (
     <div className={styles.container}>
@@ -127,7 +173,9 @@ export const Popup = () => {
       </div>
 
       <div className={styles.body}>
-        <div className={styles.hostname}>{tabTitle}</div>
+        <div className={styles.hostname}>
+          {tabInfo?.hostname || 'active tab'}
+        </div>
 
         <div className={styles.spacer} />
 
@@ -169,6 +217,18 @@ export const Popup = () => {
               in total
             </div>
           </div>
+        </div>
+
+        <div className={styles.spacer} />
+
+        <div className={styles.row}>
+          <button
+            aria-label='Add link to block'
+            className={cs(styles.button, isAddingLinkBlock && styles.active)}
+            onClick={onClickToggleAddLinkBlock}
+          >
+            Add Link Block <FaUnlink />
+          </button>
         </div>
       </div>
     </div>
