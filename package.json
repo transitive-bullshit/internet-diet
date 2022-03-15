@@ -24,11 +24,12 @@
     "watch:webpack": "cross-env NODE_OPTIONS=\"--loader ts-node/esm --no-warnings\" webpack --mode=development --watch"
   },
   "dependencies": {
+    "@fortawesome/react-fontawesome": "^0.1.17",
+    "@react-icons/all-files": "^4.1.0",
     "lodash.throttle": "^4.1.1",
     "normalize-url": "^7.0.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-icons": "^4.3.1",
     "select-dom": "^7.1.1"
   },
   "devDependencies": {

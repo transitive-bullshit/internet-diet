@@ -17,7 +17,7 @@
 }
 
 .logo img {
-  width: 48px;
+  width: 36px;
   margin-right: 8px;
 }
 
@@ -58,4 +58,26 @@
 .stat {
   font-weight: 600;
   color: #e40e0b;
+}
+
+.button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  color: #000;
+  user-select: none;
+  outline: none;
+  border-radius: 10px;
+}
+
+.button:hover {
+  background: rgb(247, 247, 247);
+}
+
+.button:active {
+  background: rgb(230, 230, 230);
 }

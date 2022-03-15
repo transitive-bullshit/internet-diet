@@ -1,4 +1,6 @@
 import React from 'react'
+// import { FaCog } from 'react-icons/fa'
+import { FaCog } from '@react-icons/all-files/fa/FaCog'
 
 import styles from './Popup.module.css'
 
@@ -94,6 +96,12 @@ export const Popup = () => {
           <img src='/assets/icon@128.png' />
           <span>Internet Diet</span>
         </a>
+
+        <div className={styles.options}>
+          <button aria-label='Open settings' className={styles.button}>
+            <FaCog />
+          </button>
+        </div>
       </div>
 
       <div className={styles.body}>

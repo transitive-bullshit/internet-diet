@@ -8,6 +8,7 @@ import {
 } from './utils'
 
 let observer: MutationObserver | null = null
+let numUpdates = 0
 let tabBlockInfo = {
   numBlockedLinks: 0,
   numBlockedItems: 0
@@ -84,8 +85,10 @@ function hideElement(
 }
 
 async function updateHiddenBlockedLinksAndItemsForce() {
+  ++numUpdates
+
   console.log('>>> internet diet updating')
-  console.time('internet diet update')
+  console.time(`internet diet update ${numUpdates}`)
 
   const { numBlockedLinks, numBlockedLinksFresh } = hideBlockedLinks()
   const { numBlockedItems, numBlockedItemsFresh } = hideBlockedItems()
@@ -102,6 +105,9 @@ async function updateHiddenBlockedLinksAndItemsForce() {
     type: 'tabBlockInfo',
     ...tabBlockInfo
   })
+
+  console.timeEnd(`internet diet update ${numUpdates}`)
+  console.log('<<< internet diet updating')
 
   if (numBlockedLinksFresh > 0) {
     const { numBlockedLinksTotal = 0 } = await chrome.storage.sync.get([
@@ -120,9 +126,6 @@ async function updateHiddenBlockedLinksAndItemsForce() {
       numBlockedItemsTotal: numBlockedItemsTotal + numBlockedItemsFresh
     })
   }
-
-  console.timeEnd('internet diet update')
-  console.log('<<< internet diet updating')
 }
 
 const updateHiddenBlockedLinksAndItems = throttle(
