@@ -1,6 +1,6 @@
 import React from 'react'
-// import { FaCog } from 'react-icons/fa'
 import { FaCog } from '@react-icons/all-files/fa/FaCog'
+import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
 
 import styles from './Popup.module.css'
 
@@ -10,6 +10,16 @@ export const Popup = () => {
   const [numBlockedLinks, setNumBlockedLinks] = React.useState(0)
   const [numBlockedItemsTotal, setNumBlockedItemsTotal] = React.useState(0)
   const [numBlockedLinksTotal, setNumBlockedLinksTotal] = React.useState(0)
+
+  const onClickOpenSupportPage = React.useCallback(() => {
+    chrome.tabs.create({
+      url: 'https://github.com/transitive-bullshit/internet-diet'
+    })
+  }, [])
+
+  const onClickOpenOptionsPage = React.useCallback(() => {
+    chrome.runtime.openOptionsPage()
+  }, [])
 
   React.useEffect(() => {
     // fetch the number of blocked items for the current tab
@@ -98,7 +108,19 @@ export const Popup = () => {
         </a>
 
         <div className={styles.options}>
-          <button aria-label='Open settings' className={styles.button}>
+          <button
+            aria-label='Support'
+            className={styles.button}
+            onClick={onClickOpenSupportPage}
+          >
+            <FaQuestion />
+          </button>
+
+          <button
+            aria-label='Open settings'
+            className={styles.button}
+            onClick={onClickOpenOptionsPage}
+          >
             <FaCog />
           </button>
         </div>
@@ -111,28 +133,40 @@ export const Popup = () => {
 
         <div className={styles.row}>
           <div>Blocked links:</div>
+
           <div className={styles.subRow}>
             <div>
-              <span className={styles.stat}>{numBlockedLinks}</span> on this
-              page
+              <span className={styles.stat}>
+                {numBlockedLinks.toLocaleString('en-US')}
+              </span>{' '}
+              on this page
             </div>
+
             <div>
-              <span className={styles.stat}>{numBlockedLinksTotal}</span> in
-              total
+              <span className={styles.stat}>
+                {numBlockedLinksTotal.toLocaleString('en-US')}
+              </span>{' '}
+              in total
             </div>
           </div>
         </div>
 
         <div className={styles.row}>
           <div>Blocked items:</div>
+
           <div className={styles.subRow}>
             <div>
-              <span className={styles.stat}>{numBlockedItems}</span> on this
-              page
+              <span className={styles.stat}>
+                {numBlockedItems.toLocaleString('en-US')}
+              </span>{' '}
+              on this page
             </div>
+
             <div>
-              <span className={styles.stat}>{numBlockedItemsTotal}</span> in
-              total
+              <span className={styles.stat}>
+                {numBlockedItemsTotal.toLocaleString('en-US')}
+              </span>{' '}
+              in total
             </div>
           </div>
         </div>

@@ -6,6 +6,7 @@
 .header {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   margin-bottom: 12px;
 }
 
@@ -60,24 +61,38 @@
   color: #e40e0b;
 }
 
+.options {
+  display: flex;
+  align-items: center;
+}
+
 .button {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  width: 40px;
-  height: 40px;
-  color: #000;
+  padding: 5px;
   user-select: none;
   outline: none;
-  border-radius: 10px;
+  border: 0 none;
+  background: transparent;
+  color: #888;
+}
+
+.button:last-child {
+  padding-right: 0;
+}
+
+.button svg {
+  width: 14px;
+  height: 14px;
 }
 
 .button:hover {
-  background: rgb(247, 247, 247);
+  color: #2b2b2b;
 }
 
 .button:active {
-  background: rgb(230, 230, 230);
+  color: #000;
 }

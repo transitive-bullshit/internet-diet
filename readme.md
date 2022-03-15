@@ -1,3 +1,7 @@
+<p align="center">
+  <img alt="Internet Diet" src="assets/banner.jpg">
+</p>
+
 # Internet Diet
 
 > Chrome extension to remove unhealthy food options from the web.
@@ -53,14 +57,15 @@ This project is a WIP and lacks UI / polish / tests / etc.
 - [x] handle page updates and slow client-side refresh
 - [x] add popup UI
 - [x] add badge UI
+- [x] add styles to default blocked page
+- [ ] inject content script dynamically
 - [ ] add options UI
 - [ ] make block rules customizable
-- [ ] make block redirect customizable
+- [ ] make block page customizable
 - [x] track the number of links and items blocked
-- [ ] add inline tooltip on blocked items for context and undo
+- [ ] add inline tooltip on blocked items for context and pausing
+- [ ] add support for pausing a site
 - [x] add icon and design
-- [ ] add styles to default blocked page
-- [ ] inject content script dynamically
 - [ ] add examples
 
 ## Development

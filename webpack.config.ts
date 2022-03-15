@@ -18,7 +18,8 @@ const config: Configuration = {
   entry: {
     content: path.resolve('src', 'content'),
     background: path.resolve('src', 'background'),
-    popup: path.resolve('src', 'popup')
+    popup: path.resolve('src', 'popup'),
+    blocked: path.resolve('src', 'blocked')
   },
   output: {
     path: path.resolve('build')
@@ -62,10 +63,6 @@ const config: Configuration = {
           to: 'assets'
         },
         {
-          from: 'src/blocked/index.html',
-          to: 'blocked.html'
-        },
-        {
           from: 'manifest.json',
           force: true,
           transform: function (content) {
@@ -83,6 +80,12 @@ const config: Configuration = {
       template: path.resolve('src', 'popup', 'index.html'),
       filename: 'popup.html',
       chunks: ['popup'],
+      cache: false
+    }),
+    new HtmlWebpackPlugin({
+      template: path.resolve('src', 'blocked', 'index.html'),
+      filename: 'blocked.html',
+      chunks: ['blocked'],
       cache: false
     }),
     new SizePlugin({ writeFile: false })

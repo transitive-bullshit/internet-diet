@@ -8,6 +8,7 @@ export const blockRules: BlockRule[] = [
       'mcdonalds',
       'burger-king',
       '7-eleven',
+      'dunkin',
       '99-cent-supreme-pizza',
       'marthas-breakfast-sandwiches-1117-broadway',
       'LPAvJw9xUn-qcF9uAhfUcA'
