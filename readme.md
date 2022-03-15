@@ -24,7 +24,7 @@ So I built an easy way to block all the unwanted crap.
 - specific URLs
 - entire websites
 
-When blocking individual restaurants and menu items, they will be blurred on the page so you can be sure it's working without being tempted by them.
+When blocking individual restaurants and menu items, they will be blurred out on the page so you can be sure it's working without being tempted by them.
 
 ## Example use cases
 
