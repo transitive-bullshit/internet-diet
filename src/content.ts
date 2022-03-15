@@ -8,37 +8,41 @@ import {
 } from './utils'
 
 let observer: MutationObserver | null = null
+let tabBlockUpdate: {
+  numBlockedLinks: number
+  numBlockedItems: number
+}
 
 function hideBlockedLinks() {
   const links = select.all('a')
 
-  let numBlocked = 0
+  let numBlockedLinks = 0
   for (const link of links) {
     if (isUrlBlockedAsString(link.href)) {
       const parent = link.closest('li') || link.closest('div') || link
       hideElement(parent)
-      ++numBlocked
+      ++numBlockedLinks
     }
   }
 
-  console.log('internet diet blocked', numBlocked, 'links')
+  return numBlockedLinks
 }
 
 function hideBlockedItems() {
   const items = select.all('li')
 
-  let numBlocked = 0
+  let numBlockedItems = 0
   for (const item of items) {
     if (
       isItemBlocked(document.location, item.textContent) ||
       isItemBlocked(document.location, item.querySelector('span')?.textContent)
     ) {
       hideElement(item)
-      ++numBlocked
+      ++numBlockedItems
     }
   }
 
-  console.log('internet diet blocked', numBlocked, 'items')
+  return numBlockedItems
 }
 
 function hideElement(
@@ -80,11 +84,27 @@ function hideElement(
   }
 }
 
-function updateHiddenBlockedLinksAndItemsForce() {
+async function updateHiddenBlockedLinksAndItemsForce() {
   console.log('>>> internet diet updating')
   console.time('internet diet update')
-  hideBlockedLinks()
-  hideBlockedItems()
+
+  const numBlockedLinks = hideBlockedLinks()
+  const numBlockedItems = hideBlockedItems()
+
+  console.log('internet diet blocked', numBlockedLinks, 'links')
+  console.log('internet diet blocked', numBlockedItems, 'items')
+
+  tabBlockUpdate = {
+    numBlockedItems,
+    numBlockedLinks
+  }
+
+  chrome.runtime.sendMessage({
+    message: 'tabBlockUpdate',
+    numBlockedItems,
+    numBlockedLinks
+  })
+
   console.timeEnd('internet diet update')
   console.log('<<< internet diet updating')
 }
@@ -132,9 +152,13 @@ update()
 window.addEventListener('load', update)
 
 chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
-  if (request.message === 'update') {
-    update()
+  switch (request.message) {
+    case 'update':
+      update()
+      sendResponse({ received: true })
+      break
+    case 'query':
+      sendResponse(tabBlockUpdate)
+      break
   }
-
-  sendResponse({ received: true })
 })

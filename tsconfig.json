@@ -6,7 +6,8 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "noUncheckedIndexedAccess": false,
-    "noPropertyAccessFromIndexSignature": false
+    "noPropertyAccessFromIndexSignature": false,
+    "jsx": "react"
   },
   "include": ["src", "dist", "webpack.config.ts"]
 }

@@ -5,7 +5,7 @@ import SizePlugin from 'size-plugin'
 import TerserPlugin from 'terser-webpack-plugin'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
-import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
 
 const { resolve: resolvePackage } = createRequire(import.meta.url)
 
@@ -16,8 +16,9 @@ const config: Configuration = {
     errors: true
   },
   entry: {
-    content: './src/content',
-    background: './src/background'
+    content: path.resolve('src', 'content'),
+    background: path.resolve('src', 'background'),
+    popup: path.resolve('src', 'popup')
   },
   output: {
     path: path.resolve('build')
@@ -34,13 +35,25 @@ const config: Configuration = {
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader']
+        use: [
+          {
+            loader: 'style-loader'
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                auto: true,
+                localIdentName: '[path][name]__[local]--[hash:base64:5]'
+              }
+            }
+          }
+        ]
       }
     ]
   },
   plugins: [
     new CleanWebpackPlugin(),
-    new MiniCssExtractPlugin(),
     new CopyWebpackPlugin({
       patterns: [
         resolvePackage('webextension-polyfill'),
@@ -61,24 +74,23 @@ const config: Configuration = {
         }
       ]
     }),
+    new HtmlWebpackPlugin({
+      template: path.resolve('src', 'popup', 'index.html'),
+      filename: 'popup.html',
+      chunks: ['popup'],
+      cache: false
+    }),
     new SizePlugin({ writeFile: false })
   ],
   resolve: {
     extensions: ['.tsx', '.ts', '.js']
   },
   optimization: {
-    // Keeps it somewhat readable for AMO reviewers
     minimizer: [
       new TerserPlugin({
         parallel: true,
         exclude: 'browser-polyfill.min.js',
-        terserOptions: {
-          mangle: false,
-          output: {
-            beautify: true,
-            indent_level: 2
-          }
-        }
+        extractComments: false
       })
     ]
   }

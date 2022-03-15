@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "manifest_version": 3,
   "description": "Remove unhealthy food options from the web.",
-  "permissions": ["storage", "tabs"],
+  "permissions": ["storage", "tabs", "management"],
   "background": {
     "service_worker": "./background.js"
   },
