@@ -43,8 +43,10 @@ const config: Configuration = {
     new MiniCssExtractPlugin(),
     new CopyWebpackPlugin({
       patterns: [
-        'dist/*.html',
         resolvePackage('webextension-polyfill'),
+        {
+          from: 'dist'
+        },
         {
           from: 'dist/manifest.json',
           force: true,
