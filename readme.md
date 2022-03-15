@@ -14,7 +14,7 @@ I order a lot of online food.
 
 But there are so many unhealthy options, restaurants, and foods that I'd rather avoid.
 
-So I built an easy way to block all the unwanted crap.
+So I built an easy way to block all of the unwanted crap.
 
 ## What can it block?
 

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "manifest_version": 3,
   "minimum_chrome_version": "88",
-  "description": "Remove unhealthy food options from the web.",
+  "description": "Remove unhealthy foods from the web.",
   "homepage_url": "https://github.com/transitive-bullshit/internet-diet",
   "permissions": ["storage", "tabs"],
   "background": {
