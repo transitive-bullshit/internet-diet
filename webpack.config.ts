@@ -1,8 +1,9 @@
 import path from 'node:path'
+import { createRequire } from 'node:module'
+import { Configuration } from 'webpack'
 import SizePlugin from 'size-plugin'
 import TerserPlugin from 'terser-webpack-plugin'
-import { Configuration } from 'webpack'
-import { createRequire } from 'node:module'
+import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 
@@ -38,11 +39,14 @@ const config: Configuration = {
     ]
   },
   plugins: [
+    new CleanWebpackPlugin(),
     new MiniCssExtractPlugin(),
     new CopyWebpackPlugin({
       patterns: [
+        'dist/*.html',
+        resolvePackage('webextension-polyfill'),
         {
-          from: 'src/manifest.json',
+          from: 'dist/manifest.json',
           force: true,
           transform: function (content) {
             return Buffer.from(
@@ -52,12 +56,6 @@ const config: Configuration = {
               })
             )
           }
-        },
-        {
-          from: 'src/blocked.html'
-        },
-        {
-          from: resolvePackage('webextension-polyfill')
         }
       ]
     }),

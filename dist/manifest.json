@@ -1,8 +1,8 @@
 {
   "name": "Internet Diet",
   "version": "0.0.0",
-  "description": "Remove unhealthy food options from the web.",
   "manifest_version": 3,
+  "description": "Remove unhealthy food options from the web.",
   "permissions": ["storage", "tabs"],
   "background": {
     "service_worker": "./background.js"

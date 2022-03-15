@@ -31,6 +31,21 @@ When blocking individual restaurants and menu items, it will blur them on the pa
 - block all of drizly.com
 - etc.
 
+## Which services does it support?
+
+- postmates
+- grubhub
+- seamless
+- doordash
+- uber eats
+- caviar
+- delivery.com
+- instacart
+- amazon
+- etc.
+
+The extension is designed to work on any website where you want to restrict access to certain URL patterns and HTML elements containing keywords.
+
 ## TODO
 
 This project is a WIP and lacks UI / polish / tests / etc.
@@ -41,6 +56,10 @@ This project is a WIP and lacks UI / polish / tests / etc.
 - [ ] make block rules customizable
 - [ ] make block redirect customizable
 - [ ] track the number of links and items blocked
+- [ ] add inline tooltip on blocked items for context and undo
+- [ ] add icon and design
+- [ ] design block page
+- [ ] inject content script dynamically
 - [ ] add examples
 
 ## License

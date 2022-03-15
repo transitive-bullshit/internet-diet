@@ -8,5 +8,5 @@
     "noUncheckedIndexedAccess": false,
     "noPropertyAccessFromIndexSignature": false
   },
-  "include": ["src", "webpack.config.ts"]
+  "include": ["src", "dist", "webpack.config.ts"]
 }
