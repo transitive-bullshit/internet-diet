@@ -230,10 +230,18 @@ export const Popup = () => {
         <div className={styles.row}>
           <button
             aria-label='Add link to block'
-            className={cs(styles.button, isAddingLinkBlock && styles.active)}
+            className={cs(styles.toggle, isAddingLinkBlock && styles.active)}
             onClick={onClickToggleAddLinkBlock}
           >
-            Add Link Block <FaUnlink />
+            {isAddingLinkBlock ? (
+              <>
+                Select link on page to block <FaUnlink />
+              </>
+            ) : (
+              <>
+                Add link to block <FaUnlink />
+              </>
+            )}
           </button>
         </div>
       </div>

@@ -63,6 +63,7 @@ This project is a WIP and lacks UI / polish / etc.
 - [ ] inject content script dynamically (using declarative content)
 - [ ] add options UI
 - [x] make block rules customizable
+- [x] dedupe block rules
 - [ ] make block page customizable
 - [x] track the number of links and items blocked
 - [ ] add inline tooltip on blocked items for context and pausing
