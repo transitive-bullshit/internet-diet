@@ -67,7 +67,7 @@ This project is a WIP and lacks UI / polish / etc.
 - [x] track the number of links and items blocked
 - [x] add block this page button in popup
 - [x] add block this site button in popup
-- [ ] add linting
+- [x] add linting
 - [ ] add support for pausing / resuming
 - [ ] add options page
 - [ ] make block page customizable
