@@ -1,6 +1,6 @@
 import { BlockRule } from './types'
 
-export const blockRules: BlockRule[] = [
+export const defaultBlockRules: BlockRule[] = [
   {
     hostname: 'postmates.com',
     type: 'pathname',

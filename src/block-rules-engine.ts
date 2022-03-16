@@ -63,6 +63,13 @@ export class BlockRulesEngine extends EventEmitter {
     return chrome.storage.sync.set({ blockRules: this._blockRules })
   }
 
+  async addBlockRules(blockRules: BlockRule[]) {
+    log.info('addBlockRules', blockRules)
+    await this.isReady
+    this._blockRules = this._blockRules.concat(blockRules)
+    return chrome.storage.sync.set({ blockRules: this._blockRules })
+  }
+
   isHostBlocked(url: URL | Location): boolean {
     for (const blockRule of this._blockRules) {
       if (blockRule.type === 'host' && url.hostname === blockRule.hostname) {
@@ -91,12 +98,12 @@ export class BlockRulesEngine extends EventEmitter {
 
       switch (blockRule.type) {
         case 'host':
-          log.info('blocking host', url.toString())
+          log.debug('blocking host', url.toString())
           return true
 
         case 'pathname':
           if (url.pathname.includes(blockRule.pathname)) {
-            log.info('blocking pathname', url.pathname)
+            log.debug('blocking pathname', url.pathname)
             return true
           }
           break
@@ -107,7 +114,7 @@ export class BlockRulesEngine extends EventEmitter {
             normalizedUrl.startsWith(normalizeUrl(blockRule.url)) ||
             normalizedUrl.startsWith(blockRule.url)
           ) {
-            log.info('blocking url', { url: url.toString(), normalizedUrl })
+            log.debug('blocking url', { url: url.toString(), normalizedUrl })
             return true
           }
           break
@@ -145,7 +152,7 @@ export class BlockRulesEngine extends EventEmitter {
             ) &&
             blockRule.item.length >= sanitizedText.length / 8
           ) {
-            log.info(
+            log.debug(
               'blocking item',
               `(rule: ${blockRule.item})`,
               sanitizedText

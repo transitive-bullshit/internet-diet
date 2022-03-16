@@ -301,6 +301,8 @@ function clearStyles() {
 }
 
 function initStyles() {
+  // note: using "pointer-events: none" for the active class messes up the mouseover and
+  // mouseout events, so we're not using them here
   const css = `
 .${selectedNodeClassName} {
   background: repeating-linear-gradient(135deg, rgba(225, 225, 226, 0.3), rgba(229, 229, 229, 0.3) 10px, rgba(173, 173, 173, 0.3) 10px, rgba(172, 172, 172, 0.3) 20px);

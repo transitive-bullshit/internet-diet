@@ -1,4 +1,5 @@
 import { BlockRulesEngine } from './block-rules-engine'
+import { defaultBlockRules } from './default-block-rules'
 
 const blockRulesEngine = new BlockRulesEngine()
 
@@ -37,4 +38,8 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
   sendResponse()
   return true
+})
+
+chrome.runtime.onInstalled.addListener(() => {
+  blockRulesEngine.addBlockRules(defaultBlockRules)
 })
