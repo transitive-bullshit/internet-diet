@@ -19,10 +19,12 @@ const config: Configuration = {
     content: path.resolve('src', 'content'),
     background: path.resolve('src', 'background'),
     popup: path.resolve('src', 'popup'),
-    blocked: path.resolve('src', 'blocked')
+    blocked: path.resolve('src', 'blocked'),
+    toast: path.resolve('src', 'toast')
   },
   output: {
-    path: path.resolve('build')
+    path: path.resolve('build'),
+    publicPath: '/'
   },
   module: {
     rules: [

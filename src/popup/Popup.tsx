@@ -140,10 +140,18 @@ export const Popup = () => {
       return
     }
 
-    chrome.tabs.sendMessage(tabInfo.id, {
-      type: 'event:updateIsAddingLinkBlock',
-      isAddingLinkBlock
-    })
+    chrome.tabs.sendMessage(
+      tabInfo.id,
+      {
+        type: 'event:updateIsAddingLinkBlock',
+        isAddingLinkBlock
+      },
+      () => {
+        if (isAddingLinkBlock) {
+          window.close()
+        }
+      }
+    )
   }, [tabInfo, isAddingLinkBlock])
 
   return (

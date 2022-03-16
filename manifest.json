@@ -18,7 +18,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["blocked.html"],
+      "resources": ["blocked.html", "toast.js"],
       "matches": ["<all_urls>"]
     }
   ],

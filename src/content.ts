@@ -2,6 +2,7 @@ import select from 'select-dom'
 import debounce from 'lodash.debounce'
 import throttle from 'lodash.throttle'
 import { BlockRulesEngine, normalizeUrl } from './block-rules-engine'
+import type toast from 'react-hot-toast'
 import * as log from './log'
 
 const selectedNodeClassName = 'internet-diet-selected'
@@ -20,6 +21,8 @@ let tabBlockInfo = {
   numBlockedItems: 0
 }
 let isAddingLinkBlock = false
+let isAddingLinkBlockToastId: string | null = null
+let createToast: typeof toast
 
 function hideBlockedLinks() {
   const links = select.all('a')
@@ -250,7 +253,7 @@ async function blockElement(event: Event) {
   const url = selectedLinkOldHref!
   clearElementImpl()
 
-  await blockRulesEngine.addBlockLinkRule({
+  const addBlockLinkRuleP = blockRulesEngine.addBlockLinkRule({
     hostname: document.location.hostname,
     url
   })
@@ -260,6 +263,24 @@ async function blockElement(event: Event) {
     type: 'event:stopIsAddingLinkBlock'
   })
 
+  if (createToast) {
+    await createToast.promise(
+      addBlockLinkRuleP,
+      {
+        loading: 'Blocking new link',
+        success: 'New link blocked',
+        error: 'Error blocking link'
+      },
+      {
+        position: 'top-right',
+        style: {
+          minWidth: '250px'
+        }
+      }
+    )
+  }
+
+  await addBlockLinkRuleP
   return false
 }
 
@@ -285,6 +306,19 @@ function updateIsAddingLinkBlock(isAddingLinkBlockUpdate: boolean) {
   document[action]('mouseout', clearElement)
   document[action]('click', blockElement)
   clearElementImpl()
+
+  if (createToast) {
+    if (isAddingLinkBlockToastId) {
+      createToast.dismiss(isAddingLinkBlockToastId)
+      isAddingLinkBlockToastId = null
+    }
+
+    if (isAddingLinkBlock) {
+      isAddingLinkBlockToastId = createToast.loading(
+        'Select the link you want to block'
+      )
+    }
+  }
 }
 
 function addStyles(css: string) {
@@ -301,6 +335,11 @@ function clearStyles() {
 }
 
 function initStyles() {
+  if (!document.head) {
+    window.addEventListener('DOMContentLoaded', initStyles)
+    return
+  }
+
   // note: using "pointer-events: none" for the active class messes up the mouseover and
   // mouseout events, so we're not using them here
   const css = `
@@ -316,6 +355,23 @@ function initStyles() {
 `
 
   addStyles(css)
+}
+
+async function initReact() {
+  if (!document.body) {
+    window.addEventListener('DOMContentLoaded', initReact)
+    return
+  }
+
+  try {
+    await import(/*webpackIgnore: true*/ chrome.runtime.getURL('toast.js'))
+  } catch (err) {
+    console.info('toast load error', err)
+    return
+  }
+
+  // hacky way to share global with from separate toast bundle
+  createToast = (window as any).toast
 }
 
 chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
@@ -334,6 +390,7 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
 })
 
 update()
-blockRulesEngine.on('update', update)
+initStyles()
+initReact()
 window.addEventListener('load', update)
-window.addEventListener('DOMContentLoaded', initStyles)
+blockRulesEngine.on('update', update)
