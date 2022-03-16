@@ -264,26 +264,18 @@ async function blockElement(event: Event) {
   })
 
   if (createToast) {
-    await createToast.promise(
-      addBlockLinkRuleP,
-      {
-        loading: 'Blocking new link',
-        success: 'New link blocked',
-        error: 'Error blocking link'
-      },
-      {
-        position: 'top-right',
-        style: {
-          minWidth: '250px'
-        }
-      }
-    )
+    await createToast.promise(addBlockLinkRuleP, {
+      loading: 'Blocking new link',
+      success: 'New link blocked',
+      error: 'Error blocking link'
+    })
   }
 
   await addBlockLinkRuleP
   return false
 }
 
+// used to forcefully override click behavior for selected elements
 function interceptClick(event: Event) {
   event.preventDefault()
   event.stopPropagation()
@@ -370,7 +362,7 @@ async function initReact() {
     return
   }
 
-  // hacky way to share global with from separate toast bundle
+  // hacky way to share globals from separate toast bundle
   createToast = (window as any).toast
 }
 
