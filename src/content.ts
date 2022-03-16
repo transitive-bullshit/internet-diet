@@ -1,4 +1,5 @@
 import debounce from 'lodash.debounce'
+import throttle from 'lodash.throttle'
 import select from 'select-dom'
 import { BlockRulesEngine, normalizeUrl } from './block-rules-engine'
 import * as log from './log'
@@ -10,6 +11,9 @@ const blockRulesEngine = new BlockRulesEngine()
 let observer: MutationObserver | null = null
 let selectedElement: HTMLElement | null = null
 let selectedLink: HTMLAnchorElement | null = null
+let selectedLinkOldHref: string
+let selectedLinkOldOnClick: any
+let selectedElementOldOnClick: any
 let numUpdates = 0
 let tabBlockInfo = {
   numBlockedLinks: 0,
@@ -32,6 +36,22 @@ function hideBlockedLinks() {
 
       ++numBlockedLinks
     }
+
+    // {
+    //   const element = getClosestLinkBlockCandidate(link)
+    //   const all = select.all(
+    //     'div,a,h1,h2,h3,h4,h5,h6,span,ol,li,ul,b,i,img',
+    //     element
+    //   )
+    //   log.info('all', all.length, all[0])
+    //   for (const e of all) {
+    //     e.onclick = stopEvent
+    //     // e.addEventListener('click', stopEvent)
+    //   }
+    //   for (const e of select.all('a', element)) {
+    //     e.href = 'javascript:void(0)'
+    //   }
+    // }
   }
 
   return { numBlockedLinks, numBlockedLinksFresh }
@@ -102,7 +122,7 @@ function getClosestItemBlockCandidate(element: HTMLElement) {
 async function updateHiddenBlockedLinksAndItemsForce() {
   ++numUpdates
 
-  log.info('>>> updating')
+  log.info('----------------')
   log.time(`update ${numUpdates}`)
 
   const { numBlockedLinks, numBlockedLinksFresh } = hideBlockedLinks()
@@ -122,7 +142,7 @@ async function updateHiddenBlockedLinksAndItemsForce() {
   })
 
   log.timeEnd(`update ${numUpdates}`)
-  log.info('<<< updating')
+  log.info('----------------')
 
   if (numBlockedLinksFresh > 0) {
     const { numBlockedLinksTotal = 0 } = await chrome.storage.sync.get([
@@ -143,7 +163,7 @@ async function updateHiddenBlockedLinksAndItemsForce() {
   }
 }
 
-const updateHiddenBlockedLinksAndItems = debounce(
+const updateHiddenBlockedLinksAndItems = throttle(
   updateHiddenBlockedLinksAndItemsForce,
   10,
   {
@@ -208,6 +228,12 @@ function selectElementImpl(event: Event) {
   selectedLink = link
   selectedElement = element
   selectedElement.classList.add(selectedNodeClassName)
+  selectedLinkOldHref = selectedLink.href
+  selectedLinkOldOnClick = selectedLink.onclick
+  selectedElementOldOnClick = selectedElement.onclick
+  selectedLink.href = 'javascript:void(0)'
+  selectedLink.onclick = interceptClick
+  selectedElement.onclick = interceptClick
 }
 
 function clearElementImpl() {
@@ -216,6 +242,9 @@ function clearElementImpl() {
   }
 
   selectedElement.classList.remove(selectedNodeClassName)
+  selectedLink.href = selectedLinkOldHref
+  selectedLink.onclick = selectedLinkOldOnClick
+  selectedElement.onclick = selectedElementOldOnClick
   selectedElement = null
   selectedLink = null
 }
@@ -228,22 +257,39 @@ async function blockElement(event: Event) {
   event.preventDefault()
   event.stopPropagation()
 
+  const url = selectedLinkOldHref
+  clearElementImpl()
+
   await blockRulesEngine.addBlockLinkRule({
     hostname: document.location.hostname,
-    url: selectedLink.href
+    url
   })
 
+  updateIsAddingLinkBlock(false)
   chrome.runtime.sendMessage({
     type: 'event:stopIsAddingLinkBlock'
   })
 
-  clearElementImpl()
+  return false
+}
+
+function interceptClick(event: Event) {
+  event.preventDefault()
+  event.stopPropagation()
+
+  blockElement(event)
+  return false
 }
 
 const selectElement = debounce(selectElementImpl, 1)
 const clearElement = debounce(clearElementImpl, 1)
 
-function updateIsAddingLinkBlock() {
+function updateIsAddingLinkBlock(isAddingLinkBlockUpdate: boolean) {
+  if (isAddingLinkBlock === isAddingLinkBlockUpdate) {
+    return
+  }
+
+  isAddingLinkBlock = isAddingLinkBlockUpdate
   const action = isAddingLinkBlock ? 'addEventListener' : 'removeEventListener'
   document[action]('mouseover', selectElement)
   document[action]('mouseout', clearElement)
@@ -269,6 +315,7 @@ function initStyles() {
 .${selectedNodeClassName} {
   background: repeating-linear-gradient(135deg, rgba(225, 225, 226, 0.3), rgba(229, 229, 229, 0.3) 10px, rgba(173, 173, 173, 0.3) 10px, rgba(172, 172, 172, 0.3) 20px);
   box-shadow: inset 0px 0px 0px 1px #d7d7d7;
+  cursor: pointer;
 }
 
 .${selectedNodeClassName} img {
@@ -289,8 +336,7 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
       sendResponse(tabBlockInfo)
       break
     case 'event:updateIsAddingLinkBlock':
-      isAddingLinkBlock = !!message.isAddingLinkBlock
-      updateIsAddingLinkBlock()
+      updateIsAddingLinkBlock(!!message.isAddingLinkBlock)
       break
   }
 })

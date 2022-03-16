@@ -78,7 +78,9 @@ export const Popup = () => {
         setNumBlockedLinks(response.numBlockedLinks)
       }
     )
+  }, [tabInfo])
 
+  React.useEffect(() => {
     chrome.runtime.onMessage.addListener(
       async (message, sender, sendResponse) => {
         const tabId = sender?.tab?.id
@@ -103,7 +105,7 @@ export const Popup = () => {
         return true
       }
     )
-  }, [tabInfo])
+  }, [])
 
   // ensure the stats stay up-to-date
   React.useEffect(() => {
