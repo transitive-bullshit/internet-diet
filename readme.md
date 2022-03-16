@@ -60,17 +60,17 @@ This project is a WIP and lacks UI / polish / etc.
 - [x] add popup UI
 - [x] add badge UI
 - [x] add styles to default blocked page
-- [ ] inject content script dynamically (using declarative content)
-- [ ] add options UI
+- [x] add icon and design
 - [x] make block rules customizable
 - [x] add UX for adding block link rules
 - [x] dedupe block rules
-- [ ] make block page customizable
 - [x] track the number of links and items blocked
-- [ ] add inline tooltip on blocked items for context and pausing
-- [ ] add support for pausing a site
 - [ ] add linting
-- [x] add icon and design
+- [ ] add support for pausing blocking
+- [ ] add options page
+- [ ] make block page customizable
+- [ ] add inline tooltip on blocked items for context and pausing
+- [ ] inject content script dynamically (using declarative content?)
 - [ ] add examples
 
 ## Development
