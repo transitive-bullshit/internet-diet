@@ -11,9 +11,9 @@ const blockRulesEngine = new BlockRulesEngine()
 let observer: MutationObserver | null = null
 let selectedElement: HTMLElement | null = null
 let selectedLink: HTMLAnchorElement | null = null
-let selectedLinkOldHref: string
-let selectedLinkOldOnClick: any
-let selectedElementOldOnClick: any
+let selectedLinkOldHref: string | null = null
+let selectedLinkOldOnClick: any | null = null
+let selectedElementOldOnClick: any | null = null
 let numUpdates = 0
 let tabBlockInfo = {
   numBlockedLinks: 0,
@@ -36,22 +36,6 @@ function hideBlockedLinks() {
 
       ++numBlockedLinks
     }
-
-    // {
-    //   const element = getClosestLinkBlockCandidate(link)
-    //   const all = select.all(
-    //     'div,a,h1,h2,h3,h4,h5,h6,span,ol,li,ul,b,i,img',
-    //     element
-    //   )
-    //   log.info('all', all.length, all[0])
-    //   for (const e of all) {
-    //     e.onclick = stopEvent
-    //     // e.addEventListener('click', stopEvent)
-    //   }
-    //   for (const e of select.all('a', element)) {
-    //     e.href = 'javascript:void(0)'
-    //   }
-    // }
   }
 
   return { numBlockedLinks, numBlockedLinksFresh }
@@ -228,6 +212,8 @@ function selectElementImpl(event: Event) {
   selectedLink = link
   selectedElement = element
   selectedElement.classList.add(selectedNodeClassName)
+
+  // forcefully override click behavior for selected elements
   selectedLinkOldHref = selectedLink.href
   selectedLinkOldOnClick = selectedLink.onclick
   selectedElementOldOnClick = selectedElement.onclick
@@ -241,10 +227,14 @@ function clearElementImpl() {
     return
   }
 
+  // reset old behavior for selected elements
   selectedElement.classList.remove(selectedNodeClassName)
-  selectedLink.href = selectedLinkOldHref
+  selectedLink.href = selectedLinkOldHref!
   selectedLink.onclick = selectedLinkOldOnClick
   selectedElement.onclick = selectedElementOldOnClick
+  selectedLinkOldHref = null
+  selectedLinkOldOnClick = null
+  selectedElementOldOnClick = null
   selectedElement = null
   selectedLink = null
 }
@@ -257,7 +247,7 @@ async function blockElement(event: Event) {
   event.preventDefault()
   event.stopPropagation()
 
-  const url = selectedLinkOldHref
+  const url = selectedLinkOldHref!
   clearElementImpl()
 
   await blockRulesEngine.addBlockLinkRule({

@@ -62,7 +62,7 @@ This project is a WIP and lacks UI / polish / etc.
 - [x] add styles to default blocked page
 - [ ] inject content script dynamically (using declarative content)
 - [ ] add options UI
-- [ ] make block rules customizable
+- [x] make block rules customizable
 - [ ] make block page customizable
 - [x] track the number of links and items blocked
 - [ ] add inline tooltip on blocked items for context and pausing
