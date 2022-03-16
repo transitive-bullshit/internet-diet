@@ -148,6 +148,9 @@ export const Popup = () => {
       },
       () => {
         if (isAddingLinkBlock) {
+          // Close the popup window which transfers focus over to the active tab.
+          // NOTE: this is the only way that I found which allows the user to click
+          // a single time in order to make their selection on the page.
           window.close()
         }
       }

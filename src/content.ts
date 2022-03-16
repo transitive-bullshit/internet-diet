@@ -1,8 +1,8 @@
 import select from 'select-dom'
 import debounce from 'lodash.debounce'
 import throttle from 'lodash.throttle'
-import { BlockRulesEngine, normalizeUrl } from './block-rules-engine'
 import type toast from 'react-hot-toast'
+import { BlockRulesEngine, normalizeUrl } from './block-rules-engine'
 import * as log from './log'
 
 const selectedNodeClassName = 'internet-diet-selected'

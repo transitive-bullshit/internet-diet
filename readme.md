@@ -12,7 +12,7 @@
 
 I order a lot of online food.
 
-But there are so many unhealthy options, restaurants, and foods that I'd rather avoid.
+But there are so many unhealthy restaurants, foods, and options that I'd rather avoid.
 
 So I built an easy way to block all of the unwanted crap.
 
