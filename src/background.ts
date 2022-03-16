@@ -34,6 +34,19 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         chrome.action.setBadgeText({ text, tabId })
       ])
       break
+
+    case 'event:addBlockLinkRule':
+      await blockRulesEngine.addBlockLinkRule({
+        hostname: message.hostname,
+        url: message.url
+      })
+      break
+
+    case 'event:addBlockHostRule':
+      await blockRulesEngine.addBlockHostRule({
+        hostname: message.hostname
+      })
+      break
   }
 
   sendResponse()

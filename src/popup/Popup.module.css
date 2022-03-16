@@ -147,3 +147,8 @@
   background: #fff;
   color: #2c5282;
 }
+
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

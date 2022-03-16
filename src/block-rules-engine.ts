@@ -23,6 +23,7 @@ export class BlockRulesEngine extends EventEmitter {
       .then(({ blockRules = [] }) => {
         this._blockRules = blockRules
         log.info('blockRules', this._blockRules)
+        this.emit('update')
       })
       .catch((err) => {
         log.error('error loading block rule config', err)
@@ -53,9 +54,16 @@ export class BlockRulesEngine extends EventEmitter {
     } catch (err) {}
 
     return this.addBlockRule({
-      hostname,
       type: 'pathname',
+      hostname,
       pathname
+    })
+  }
+
+  async addBlockHostRule({ hostname }: { hostname: string }) {
+    return this.addBlockRule({
+      type: 'host',
+      hostname
     })
   }
 

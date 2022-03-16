@@ -2,6 +2,7 @@ import React from 'react'
 import { FaCog } from '@react-icons/all-files/fa/FaCog'
 import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
 import { FaUnlink } from '@react-icons/all-files/fa/FaUnlink'
+import { FaBan } from '@react-icons/all-files/fa/FaBan'
 
 import { cs } from '../utils'
 import styles from './Popup.module.css'
@@ -12,6 +13,8 @@ interface TabInfo {
   hostname: string
   url: string
 }
+
+const noop = () => {}
 
 export const Popup = () => {
   const [isAddingLinkBlock, setIsAddingLinkBlock] = React.useState(false)
@@ -34,6 +37,29 @@ export const Popup = () => {
   const onClickToggleAddLinkBlock = React.useCallback(() => {
     setIsAddingLinkBlock(!isAddingLinkBlock)
   }, [isAddingLinkBlock])
+
+  const onClickBlockCurrentPage = React.useCallback(() => {
+    if (!tabInfo || !tabInfo.hostname || !tabInfo.url) {
+      return
+    }
+
+    chrome.runtime.sendMessage({
+      type: 'event:addBlockLinkRule',
+      hostname: tabInfo.hostname,
+      url: tabInfo.url
+    })
+  }, [tabInfo])
+
+  const onClickBlockCurrentHost = React.useCallback(() => {
+    if (!tabInfo || !tabInfo.hostname) {
+      return
+    }
+
+    chrome.runtime.sendMessage({
+      type: 'event:addBlockHostRule',
+      hostname: tabInfo.hostname
+    })
+  }, [tabInfo])
 
   React.useEffect(() => {
     // fetch the number of blocked items for the current tab
@@ -157,6 +183,11 @@ export const Popup = () => {
     )
   }, [tabInfo, isAddingLinkBlock])
 
+  const isTabPrivate = tabInfo?.url?.startsWith('chrome')
+  const isBlockPageEnabled =
+    tabInfo && tabInfo.hostname && tabInfo.url && !isTabPrivate
+  const isBlockHostEnabled = tabInfo && tabInfo.hostname && !isTabPrivate
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -190,11 +221,15 @@ export const Popup = () => {
       </div>
 
       <div className={styles.body}>
-        <div className={styles.hostname}>
-          {tabInfo?.hostname || 'active tab'}
-        </div>
+        {!isTabPrivate && (
+          <>
+            <div className={styles.hostname}>
+              {tabInfo?.hostname || 'active tab'}
+            </div>
 
-        <div className={styles.spacer} />
+            <div className={styles.spacer} />
+          </>
+        )}
 
         <div className={styles.row}>
           <div>Blocked links:</div>
@@ -241,16 +276,57 @@ export const Popup = () => {
         <div className={styles.row}>
           <button
             aria-label='Add link to block'
-            className={cs(styles.toggle, isAddingLinkBlock && styles.active)}
-            onClick={onClickToggleAddLinkBlock}
+            className={cs(
+              styles.toggle,
+              isAddingLinkBlock && styles.active,
+              !isBlockPageEnabled && styles.disabled
+            )}
+            onClick={isBlockPageEnabled ? onClickToggleAddLinkBlock : noop}
+            disabled={!isBlockPageEnabled}
           >
-            {isAddingLinkBlock ? (
+            {isAddingLinkBlock && isBlockPageEnabled ? (
               <>
                 Select link on page to block <FaUnlink />
               </>
             ) : (
               <>
-                Add link to block <FaUnlink />
+                Block a link on this page <FaUnlink />
+              </>
+            )}
+          </button>
+        </div>
+
+        <div className={styles.row}>
+          <button
+            aria-label='Block this page'
+            className={cs(
+              styles.toggle,
+              !isBlockPageEnabled && styles.disabled
+            )}
+            onClick={isBlockPageEnabled ? onClickBlockCurrentPage : noop}
+            disabled={!isBlockPageEnabled}
+          >
+            Block this page <FaUnlink />
+          </button>
+        </div>
+
+        <div className={styles.row}>
+          <button
+            aria-label='Block this page'
+            className={cs(
+              styles.toggle,
+              !isBlockHostEnabled && styles.disabled
+            )}
+            onClick={isBlockHostEnabled ? onClickBlockCurrentHost : noop}
+            disabled={!isBlockHostEnabled}
+          >
+            {isBlockHostEnabled ? (
+              <>
+                Block all of {tabInfo?.hostname} <FaBan />
+              </>
+            ) : (
+              <>
+                Block this site <FaBan />
               </>
             )}
           </button>

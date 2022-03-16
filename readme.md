@@ -65,8 +65,10 @@ This project is a WIP and lacks UI / polish / etc.
 - [x] add UX for adding block link rules
 - [x] dedupe block rules
 - [x] track the number of links and items blocked
+- [x] add block this page button in popup
+- [x] add block this site button in popup
 - [ ] add linting
-- [ ] add support for pausing blocking
+- [ ] add support for pausing / resuming
 - [ ] add options page
 - [ ] make block page customizable
 - [ ] add inline tooltip on blocked items for context and pausing
