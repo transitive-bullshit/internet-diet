@@ -16,7 +16,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
 
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   switch (message.type) {
-    case 'tabBlockInfo':
+    case 'tabBlockInfo': {
       const tabId = sender?.tab?.id
       if (!tabId) {
         break
@@ -34,6 +34,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         chrome.action.setBadgeText({ text, tabId })
       ])
       break
+    }
 
     case 'event:addBlockLinkRule':
       await blockRulesEngine.addBlockLinkRule({

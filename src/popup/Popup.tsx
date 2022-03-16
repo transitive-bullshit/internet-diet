@@ -14,7 +14,7 @@ interface TabInfo {
   url: string
 }
 
-const noop = () => {}
+const noop = () => undefined
 
 export const Popup = () => {
   const [isAddingLinkBlock, setIsAddingLinkBlock] = React.useState(false)
@@ -73,7 +73,9 @@ export const Popup = () => {
           if (url.hostname) {
             hostname = url.hostname
           }
-        } catch (err) {}
+        } catch (err) {
+          // fallback gracefully
+        }
 
         setTabInfo({
           title: activeTab.title!,

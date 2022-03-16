@@ -8,7 +8,7 @@ import * as log from './log'
 
 export declare interface BlockRulesEngine {
   on(event: 'update', listener: (name: string) => void): this
-  on(event: string, listener: Function): this
+  on(event: string, listener: (...args: unknown[]) => unknown): this
 }
 
 export class BlockRulesEngine extends EventEmitter {
@@ -51,7 +51,9 @@ export class BlockRulesEngine extends EventEmitter {
 
     try {
       pathname = new URL(url).pathname
-    } catch (err) {}
+    } catch (err) {
+      // ignore invalid urls and fallback to the full input
+    }
 
     return this.addBlockRule({
       type: 'pathname',

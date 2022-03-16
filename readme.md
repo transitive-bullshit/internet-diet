@@ -72,7 +72,9 @@ This project is a WIP and lacks UI / polish / etc.
 - [ ] add options page
 - [ ] make block page customizable
 - [ ] add inline tooltip on blocked items for context and pausing
-- [ ] inject content script dynamically (using declarative content?)
+- [ ] add support for any site
+  - [ ] inject content script dynamically (using declarative content?)
+- [ ] test on other sites
 - [ ] add examples
 
 ## Development

@@ -23,8 +23,8 @@ export const Blocked = () => {
         <h1>Blocked</h1>
 
         <p>
-          You put this page on your blocked list. It's probably there for a good
-          reason.
+          You put this page on your blocked list. It&apos;s probably there for a
+          good reason.
         </p>
 
         <div className={styles.options}>
