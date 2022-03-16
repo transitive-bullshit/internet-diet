@@ -1,4 +1,7 @@
 import normalizeUrlImpl from 'normalize-url'
+import stableStringify from 'fast-json-stable-stringify'
+import pMap from 'p-map'
+import { sha256 } from 'crypto-hash'
 import { EventEmitter } from 'events'
 import { BlockRule } from './types'
 import * as log from './log'
@@ -59,14 +62,20 @@ export class BlockRulesEngine extends EventEmitter {
   async addBlockRule(blockRule: BlockRule) {
     log.info('addBlockRule', blockRule)
     await this.isReady
+
     this._blockRules.push(blockRule)
+    this._blockRules = await dedupeBlockRules(this._blockRules)
+
     return chrome.storage.sync.set({ blockRules: this._blockRules })
   }
 
   async addBlockRules(blockRules: BlockRule[]) {
     log.info('addBlockRules', blockRules)
     await this.isReady
+
     this._blockRules = this._blockRules.concat(blockRules)
+    this._blockRules = await dedupeBlockRules(this._blockRules)
+
     return chrome.storage.sync.set({ blockRules: this._blockRules })
   }
 
@@ -168,6 +177,26 @@ export class BlockRulesEngine extends EventEmitter {
 
     return false
   }
+}
+
+export async function dedupeBlockRules(
+  blockRules: BlockRule[]
+): Promise<BlockRule[]> {
+  // stable JSON hashing
+  function getHash(input: object): Promise<string> {
+    const text = stableStringify(input)
+    return sha256(text)
+  }
+
+  const hashEntries = await pMap(
+    blockRules,
+    async (blockRule) => [await getHash(blockRule), blockRule],
+    {
+      concurrency: 8
+    }
+  )
+
+  return Object.values(Object.fromEntries(hashEntries))
 }
 
 export function normalizeUrl(url?: string): string {

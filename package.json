@@ -17,7 +17,8 @@
     "build": "run-p build:* --continue-on-error",
     "build:typescript": "tsc --noEmit",
     "build:webpack": "cross-env NODE_OPTIONS=\"--loader ts-node/esm --no-warnings\" webpack --mode=production",
-    "test": "run-s test:*",
+    "test": "run-p test:*",
+    "test:unit": "ava",
     "test:prettier": "prettier '**/*.{js,jsx,ts,tsx}' --check",
     "watch": "run-p watch:* --continue-on-error",
     "watch:typescript": "tsc --noEmit --watch --preserveWatchOutput",
@@ -25,9 +26,12 @@
   },
   "dependencies": {
     "@react-icons/all-files": "^4.1.0",
+    "crypto-hash": "^2.0.1",
+    "fast-json-stable-stringify": "^2.1.0",
     "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
     "normalize-url": "^7.0.3",
+    "p-map": "^5.3.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "select-dom": "^7.1.1"
@@ -39,6 +43,7 @@
     "@types/lodash.throttle": "^4.1.6",
     "@types/react": "^17.0.40",
     "@types/react-dom": "^17.0.13",
+    "ava": "^4.1.0",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^10.2.4",
     "cross-env": "^7.0.3",
@@ -60,5 +65,17 @@
   "engines": {
     "node": ">=16",
     "npm": ">=7"
+  },
+  "ava": {
+    "snapshotDir": ".snapshots",
+    "timeout": "30s",
+    "extensions": {
+      "ts": "module"
+    },
+    "nodeArguments": [
+      "--loader=ts-node/esm",
+      "--no-warnings",
+      "--experimental-specifier-resolution=node"
+    ]
   }
 }

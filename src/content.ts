@@ -1,6 +1,6 @@
+import select from 'select-dom'
 import debounce from 'lodash.debounce'
 import throttle from 'lodash.throttle'
-import select from 'select-dom'
 import { BlockRulesEngine, normalizeUrl } from './block-rules-engine'
 import * as log from './log'
 
