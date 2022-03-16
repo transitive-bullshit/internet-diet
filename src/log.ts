@@ -1,5 +1,7 @@
 const prefix = 'internet diet'
 
+// TODO: disable all production logging by default
+
 export function log(...args: any[]) {
   console.log(prefix, ...args)
 }

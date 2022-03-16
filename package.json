@@ -23,7 +23,9 @@
     "test:prettier": "prettier '**/*.{js,jsx,ts,tsx}' --check",
     "watch": "run-p watch:* --continue-on-error",
     "watch:typescript": "tsc --noEmit --watch --preserveWatchOutput",
-    "watch:webpack": "cross-env NODE_OPTIONS=\"--loader ts-node/esm --no-warnings\" webpack --mode=development --watch"
+    "watch:webpack": "cross-env NODE_OPTIONS=\"--loader ts-node/esm --no-warnings\" webpack --mode=development --watch",
+    "prepare": "husky install",
+    "pre-commit": "lint-staged"
   },
   "dependencies": {
     "@react-icons/all-files": "^4.1.0",
@@ -86,6 +88,12 @@
       "--loader=ts-node/esm",
       "--no-warnings",
       "--experimental-specifier-resolution=node"
+    ]
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
     ]
   }
 }

@@ -3,7 +3,7 @@ import { defaultBlockRules } from './default-block-rules'
 
 const blockRulesEngine = new BlockRulesEngine()
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, foo) => {
   if (
     changeInfo.url &&
     blockRulesEngine.isBlockingEnabledForHost(new URL(changeInfo.url))
