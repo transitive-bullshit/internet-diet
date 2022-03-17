@@ -4,6 +4,8 @@ import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
 import { FaUnlink } from '@react-icons/all-files/fa/FaUnlink'
 import { FaBan } from '@react-icons/all-files/fa/FaBan'
 
+import { ConfirmModal } from 'components/ConfirmModal/ConfirmModal'
+import { normalizeUrl } from '../block-rules-engine'
 import { cs } from '../utils'
 import styles from './Popup.module.css'
 
@@ -12,11 +14,16 @@ interface TabInfo {
   title: string
   hostname: string
   url: string
+  normalizedUrl: string
 }
 
 const noop = () => undefined
 
 export const Popup = () => {
+  const [isBlockSiteConfirmModalOpen, setIsConfirmBlockSiteModalOpen] =
+    React.useState(false)
+  const [isBlockPageConfirmModalOpen, setIsConfirmBlockPageModalOpen] =
+    React.useState(false)
   const [isAddingLinkBlock, setIsAddingLinkBlock] = React.useState(false)
   const [tabInfo, setTabInfo] = React.useState<TabInfo | null>(null)
   const [numBlockedItems, setNumBlockedItems] = React.useState(0)
@@ -34,6 +41,22 @@ export const Popup = () => {
     chrome.runtime.openOptionsPage()
   }, [])
 
+  const onClickOpenBlockSiteConfirmModal = React.useCallback(() => {
+    setIsConfirmBlockSiteModalOpen(true)
+  }, [])
+
+  const onClickCloseBlockSiteConfirmModal = React.useCallback(() => {
+    setIsConfirmBlockSiteModalOpen(false)
+  }, [])
+
+  const onClickOpenBlockPageConfirmModal = React.useCallback(() => {
+    setIsConfirmBlockPageModalOpen(true)
+  }, [])
+
+  const onClickCloseBlockPageConfirmModal = React.useCallback(() => {
+    setIsConfirmBlockPageModalOpen(false)
+  }, [])
+
   const onClickToggleAddLinkBlock = React.useCallback(() => {
     setIsAddingLinkBlock(!isAddingLinkBlock)
   }, [isAddingLinkBlock])
@@ -48,7 +71,9 @@ export const Popup = () => {
       hostname: tabInfo.hostname,
       url: tabInfo.url
     })
-  }, [tabInfo])
+
+    onClickCloseBlockPageConfirmModal()
+  }, [tabInfo, onClickCloseBlockPageConfirmModal])
 
   const onClickBlockCurrentHost = React.useCallback(() => {
     if (!tabInfo || !tabInfo.hostname) {
@@ -59,36 +84,49 @@ export const Popup = () => {
       type: 'event:addBlockHostRule',
       hostname: tabInfo.hostname
     })
-  }, [tabInfo])
+
+    onClickCloseBlockSiteConfirmModal()
+  }, [tabInfo, onClickCloseBlockSiteConfirmModal])
+
+  function updateTabInfo(tab?: chrome.tabs.Tab) {
+    if (!tab) {
+      return
+    }
+
+    const normalizedUrl = normalizeUrl(tab.url)
+    let hostname = tab.title || 'active tab'
+    try {
+      const url = new URL(tab.url!)
+      if (url.hostname) {
+        hostname = url.hostname
+      }
+    } catch (err) {
+      // fallback gracefully
+    }
+
+    setTabInfo({
+      id: tab.id!,
+      title: tab.title!,
+      hostname,
+      url: tab.url!,
+      normalizedUrl
+    })
+  }
 
   React.useEffect(() => {
-    // fetch the number of blocked items for the current tab
     chrome.tabs.query({ currentWindow: true, active: true }).then((tabs) => {
       const activeTab = tabs[0]
-
-      if (activeTab) {
-        let hostname = activeTab.title || 'active tab'
-        try {
-          const url = new URL(activeTab.url!)
-          if (url.hostname) {
-            hostname = url.hostname
-          }
-        } catch (err) {
-          // fallback gracefully
-        }
-
-        setTabInfo({
-          title: activeTab.title!,
-          id: activeTab.id!,
-          url: activeTab.url!,
-          hostname
-        })
-      }
+      updateTabInfo(activeTab)
     })
 
-    // TODO: is it necessary to handle active tab onChanged event?
+    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+      if (changeInfo.url && tab.active) {
+        updateTabInfo(tab)
+      }
+    })
   }, [])
 
+  // fetch the number of blocked items for the current tab
   React.useEffect(() => {
     if (!tabInfo) {
       setNumBlockedItems(0)
@@ -187,153 +225,179 @@ export const Popup = () => {
 
   const isTabPrivate = tabInfo?.url?.startsWith('chrome')
   const isBlockPageEnabled =
-    tabInfo && tabInfo.hostname && tabInfo.url && !isTabPrivate
+    tabInfo && tabInfo.hostname && tabInfo.normalizedUrl && !isTabPrivate
   const isBlockHostEnabled = tabInfo && tabInfo.hostname && !isTabPrivate
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <a
-          className={styles.logo}
-          href='https://github.com/transitive-bullshit/internet-diet'
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          <img src='/assets/icon@128.png' />
-          <span>Internet Diet</span>
-        </a>
-
-        <div className={styles.options}>
-          <button
-            aria-label='Support'
-            className={styles.button}
-            onClick={onClickOpenSupportPage}
+    <>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <a
+            className={styles.logo}
+            href='https://github.com/transitive-bullshit/internet-diet'
+            target='_blank'
+            rel='noopener noreferrer'
           >
-            <FaQuestion />
-          </button>
+            <img src='/assets/icon@128.png' />
+            <span>Internet Diet</span>
+          </a>
 
-          <button
-            aria-label='Open settings'
-            className={styles.button}
-            onClick={onClickOpenOptionsPage}
-          >
-            <FaCog />
-          </button>
-        </div>
-      </div>
+          <div className={styles.options}>
+            <button
+              aria-label='Support'
+              className={styles.button}
+              onClick={onClickOpenSupportPage}
+            >
+              <FaQuestion />
+            </button>
 
-      <div className={styles.body}>
-        {!isTabPrivate && (
-          <>
-            <div className={styles.hostname}>
-              {tabInfo?.hostname || 'active tab'}
-            </div>
-
-            <div className={styles.spacer} />
-          </>
-        )}
-
-        <div className={styles.row}>
-          <div>Blocked links:</div>
-
-          <div className={styles.subRow}>
-            <div>
-              <span className={styles.stat}>
-                {numBlockedLinks.toLocaleString('en-US')}
-              </span>{' '}
-              on this page
-            </div>
-
-            <div>
-              <span className={styles.stat}>
-                {numBlockedLinksTotal.toLocaleString('en-US')}
-              </span>{' '}
-              in total
-            </div>
+            <button
+              aria-label='Open settings'
+              className={styles.button}
+              onClick={onClickOpenOptionsPage}
+            >
+              <FaCog />
+            </button>
           </div>
         </div>
 
-        <div className={styles.row}>
-          <div>Blocked items:</div>
+        <div className={styles.body}>
+          {!isTabPrivate && (
+            <>
+              <div className={styles.hostname}>
+                {tabInfo?.hostname || 'active tab'}
+              </div>
 
-          <div className={styles.subRow}>
-            <div>
-              <span className={styles.stat}>
-                {numBlockedItems.toLocaleString('en-US')}
-              </span>{' '}
-              on this page
-            </div>
+              <div className={styles.spacer} />
+            </>
+          )}
 
-            <div>
-              <span className={styles.stat}>
-                {numBlockedItemsTotal.toLocaleString('en-US')}
-              </span>{' '}
-              in total
+          <div className={styles.row}>
+            <div>Blocked links:</div>
+
+            <div className={styles.subRow}>
+              <div>
+                <span className={styles.stat}>
+                  {numBlockedLinks.toLocaleString('en-US')}
+                </span>{' '}
+                on this page
+              </div>
+
+              <div>
+                <span className={styles.stat}>
+                  {numBlockedLinksTotal.toLocaleString('en-US')}
+                </span>{' '}
+                in total
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className={styles.spacer} />
+          <div className={styles.row}>
+            <div>Blocked items:</div>
 
-        <div className={styles.row}>
-          <button
-            aria-label='Add link to block'
-            className={cs(
-              styles.toggle,
-              isAddingLinkBlock && styles.active,
-              !isBlockPageEnabled && styles.disabled
-            )}
-            onClick={isBlockPageEnabled ? onClickToggleAddLinkBlock : noop}
-            disabled={!isBlockPageEnabled}
-          >
-            {isAddingLinkBlock && isBlockPageEnabled ? (
-              <>
-                Select link on page to block <FaUnlink />
-              </>
-            ) : (
-              <>
-                Block a link on this page <FaUnlink />
-              </>
-            )}
-          </button>
-        </div>
+            <div className={styles.subRow}>
+              <div>
+                <span className={styles.stat}>
+                  {numBlockedItems.toLocaleString('en-US')}
+                </span>{' '}
+                on this page
+              </div>
 
-        <div className={styles.row}>
-          <button
-            aria-label='Block this page'
-            className={cs(
-              styles.toggle,
-              !isBlockPageEnabled && styles.disabled
-            )}
-            onClick={isBlockPageEnabled ? onClickBlockCurrentPage : noop}
-            disabled={!isBlockPageEnabled}
-          >
-            Block this page <FaUnlink />
-          </button>
-        </div>
+              <div>
+                <span className={styles.stat}>
+                  {numBlockedItemsTotal.toLocaleString('en-US')}
+                </span>{' '}
+                in total
+              </div>
+            </div>
+          </div>
 
-        <div className={styles.row}>
-          <button
-            aria-label='Block this page'
-            className={cs(
-              styles.toggle,
-              !isBlockHostEnabled && styles.disabled
-            )}
-            onClick={isBlockHostEnabled ? onClickBlockCurrentHost : noop}
-            disabled={!isBlockHostEnabled}
-          >
-            {isBlockHostEnabled ? (
-              <>
-                Block all of {tabInfo?.hostname} <FaBan />
-              </>
-            ) : (
-              <>
-                Block this site <FaBan />
-              </>
-            )}
-          </button>
+          <div className={styles.spacer} />
+
+          <div className={styles.row}>
+            <button
+              aria-label='Add link to block'
+              className={cs(
+                styles.toggle,
+                isAddingLinkBlock && styles.active,
+                !isBlockPageEnabled && styles.disabled
+              )}
+              onClick={isBlockPageEnabled ? onClickToggleAddLinkBlock : noop}
+              disabled={!isBlockPageEnabled}
+            >
+              {isAddingLinkBlock && isBlockPageEnabled ? (
+                <>
+                  Select link on page to block <FaUnlink />
+                </>
+              ) : (
+                <>
+                  Block a link on this page <FaUnlink />
+                </>
+              )}
+            </button>
+          </div>
+
+          <div className={styles.row}>
+            <button
+              aria-label='Block this page'
+              className={cs(
+                styles.toggle,
+                !isBlockPageEnabled && styles.disabled
+              )}
+              onClick={
+                isBlockPageEnabled ? onClickOpenBlockPageConfirmModal : noop
+              }
+              disabled={!isBlockPageEnabled}
+            >
+              Block this page <FaUnlink />
+            </button>
+          </div>
+
+          <div className={styles.row}>
+            <button
+              aria-label='Block this site'
+              className={cs(
+                styles.toggle,
+                !isBlockHostEnabled && styles.disabled
+              )}
+              onClick={
+                isBlockHostEnabled ? onClickOpenBlockSiteConfirmModal : noop
+              }
+              disabled={!isBlockHostEnabled}
+            >
+              {isBlockHostEnabled ? (
+                <>
+                  Block all of {tabInfo?.hostname} <FaBan />
+                </>
+              ) : (
+                <>
+                  Block this site <FaBan />
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+
+      <ConfirmModal
+        isOpen={isBlockSiteConfirmModalOpen}
+        confirm='Block site'
+        onRequestClose={onClickCloseBlockSiteConfirmModal}
+        onConfirm={onClickBlockCurrentHost}
+      >
+        Are you sure you want to block all of{' '}
+        <span className={styles.ban}>{tabInfo?.hostname}</span>?
+      </ConfirmModal>
+
+      <ConfirmModal
+        isOpen={isBlockPageConfirmModalOpen}
+        confirm='Block page'
+        onRequestClose={onClickCloseBlockPageConfirmModal}
+        onConfirm={onClickBlockCurrentPage}
+      >
+        Are you sure you want to block this page{' '}
+        <span className={styles.ban}>{tabInfo?.normalizedUrl}</span>?
+      </ConfirmModal>
+    </>
   )
 }

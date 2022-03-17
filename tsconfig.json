@@ -6,9 +6,12 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "moduleResolution": "node",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noUncheckedIndexedAccess": false,
     "noPropertyAccessFromIndexSignature": false,
-    "jsx": "react"
+    "jsx": "react",
+    "baseUrl": "src"
   },
-  "include": ["src", "dist", "webpack.config.ts"]
+  "include": ["src", "webpack.config.ts"]
 }

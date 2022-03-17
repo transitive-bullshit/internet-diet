@@ -35,6 +35,7 @@
 
 h1 {
   font-size: 64px;
+  font-weight: 400 !important;
   margin: 24px 0 0;
   text-align: center;
 }
@@ -75,8 +76,4 @@ h1 {
 
 .button:active {
   color: #000;
-}
-
-.ban {
-  font-weight: 500;
 }

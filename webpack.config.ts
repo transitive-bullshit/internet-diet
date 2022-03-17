@@ -6,6 +6,7 @@ import TerserPlugin from 'terser-webpack-plugin'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
+import TSConfigPathsWebpackPlugin from 'tsconfig-paths-webpack-plugin'
 
 const { resolve: resolvePackage } = createRequire(import.meta.url)
 
@@ -19,8 +20,9 @@ const config: Configuration = {
     content: path.resolve('src', 'content'),
     background: path.resolve('src', 'background'),
     popup: path.resolve('src', 'popup'),
+    toast: path.resolve('src', 'toast'),
     blocked: path.resolve('src', 'blocked'),
-    toast: path.resolve('src', 'toast')
+    options: path.resolve('src', 'options')
   },
   output: {
     path: path.resolve('build'),
@@ -90,10 +92,17 @@ const config: Configuration = {
       chunks: ['blocked'],
       cache: false
     }),
+    new HtmlWebpackPlugin({
+      template: path.resolve('src', 'options', 'index.html'),
+      filename: 'options.html',
+      chunks: ['options'],
+      cache: false
+    }),
     new SizePlugin({ writeFile: false })
   ],
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+    extensions: ['.tsx', '.ts', '.js'],
+    plugins: [new TSConfigPathsWebpackPlugin()]
   },
   optimization: {
     minimizer: [

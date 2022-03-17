@@ -1,0 +1,46 @@
+.confirmModal {
+  display: flex;
+  flex-direction: column;
+}
+
+.confirmModalFooter {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.btn {
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.6rem;
+  user-select: none;
+  white-space: nowrap;
+  vertical-align: middle;
+  outline: transparent solid 2px;
+  outline-offset: 2px;
+  border-radius: 0.375rem;
+  line-height: 1.2;
+  font-weight: 500;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: inherit;
+}
+
+.btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.btn:hover {
+  background: #edf2f7;
+}
+
+.btn:active {
+  background: #e2e8f0;
+}

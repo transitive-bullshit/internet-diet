@@ -15,7 +15,6 @@ let selectedLink: HTMLAnchorElement | null = null
 let selectedLinkOldHref: string | null = null
 let selectedLinkOldOnClick: any | null = null
 let selectedElementOldOnClick: any | null = null
-let numUpdates = 0
 let tabBlockInfo = {
   numBlockedLinks: 0,
   numBlockedItems: 0
@@ -107,16 +106,13 @@ function getClosestItemBlockCandidate(element: HTMLElement) {
 }
 
 async function updateHiddenBlockedLinksAndItemsForce() {
-  ++numUpdates
-
-  log.info('----------------')
-  log.time(`update ${numUpdates}`)
+  log.debug('----------------')
 
   const { numBlockedLinks, numBlockedLinksFresh } = hideBlockedLinks()
   const { numBlockedItems, numBlockedItemsFresh } = hideBlockedItems()
 
-  log.info('blocked', numBlockedLinks, 'links')
-  log.info('blocked', numBlockedItems, 'items')
+  log.debug('blocked', numBlockedLinks, 'links')
+  log.debug('blocked', numBlockedItems, 'items')
 
   tabBlockInfo = {
     numBlockedItems,
@@ -128,8 +124,7 @@ async function updateHiddenBlockedLinksAndItemsForce() {
     ...tabBlockInfo
   })
 
-  log.timeEnd(`update ${numUpdates}`)
-  log.info('----------------')
+  log.debug('----------------')
 
   if (numBlockedLinksFresh > 0) {
     const { numBlockedLinksTotal = 0 } = await chrome.storage.sync.get([
@@ -160,10 +155,15 @@ const updateHiddenBlockedLinksAndItems = throttle(
 
 function update() {
   if (!blockRulesEngine.isBlockingEnabledForHost(document.location)) {
+    log.info('update blocking disabled for host', document.location.hostname)
     return
   } else if (blockRulesEngine.isUrlBlocked(document.location)) {
-    document.location.href = chrome.runtime.getURL('blocked.html')
+    log.info('update page is blocked', document.location.hostname)
+    const url = new URL(chrome.runtime.getURL('blocked.html'))
+    url.searchParams.set('host', document.location.hostname)
+    document.location.href = url.toString()
   } else {
+    log.info('update page is not blocked', document.location.hostname)
     if (!document.body) {
       setTimeout(update, 0)
       return

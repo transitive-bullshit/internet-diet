@@ -1,13 +1,10 @@
 import React from 'react'
-import { useSearchParam } from 'react-use'
 import { FaCog } from '@react-icons/all-files/fa/FaCog'
 import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
 
-import styles from './Blocked.module.css'
+import styles from './Options.module.css'
 
-export const Blocked = () => {
-  const host = useSearchParam('host')
-
+export const Options = () => {
   const onClickOpenSupportPage = React.useCallback(() => {
     chrome.tabs.create({
       url: 'https://github.com/transitive-bullshit/internet-diet'
@@ -23,18 +20,9 @@ export const Blocked = () => {
       <div className={styles.header} />
 
       <div className={styles.body}>
-        <h1>Blocked</h1>
+        <h1>Settings</h1>
 
-        <p>
-          You blocked this page
-          {host && (
-            <>
-              {' '}
-              on <span className={styles.ban}>{host}</span>
-            </>
-          )}
-          . It&apos;s probably there for a good reason.
-        </p>
+        <p>TODO</p>
 
         <div className={styles.options}>
           <button
