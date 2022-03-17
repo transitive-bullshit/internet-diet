@@ -3,6 +3,8 @@ import { FaCog } from '@react-icons/all-files/fa/FaCog'
 import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
 import { FaUnlink } from '@react-icons/all-files/fa/FaUnlink'
 import { FaBan } from '@react-icons/all-files/fa/FaBan'
+import { FaPlay } from '@react-icons/all-files/fa/FaPlay'
+import { FaPause } from '@react-icons/all-files/fa/FaPause'
 
 import { ConfirmModal } from 'components/ConfirmModal/ConfirmModal'
 import { normalizeUrl } from '../block-rules-engine'
@@ -25,11 +27,20 @@ export const Popup = () => {
   const [isBlockPageConfirmModalOpen, setIsConfirmBlockPageModalOpen] =
     React.useState(false)
   const [isAddingLinkBlock, setIsAddingLinkBlock] = React.useState(false)
+  const [isPaused, setIsPaused] = React.useState<boolean | undefined>(undefined)
   const [tabInfo, setTabInfo] = React.useState<TabInfo | null>(null)
-  const [numBlockedItems, setNumBlockedItems] = React.useState(0)
-  const [numBlockedLinks, setNumBlockedLinks] = React.useState(0)
-  const [numBlockedItemsTotal, setNumBlockedItemsTotal] = React.useState(0)
-  const [numBlockedLinksTotal, setNumBlockedLinksTotal] = React.useState(0)
+  const [numBlockedItems, setNumBlockedItems] = React.useState<
+    number | undefined
+  >(undefined)
+  const [numBlockedLinks, setNumBlockedLinks] = React.useState<
+    number | undefined
+  >(undefined)
+  const [numBlockedItemsTotal, setNumBlockedItemsTotal] = React.useState<
+    number | undefined
+  >(undefined)
+  const [numBlockedLinksTotal, setNumBlockedLinksTotal] = React.useState<
+    number | undefined
+  >(undefined)
 
   const onClickOpenSupportPage = React.useCallback(() => {
     chrome.tabs.create({
@@ -60,6 +71,10 @@ export const Popup = () => {
   const onClickToggleAddLinkBlock = React.useCallback(() => {
     setIsAddingLinkBlock(!isAddingLinkBlock)
   }, [isAddingLinkBlock])
+
+  const onClickToggleIsPaused = React.useCallback(() => {
+    setIsPaused(!isPaused)
+  }, [isPaused])
 
   const onClickBlockCurrentPage = React.useCallback(() => {
     if (!tabInfo || !tabInfo.hostname || !tabInfo.url) {
@@ -173,20 +188,25 @@ export const Popup = () => {
     )
   }, [])
 
-  // ensure the stats stay up-to-date
+  // ensure local state stays in sync with storage
   React.useEffect(() => {
     ;(async function () {
-      // fetch the total blocked stats from storage
-      const { numBlockedLinksTotal = 0, numBlockedItemsTotal = 0 } =
-        await chrome.storage.sync.get([
-          'numBlockedLinksTotal',
-          'numBlockedItemsTotal'
-        ])
+      // fetch initial values from storage
+      const {
+        numBlockedLinksTotal = 0,
+        numBlockedItemsTotal = 0,
+        isPaused = false
+      } = await chrome.storage.sync.get([
+        'numBlockedLinksTotal',
+        'numBlockedItemsTotal',
+        'isPaused'
+      ])
 
       setNumBlockedItemsTotal(numBlockedItemsTotal)
       setNumBlockedLinksTotal(numBlockedLinksTotal)
+      setIsPaused(isPaused)
 
-      // ensure the total stats stay up-to-date with storage
+      // ensure local state stays in sync with storage
       chrome.storage.onChanged.addListener((changes, area) => {
         if (area !== 'sync') return
 
@@ -196,6 +216,10 @@ export const Popup = () => {
 
         if (changes.numBlockedItemsTotal) {
           setNumBlockedItemsTotal(changes.numBlockedItemsTotal.newValue)
+        }
+
+        if (changes.isPaused) {
+          setIsPaused(changes.isPaused.newValue)
         }
       })
     })()
@@ -223,10 +247,25 @@ export const Popup = () => {
     )
   }, [tabInfo, isAddingLinkBlock])
 
+  React.useEffect(() => {
+    if (isPaused === undefined) {
+      return
+    }
+
+    ;(async () => {
+      await chrome.storage.sync.set({ isPaused })
+    })()
+  }, [isPaused])
+
   const isTabPrivate = tabInfo?.url?.startsWith('chrome')
   const isBlockPageEnabled =
-    tabInfo && tabInfo.hostname && tabInfo.normalizedUrl && !isTabPrivate
-  const isBlockHostEnabled = tabInfo && tabInfo.hostname && !isTabPrivate
+    tabInfo &&
+    tabInfo.hostname &&
+    tabInfo.normalizedUrl &&
+    !isTabPrivate &&
+    !isPaused
+  const isBlockHostEnabled =
+    tabInfo && tabInfo.hostname && !isTabPrivate && !isPaused
 
   return (
     <>
@@ -277,17 +316,25 @@ export const Popup = () => {
 
             <div className={styles.subRow}>
               <div>
-                <span className={styles.stat}>
-                  {numBlockedLinks.toLocaleString('en-US')}
-                </span>{' '}
-                on this page
+                {numBlockedLinks !== undefined && (
+                  <>
+                    <span className={styles.stat}>
+                      {numBlockedLinks.toLocaleString('en-US')}
+                    </span>{' '}
+                    on this page
+                  </>
+                )}
               </div>
 
               <div>
-                <span className={styles.stat}>
-                  {numBlockedLinksTotal.toLocaleString('en-US')}
-                </span>{' '}
-                in total
+                {numBlockedLinksTotal !== undefined && (
+                  <>
+                    <span className={styles.stat}>
+                      {numBlockedLinksTotal.toLocaleString('en-US')}
+                    </span>{' '}
+                    in total
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -297,17 +344,25 @@ export const Popup = () => {
 
             <div className={styles.subRow}>
               <div>
-                <span className={styles.stat}>
-                  {numBlockedItems.toLocaleString('en-US')}
-                </span>{' '}
-                on this page
+                {numBlockedItems !== undefined && (
+                  <>
+                    <span className={styles.stat}>
+                      {numBlockedItems.toLocaleString('en-US')}
+                    </span>{' '}
+                    on this page
+                  </>
+                )}
               </div>
 
               <div>
-                <span className={styles.stat}>
-                  {numBlockedItemsTotal.toLocaleString('en-US')}
-                </span>{' '}
-                in total
+                {numBlockedItemsTotal !== undefined && (
+                  <>
+                    <span className={styles.stat}>
+                      {numBlockedItemsTotal.toLocaleString('en-US')}
+                    </span>{' '}
+                    in total
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -316,22 +371,43 @@ export const Popup = () => {
 
           <div className={styles.row}>
             <button
-              aria-label='Add link to block'
-              className={cs(
-                styles.toggle,
-                isAddingLinkBlock && styles.active,
-                !isBlockPageEnabled && styles.disabled
-              )}
-              onClick={isBlockPageEnabled ? onClickToggleAddLinkBlock : noop}
-              disabled={!isBlockPageEnabled}
+              aria-label='Pause blocking'
+              className={cs(styles.toggle, !isPaused && styles.active)}
+              onClick={onClickToggleIsPaused}
             >
-              {isAddingLinkBlock && isBlockPageEnabled ? (
+              {isPaused ? (
                 <>
-                  Select link on page to block <FaUnlink />
+                  Unpause blocking <FaPlay />
                 </>
               ) : (
                 <>
-                  Block a link on this page <FaUnlink />
+                  Pause blocking <FaPause />
+                </>
+              )}
+            </button>
+          </div>
+
+          <div className={styles.spacer} />
+
+          <div className={styles.row}>
+            <button
+              aria-label='Block this site'
+              className={cs(
+                styles.toggle,
+                !isBlockHostEnabled && styles.disabled
+              )}
+              onClick={
+                isBlockHostEnabled ? onClickOpenBlockSiteConfirmModal : noop
+              }
+              disabled={!isBlockHostEnabled}
+            >
+              {isBlockHostEnabled ? (
+                <>
+                  Block all of {tabInfo?.hostname} <FaBan />
+                </>
+              ) : (
+                <>
+                  Block this site <FaBan />
                 </>
               )}
             </button>
@@ -355,23 +431,22 @@ export const Popup = () => {
 
           <div className={styles.row}>
             <button
-              aria-label='Block this site'
+              aria-label='Add link to block'
               className={cs(
                 styles.toggle,
-                !isBlockHostEnabled && styles.disabled
+                isAddingLinkBlock && styles.active,
+                !isBlockPageEnabled && styles.disabled
               )}
-              onClick={
-                isBlockHostEnabled ? onClickOpenBlockSiteConfirmModal : noop
-              }
-              disabled={!isBlockHostEnabled}
+              onClick={isBlockPageEnabled ? onClickToggleAddLinkBlock : noop}
+              disabled={!isBlockPageEnabled}
             >
-              {isBlockHostEnabled ? (
+              {isAddingLinkBlock && isBlockPageEnabled ? (
                 <>
-                  Block all of {tabInfo?.hostname} <FaBan />
+                  Select link on page to block <FaUnlink />
                 </>
               ) : (
                 <>
-                  Block this site <FaBan />
+                  Block a link on this page <FaUnlink />
                 </>
               )}
             </button>

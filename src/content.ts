@@ -361,21 +361,6 @@ async function initReact() {
   createToast = (window as any).toast
 }
 
-chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
-  switch (message.type) {
-    case 'update':
-      update()
-      sendResponse()
-      break
-    case 'tabBlockInfoQuery':
-      sendResponse(tabBlockInfo)
-      break
-    case 'event:updateIsAddingLinkBlock':
-      updateIsAddingLinkBlock(!!message.isAddingLinkBlock)
-      break
-  }
-})
-
 function init() {
   if (!document.head || !document.body) {
     window.addEventListener('DOMContentLoaded', init)
@@ -392,6 +377,21 @@ function init() {
     }
   })
 }
+
+chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
+  switch (message.type) {
+    case 'update':
+      update()
+      sendResponse()
+      break
+    case 'tabBlockInfoQuery':
+      sendResponse(tabBlockInfo)
+      break
+    case 'event:updateIsAddingLinkBlock':
+      updateIsAddingLinkBlock(!!message.isAddingLinkBlock)
+      break
+  }
+})
 
 init()
 update()
