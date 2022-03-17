@@ -72,11 +72,11 @@ This project is a WIP and lacks some polish and features.
 - [x] add support for pausing / resuming
 - [x] add support for any site
 - [x] inject content script dynamically
+- [ ] test on other sites
 - [ ] add options page
 - [ ] make block page customizable
 - [ ] make block effect customizable (blur vs removal)
 - [ ] add inline tooltip on blocked items for context and pausing
-- [ ] test on other sites
 - [ ] add examples
 - [ ] publish to chrome store
 - [ ] add hotkey command for blocking a link
