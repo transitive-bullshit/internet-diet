@@ -10,22 +10,24 @@ import {
 } from 'definitions'
 import * as log from './log'
 
-// Make injecting this content script idempotent in case multiple copies are injected.
-//
-// When the extension's action is triggered, the popup JS will attempt to send a
-// message to the currently active tab's content script. If it doesn't get a response
-// within a brief period of time, it will inject the content script into that page.
-//
-// Most of the time, this check works as intended, but this guard exists just in case
-// it fails, in which case multiple copies of the content script are injected. This
-// edge case has been manually tested to work fine since duplicate scripts bail out
-// with this guard (by throwing an error), but it is not a very clean solution.
-//
-// The reason we're going with this approach, however, is to only inject the content
-// script into pages that either have active blocking rules or where the user has
-// manually invoked the extension's page action. In other words, we are trying to
-// dynamically inject our content script into as few tabs as possible instead of
-// statically injecting it into every tab.
+/*
+  Make injecting this content script idempotent in case multiple copies are injected.
+
+  When the extension's action is triggered, the popup JS will attempt to send a
+  message to the currently active tab's content script. If it doesn't get a response
+  within a brief period of time, it will inject the content script into that page.
+
+  Most of the time, this check works as intended, but this guard exists just in case
+  it fails, in which case multiple copies of the content script are injected. This
+  edge case has been manually tested to work fine since duplicate scripts bail out
+  with this guard (by throwing an error), but it is not a very clean solution.
+
+  The reason we're going with this approach, however, is to only inject the content
+  script into pages that either have active blocking rules or where the user has
+  manually invoked the extension's page action. In other words, we are trying to
+  dynamically inject our content script into as few tabs as possible instead of
+  statically injecting it into every tab.
+*/
 if ((window as any)[contentScriptID]) {
   log.info('content script duplicate', contentScriptID)
   throw new Error(`duplicate ${contentScriptID}`)

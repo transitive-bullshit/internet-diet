@@ -5,6 +5,11 @@ import { Popup } from './Popup'
 import { contentScriptID } from '../definitions'
 import './index.css'
 
+/*
+  Check to see if our content script has been injected into the active tab.
+
+  If it hasn't, then inject the content script + CSS.
+ */
 async function main() {
   const [activeTab] = await chrome.tabs.query({
     currentWindow: true,
@@ -29,6 +34,10 @@ async function main() {
         }
       )
 
+      // TODO: using an arbitrary timeout here is a bit hacky and prone to error.
+      // The content script includes a guard to prevent against duplicate scripts,
+      // but in the future we should try to find a better way of tracking dynamic
+      // script injection.
       setTimeout(() => resolve(false), 250)
     })
     console.timeEnd('content-script-check')
