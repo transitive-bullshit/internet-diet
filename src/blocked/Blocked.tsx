@@ -30,7 +30,10 @@ export const Blocked = () => {
           {host && (
             <>
               {' '}
-              on <span className={styles.ban}>{host}</span>
+              on{' '}
+              <a href={`https://${host}`} className={styles.ban}>
+                {host}
+              </a>
             </>
           )}
           . It&apos;s probably there for a good reason.
