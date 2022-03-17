@@ -22,6 +22,11 @@ test('normalizeUrl valid', (t) => {
   t.snapshot(normalizeUrl('https://test.com/foo/bar'))
   t.snapshot(normalizeUrl('https://test.com/foo/bar/'))
   t.snapshot(normalizeUrl('https://test.com/foo/bar?foo=bar&cat=dog'))
+  t.snapshot(
+    normalizeUrl(
+      'https://www.seamless.com/menu/empanada-loca-606-5th-ave-brooklyn/310748'
+    )
+  )
 })
 
 test('dedupeBlockRules no-op', async (t) => {

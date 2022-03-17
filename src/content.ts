@@ -59,7 +59,8 @@ function hideBlockedLinks() {
 
   for (const link of links) {
     if (blockRulesEngine.isUrlBlockedAsString(link.href)) {
-      const element = getClosestLinkBlockCandidate(link)
+      const candidate = getBestLinkBlockCandidate(link)
+      const element = candidate?.element || getClosestLinkBlockCandidate(link)
       if (hideElement(element)) {
         ++numBlockedLinksFresh
       }
@@ -114,6 +115,108 @@ function hideElement(element: HTMLElement): boolean {
   }
 
   return !isHidden
+}
+
+// TODO: add caching to this
+function getNormalizedUrlForHost(url: string, hostname: string): string | null {
+  if (!url) {
+    return null
+  }
+
+  try {
+    const urlHostname = new URL(url).hostname
+    if (!hostname.includes(urlHostname) && !urlHostname.includes(hostname)) {
+      return null
+    }
+  } catch (err) {
+    // malformed URL
+    return null
+  }
+
+  return normalizeUrl(url)
+}
+
+interface LinkBlockCandidate {
+  link: HTMLAnchorElement
+  element: HTMLElement
+}
+
+function getBestLinkBlockCandidate(
+  target: HTMLElement
+): LinkBlockCandidate | null {
+  const { hostname } = document.location
+  const containerCandidate = target.closest('li')?.parentElement
+  let link: HTMLAnchorElement | null = null
+  let element: HTMLElement | null = null
+  let currentElement: HTMLElement = target
+
+  /*
+    Traverse up the DOM tree, starting from the target node. On each 
+    iteration, we assess whether the current node could be a viable element 
+    containing a single unique link that's blockable with respect to the 
+    current host.
+    
+    Once we get to a point where the current node contains too many links or
+    list items, we know we've gone too far, so we bail out.
+
+    The resulting candidate represents the highest DOM node that fulfilled
+    our blocking criteria (or null if no valid candidates were found).
+
+    NOTE: I'm sure this algorithm could be optimized, but it doesn't appear
+    to be a problem in practice for the time being. Specifically, we're
+    doing a lot of extra sub-tree traversals with the `select.all` calls 
+    for each iteration of the main loop.
+
+    NOTE: This algorithm is critical for the "smart selection" UX in order
+    to make it feel natural for non-technical users to select element/link 
+    pairs to block.
+  */
+  do {
+    const urls = select
+      .all('a', currentElement)
+      .map((link) => [getNormalizedUrlForHost(link.href, hostname), link])
+      .filter((pair) => !!pair[0])
+    const uniqueUrlsToLinks: { [url: string]: HTMLAnchorElement } =
+      Object.fromEntries(urls)
+    const numUniqueUrls = Object.keys(uniqueUrlsToLinks).length
+
+    const lis = select.all('li', currentElement)
+    const numLis = lis.length
+    const isCurrentElementLi =
+      currentElement.tagName === 'LI' || currentElement === lis[0]
+
+    const { parentElement } = currentElement
+
+    if (
+      numUniqueUrls > 1 ||
+      numLis >= 2 ||
+      (numLis === 1 && !isCurrentElementLi) ||
+      !parentElement ||
+      parentElement === containerCandidate ||
+      parentElement === document.body
+    ) {
+      // we've gone too far; return the last valid candidate
+      if (element && link) {
+        return {
+          element,
+          link
+        }
+      } else {
+        return null
+      }
+    }
+
+    if (numUniqueUrls === 1) {
+      // we have a new candidate element / link pair
+      element = currentElement
+      link = Object.values(uniqueUrlsToLinks)?.[0]
+    }
+
+    // continue traversing up the DOM tree
+    currentElement = parentElement
+
+    // eslint-disable-next-line no-constant-condition
+  } while (true)
 }
 
 function getClosestLinkBlockCandidate(element: HTMLElement) {
@@ -229,28 +332,24 @@ function update() {
   })
 }
 
-function selectElementImpl(event: Event) {
+function updateSelectedElementImpl(event: Event) {
   if (!event.target || selectedLink === event.target) {
     return
   }
 
   const target = event.target as HTMLElement
-  const link = target.closest('a')
-
-  if (selectedLink === link) {
+  const candidate = getBestLinkBlockCandidate(target)
+  if (!candidate) {
+    clearSelectedElement()
     return
   }
 
-  clearElementImpl()
-
-  if (!link || !normalizeUrl(link.href)) {
+  const { link, element } = candidate
+  if (selectedLink === link || selectedLinkOldHref === link.href) {
     return
   }
 
-  const element = getClosestLinkBlockCandidate(link)
-  if (!element) {
-    return
-  }
+  clearSelectedElement()
 
   selectedLink = link
   selectedElement = element
@@ -260,21 +359,23 @@ function selectElementImpl(event: Event) {
   selectedLinkOldHref = selectedLink.href
   selectedLinkOldOnClick = selectedLink.onclick
   selectedElementOldOnClick = selectedElement.onclick
-  selectedLink.href = 'javascript:void(0)'
+  // selectedLink.href = 'javascript:void(0)'
   selectedLink.onclick = interceptClick
   selectedElement.onclick = interceptClick
 }
 
-function clearElementImpl() {
-  if (!selectedElement || !selectedLink) {
-    return
+function clearSelectedElement() {
+  // reset old behavior for selected elements
+  if (selectedElement) {
+    selectedElement.classList.remove(selectedNodeClassName)
+    selectedElement.onclick = selectedElementOldOnClick
   }
 
-  // reset old behavior for selected elements
-  selectedElement.classList.remove(selectedNodeClassName)
-  selectedLink.href = selectedLinkOldHref!
-  selectedLink.onclick = selectedLinkOldOnClick
-  selectedElement.onclick = selectedElementOldOnClick
+  if (selectedLink) {
+    // selectedLink.href = selectedLinkOldHref!
+    selectedLink.onclick = selectedLinkOldOnClick
+  }
+
   selectedLinkOldHref = null
   selectedLinkOldOnClick = null
   selectedElementOldOnClick = null
@@ -284,6 +385,8 @@ function clearElementImpl() {
 
 async function blockElement(event: Event) {
   if (!selectedElement || !selectedLink) {
+    // dismiss the selection behavior upon clicking an empty area
+    updateIsAddingLinkBlock(false)
     return
   }
 
@@ -291,27 +394,23 @@ async function blockElement(event: Event) {
   event.stopPropagation()
 
   const url = selectedLinkOldHref!
-  clearElementImpl()
 
-  const addBlockLinkRuleP = blockRulesEngine.addBlockLinkRule({
+  await blockRulesEngine.addBlockLinkRule({
     hostname: document.location.hostname,
     url
   })
 
   updateIsAddingLinkBlock(false)
+  clearSelectedElement()
+
   chrome.runtime.sendMessage({
     type: 'event:stopIsAddingLinkBlock'
   })
 
   if (createToast) {
-    await createToast.promise(addBlockLinkRuleP, {
-      loading: 'Blocking new link',
-      success: 'New link blocked',
-      error: 'Error blocking link'
-    })
+    createToast.success('New link blocked')
   }
 
-  await addBlockLinkRuleP
   return false
 }
 
@@ -324,8 +423,7 @@ function interceptClick(event: Event) {
   return false
 }
 
-const selectElement = debounce(selectElementImpl, 1)
-const clearElement = debounce(clearElementImpl, 1)
+const updateSelectedElement = debounce(updateSelectedElementImpl, 1)
 
 function updateIsAddingLinkBlock(isAddingLinkBlockUpdate: boolean) {
   if (isAddingLinkBlock === isAddingLinkBlockUpdate) {
@@ -334,10 +432,10 @@ function updateIsAddingLinkBlock(isAddingLinkBlockUpdate: boolean) {
 
   isAddingLinkBlock = isAddingLinkBlockUpdate
   const action = isAddingLinkBlock ? 'addEventListener' : 'removeEventListener'
-  document[action]('mouseover', selectElement)
-  document[action]('mouseout', clearElement)
+  document[action]('mouseover', updateSelectedElement)
+  // document[action]('mouseout', updateSelectedElement)
   document[action]('click', blockElement)
-  clearElementImpl()
+  clearSelectedElement()
 
   if (createToast) {
     if (isAddingLinkBlockToastId) {

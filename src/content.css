@@ -8,10 +8,13 @@
   );
   box-shadow: inset 0px 0px 0px 1px #d7d7d7;
   cursor: pointer;
+  filter: blur(16px);
 }
 
-.internet-diet-selected img {
-  filter: blur(16px);
+/* seamless.com: disable ratings popup */
+.internet-diet-selected [data-testid='content-ratings'],
+.internet-diet-selected .content-ratings {
+  pointer-events: none;
 }
 
 .internet-diet-blocked {
