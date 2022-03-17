@@ -5,6 +5,7 @@ import type toast from 'react-hot-toast'
 import { BlockRulesEngine, normalizeUrl } from './block-rules-engine'
 import * as log from './log'
 
+const blockedNodeClassName = 'internet-diet-blocked'
 const selectedNodeClassName = 'internet-diet-selected'
 const stylesNodeId = 'internet-diet-styles-0'
 
@@ -78,20 +79,17 @@ function hideElement(
   }
 
   if (remove) {
+    // TODO: update this option using a classname
     const isHidden = element.style.display === 'none'
     element.style.display = 'none'
     // element.style.backgroundColor = 'red'
 
     return !isHidden
   } else {
-    const isHidden =
-      element.style.pointerEvents === 'none' &&
-      element.style.filter === 'blur(16px)' &&
-      element.style.userSelect === 'none'
-
-    element.style.pointerEvents = 'none'
-    element.style.filter = 'blur(16px)'
-    element.style.userSelect = 'none'
+    const isHidden = element.classList.contains(blockedNodeClassName)
+    if (!isHidden) {
+      element.classList.add(blockedNodeClassName)
+    }
 
     return !isHidden
   }
@@ -107,6 +105,12 @@ function getClosestItemBlockCandidate(element: HTMLElement) {
 
 async function updateHiddenBlockedLinksAndItemsForce() {
   log.debug('----------------')
+
+  if (blockRulesEngine.isPaused) {
+    for (const element of select.all(`.${blockedNodeClassName}`)) {
+      element.classList.remove(blockedNodeClassName)
+    }
+  }
 
   const { numBlockedLinks, numBlockedLinksFresh } = hideBlockedLinks()
   const { numBlockedItems, numBlockedItemsFresh } = hideBlockedItems()
@@ -139,6 +143,7 @@ async function updateHiddenBlockedLinksAndItemsForce() {
     const { numBlockedItemsTotal = 0 } = await chrome.storage.sync.get([
       'numBlockedItemsTotal'
     ])
+
     await chrome.storage.sync.set({
       numBlockedItemsTotal: numBlockedItemsTotal + numBlockedItemsFresh
     })
@@ -327,7 +332,7 @@ function clearStyles() {
 }
 
 function initStyles() {
-  // note: using "pointer-events: none" for the active class messes up the mouseover and
+  // note: using "pointer-events: none" for the selected class messes up the mouseover and
   // mouseout events, so we're not using them here
   const css = `
 .${selectedNodeClassName} {
@@ -339,8 +344,13 @@ function initStyles() {
 .${selectedNodeClassName} img {
   filter: blur(16px);
 }
-`
 
+.${blockedNodeClassName} {
+  pointer-events: none !important;
+  filter: blur(16px) !important;
+  user-select: none !important;
+}
+`
   addStyles(css)
 }
 
