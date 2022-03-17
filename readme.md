@@ -37,9 +37,10 @@ When blocking individual restaurants and menu items, they will be blurred out on
 
 ## Which services does it support?
 
-**Currently only a few sites are supported, but more will come soon.**
+**Currently only a few sites have undergone thorough testing, but more robust support for the others on this list will come soon.**
 
 - [x] postmates
+- [x] amazon
 - [ ] grubhub
 - [ ] seamless
 - [ ] doordash
@@ -47,14 +48,13 @@ When blocking individual restaurants and menu items, they will be blurred out on
 - [ ] caviar
 - [ ] delivery.com
 - [ ] instacart
-- [x] amazon
 - [ ] etc.
 
 The extension is designed to work on any website where you want to restrict access to certain URL patterns and HTML elements containing keywords.
 
 ## TODO
 
-This project is a WIP and lacks UI / polish / etc.
+This project is a WIP and lacks some polish and features.
 
 - [x] handle page updates and slow client-side refresh
 - [x] add popup UI
