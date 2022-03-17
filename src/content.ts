@@ -70,29 +70,23 @@ function hideBlockedItems() {
   return { numBlockedItems, numBlockedItemsFresh }
 }
 
-function hideElement(
-  element: HTMLElement,
-  { remove = false }: { remove?: boolean } = {}
-): boolean {
+function hideElement(element: HTMLElement): boolean {
   if (!element) {
     return false
   }
 
-  if (remove) {
-    // TODO: update this option using a classname
-    const isHidden = element.style.display === 'none'
-    element.style.display = 'none'
-    // element.style.backgroundColor = 'red'
+  // TODO: update this option using a classname
+  // this should be an option available from the options page
+  // const isHidden = element.style.display === 'none'
+  // element.style.display = 'none'
+  // element.style.backgroundColor = 'red'
 
-    return !isHidden
-  } else {
-    const isHidden = element.classList.contains(blockedNodeClassName)
-    if (!isHidden) {
-      element.classList.add(blockedNodeClassName)
-    }
-
-    return !isHidden
+  const isHidden = element.classList.contains(blockedNodeClassName)
+  if (!isHidden) {
+    element.classList.add(blockedNodeClassName)
   }
+
+  return !isHidden
 }
 
 function getClosestLinkBlockCandidate(element: HTMLElement) {
@@ -105,12 +99,6 @@ function getClosestItemBlockCandidate(element: HTMLElement) {
 
 async function updateHiddenBlockedLinksAndItemsForce() {
   log.debug('----------------')
-
-  if (blockRulesEngine.isPaused) {
-    for (const element of select.all(`.${blockedNodeClassName}`)) {
-      element.classList.remove(blockedNodeClassName)
-    }
-  }
 
   const { numBlockedLinks, numBlockedLinksFresh } = hideBlockedLinks()
   const { numBlockedItems, numBlockedItemsFresh } = hideBlockedItems()
@@ -159,39 +147,52 @@ const updateHiddenBlockedLinksAndItems = throttle(
 )
 
 function update() {
+  if (blockRulesEngine.isPaused) {
+    const elements = select.all(`.${blockedNodeClassName}`)
+    log.info('update cleaning', elements.length)
+    for (const element of elements) {
+      element.classList.remove(blockedNodeClassName)
+    }
+    const elements2 = select.all(`.${blockedNodeClassName}`)
+    log.info('update ed', elements2.length)
+    return
+  }
+
   if (!blockRulesEngine.isBlockingEnabledForHost(document.location)) {
     log.info('disabled for host', document.location.hostname)
     return
-  } else if (blockRulesEngine.isUrlBlocked(document.location)) {
+  }
+
+  if (blockRulesEngine.isUrlBlocked(document.location)) {
     log.info('page blocked', document.location.hostname)
     const url = new URL(chrome.runtime.getURL('blocked.html'))
     url.searchParams.set('host', document.location.hostname)
     document.location.href = url.toString()
     return
-  } else {
-    if (!document.body) {
-      setTimeout(update, 0)
-      return
-    }
-
-    updateHiddenBlockedLinksAndItemsForce()
-
-    if (observer) {
-      observer.disconnect()
-      observer = null
-    }
-
-    observer = new MutationObserver(function () {
-      // TODO: some filtering or targeting of a subtree here would be nice
-      // in order to avoid unnecessary effort
-      updateHiddenBlockedLinksAndItems()
-    })
-
-    observer.observe(document.body, {
-      subtree: true,
-      childList: true
-    })
   }
+
+  if (!document.body) {
+    setTimeout(update, 0)
+    return
+  }
+
+  updateHiddenBlockedLinksAndItemsForce()
+
+  if (observer) {
+    observer.disconnect()
+    observer = null
+  }
+
+  observer = new MutationObserver(function () {
+    // TODO: some filtering or targeting of a subtree here would be nice
+    // in order to avoid unnecessary effort
+    updateHiddenBlockedLinksAndItems()
+  })
+
+  observer.observe(document.body, {
+    subtree: true,
+    childList: true
+  })
 }
 
 function selectElementImpl(event: Event) {
@@ -332,6 +333,13 @@ function clearStyles() {
 }
 
 function initStyles() {
+  if (!document.head) {
+    // styles need to be loaded asap (before `DOMContentLoaded`), so we initialize
+    // them separately from everything else
+    setTimeout(initStyles, 0)
+    return
+  }
+
   // note: using "pointer-events: none" for the selected class messes up the mouseover and
   // mouseout events, so we're not using them here
   const css = `
@@ -347,8 +355,8 @@ function initStyles() {
 
 .${blockedNodeClassName} {
   pointer-events: none !important;
-  filter: blur(16px) !important;
   user-select: none !important;
+  filter: blur(16px) !important;
 }
 `
   addStyles(css)
@@ -378,7 +386,6 @@ function init() {
   }
 
   update()
-  initStyles()
   initReact()
 
   document.body.addEventListener('keydown', (e) => {
@@ -404,6 +411,7 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
 })
 
 init()
+initStyles()
 update()
 window.addEventListener('load', update)
 blockRulesEngine.on('update', update)
