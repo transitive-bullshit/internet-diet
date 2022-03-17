@@ -102,10 +102,6 @@ npm start
 
 Then load the unpacked extension into chrome from the `build` folder.
 
-## Related
-
-- [Adblock advanced filter syntax](https://help.eyeo.com/en/adblockplus/how-to-write-filters)
-
 ## License
 
 MIT © [Travis Fischer](https://transitivebullsh.it)
