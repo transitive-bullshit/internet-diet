@@ -133,7 +133,17 @@ function getNormalizedUrlForHost(url: string, hostname: string): string | null {
     return null
   }
 
-  return normalizeUrl(url)
+  const normalizedUrl = normalizeUrl(url)
+  if (normalizedUrl) {
+    if (
+      hostname.includes('amazon') &&
+      normalizedUrl.includes('/customer-reviews/')
+    ) {
+      return ''
+    }
+  }
+
+  return normalizedUrl
 }
 
 interface LinkBlockCandidate {
@@ -185,25 +195,13 @@ function getBestLinkBlockCandidate(
     const isCurrentElementLi =
       currentElement.tagName === 'LI' || currentElement === lis[0]
 
-    const { parentElement } = currentElement
-
     if (
       numUniqueUrls > 1 ||
       numLis >= 2 ||
-      (numLis === 1 && !isCurrentElementLi) ||
-      !parentElement ||
-      parentElement === containerCandidate ||
-      parentElement === document.body
+      (numLis === 1 && !isCurrentElementLi)
     ) {
-      // we've gone too far; return the last valid candidate
-      if (element && link) {
-        return {
-          element,
-          link
-        }
-      } else {
-        return null
-      }
+      // we've traversed too far
+      break
     }
 
     if (numUniqueUrls === 1) {
@@ -212,11 +210,32 @@ function getBestLinkBlockCandidate(
       link = Object.values(uniqueUrlsToLinks)?.[0]
     }
 
+    const { parentElement } = currentElement
+
+    if (
+      !parentElement ||
+      parentElement === containerCandidate ||
+      parentElement === document.body
+    ) {
+      // we've traversed too far
+      break
+    }
+
     // continue traversing up the DOM tree
     currentElement = parentElement
 
     // eslint-disable-next-line no-constant-condition
   } while (true)
+
+  // return the most recent valid candidate if one exists
+  if (element && link) {
+    return {
+      element,
+      link
+    }
+  } else {
+    return null
+  }
 }
 
 function getClosestLinkBlockCandidate(element: HTMLElement) {

@@ -41,8 +41,8 @@ When blocking individual restaurants and menu items, they will be blurred out on
 
 - [x] postmates
 - [x] amazon
-- [ ] grubhub
-- [ ] seamless
+- [x] grubhub
+- [x] seamless
 - [ ] doordash
 - [ ] uber eats
 - [ ] caviar
