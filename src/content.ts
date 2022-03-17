@@ -102,8 +102,8 @@ function hideElement(element: HTMLElement): boolean {
     return false
   }
 
-  // TODO: update this option using a classname
-  // this should be an option available from the options page
+  // TODO: this should be an option available from the options page
+  // TODO: change to use the class approach so it's reversible
   // const isHidden = element.style.display === 'none'
   // element.style.display = 'none'
   // element.style.backgroundColor = 'red'
