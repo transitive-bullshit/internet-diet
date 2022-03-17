@@ -69,7 +69,7 @@ This project is a WIP and lacks UI / polish / etc.
 - [x] add block this site button in popup
 - [x] add linting
 - [x] add confirmation dialogs for blocking pages and sites
-- [ ] add support for pausing / resuming
+- [x] add support for pausing / resuming
 - [ ] add options page
 - [ ] make block page customizable
 - [ ] add inline tooltip on blocked items for context and pausing

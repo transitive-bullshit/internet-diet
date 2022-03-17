@@ -148,13 +148,20 @@ const updateHiddenBlockedLinksAndItems = throttle(
 
 function update() {
   if (blockRulesEngine.isPaused) {
-    const elements = select.all(`.${blockedNodeClassName}`)
-    log.info('update cleaning', elements.length)
-    for (const element of elements) {
+    for (const element of select.all(`.${blockedNodeClassName}`)) {
       element.classList.remove(blockedNodeClassName)
     }
-    const elements2 = select.all(`.${blockedNodeClassName}`)
-    log.info('update ed', elements2.length)
+
+    tabBlockInfo = {
+      numBlockedItems: 0,
+      numBlockedLinks: 0
+    }
+
+    chrome.runtime.sendMessage({
+      type: 'tabBlockInfo',
+      ...tabBlockInfo
+    })
+
     return
   }
 
