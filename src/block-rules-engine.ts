@@ -69,7 +69,7 @@ export class BlockRulesEngine extends EventEmitter {
     return this._blockRules as readonly BlockRule[]
   }
 
-  /** get all of the affected hostnames in a unique, non-empty, sorted array */
+  /** returns all of the affected hostnames as a unique, sorted array */
   getHostnames(): string[] {
     return Array.from(this.getHostnamesAsSet()).sort()
   }

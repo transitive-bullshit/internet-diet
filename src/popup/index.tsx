@@ -26,11 +26,12 @@ async function main() {
         {
           type: 'query:contentScriptID'
         },
-        () => {
+        (result) => {
+          console.log('content-script-check result', result)
           // we know this tab already has the content script loaded
           // we're ignoring the ID response since there can currently
           // only be one content script ID
-          resolve(true)
+          resolve(!!result)
         }
       )
 
@@ -51,17 +52,21 @@ async function main() {
         `loading content script "${contentScriptID}" in tab "${tabId}"`
       )
 
-      await Promise.all([
-        chrome.scripting.insertCSS({
-          target: { tabId },
-          files: ['content.css']
-        }),
+      try {
+        await Promise.all([
+          chrome.scripting.insertCSS({
+            target: { tabId },
+            files: ['content.css']
+          }),
 
-        chrome.scripting.executeScript({
-          target: { tabId },
-          files: ['content.js']
-        })
-      ])
+          chrome.scripting.executeScript({
+            target: { tabId },
+            files: ['content.js']
+          })
+        ])
+      } catch (err) {
+        console.error('error injecting content script', err)
+      }
     }
   }
 }

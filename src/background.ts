@@ -28,43 +28,46 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   }
 })
 
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-  switch (message.type) {
-    case 'tabBlockInfo': {
-      const tabId = sender?.tab?.id
-      if (!tabId) {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  ;(async () => {
+    switch (message.type) {
+      case 'tabBlockInfo': {
+        const tabId = sender?.tab?.id
+        if (!tabId) {
+          break
+        }
+
+        const { numBlockedItems, numBlockedLinks } = message
+
+        const text =
+          numBlockedItems + numBlockedLinks > 0
+            ? `${numBlockedItems + numBlockedLinks}`
+            : ''
+
+        await Promise.all([
+          chrome.action.setBadgeBackgroundColor({ color: '#646464' }),
+          chrome.action.setBadgeText({ text, tabId })
+        ])
         break
       }
 
-      const { numBlockedItems, numBlockedLinks } = message
+      case 'event:addBlockLinkRule':
+        await blockRulesEngine.addBlockLinkRule({
+          hostname: message.hostname,
+          url: message.url
+        })
+        break
 
-      const text =
-        numBlockedItems + numBlockedLinks > 0
-          ? `${numBlockedItems + numBlockedLinks}`
-          : ''
-
-      await Promise.all([
-        chrome.action.setBadgeBackgroundColor({ color: '#646464' }),
-        chrome.action.setBadgeText({ text, tabId })
-      ])
-      break
+      case 'event:addBlockHostRule':
+        await blockRulesEngine.addBlockHostRule({
+          hostname: message.hostname
+        })
+        break
     }
 
-    case 'event:addBlockLinkRule':
-      await blockRulesEngine.addBlockLinkRule({
-        hostname: message.hostname,
-        url: message.url
-      })
-      break
+    sendResponse()
+  })()
 
-    case 'event:addBlockHostRule':
-      await blockRulesEngine.addBlockHostRule({
-        hostname: message.hostname
-      })
-      break
-  }
-
-  sendResponse()
   return true
 })
 
@@ -78,7 +81,7 @@ async function updateRegisteredContentScripts() {
 
   const script = {
     id: contentScriptID,
-    // matches: ['<all_urls>'], // great for debugging
+    // matches: ['<all_urls>'], // useful for debugging
     matches: hostnames.flatMap((hostname) => [
       `*://${hostname}/*`,
       `*://*.${hostname}/*`

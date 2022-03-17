@@ -3,6 +3,7 @@ import Modal from 'react-modal'
 
 import styles from './ConfirmModal.module.css'
 
+Modal.setAppElement('#root')
 const noop = () => undefined
 
 export const ConfirmModal: React.FC<{

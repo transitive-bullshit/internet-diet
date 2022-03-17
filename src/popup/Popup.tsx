@@ -162,30 +162,27 @@ export const Popup = () => {
   }, [tabInfo])
 
   React.useEffect(() => {
-    chrome.runtime.onMessage.addListener(
-      async (message, sender, sendResponse) => {
-        const tabId = sender?.tab?.id
-        if (!tabId || !sender?.tab?.active) {
-          sendResponse()
-          return
-        }
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      const tabId = sender?.tab?.id
 
-        // TODO: verify tabInfo.id matches sender.tab.id?
-
-        switch (message.type) {
-          case 'tabBlockInfo':
-            setNumBlockedItems(message.numBlockedItems)
-            setNumBlockedLinks(message.numBlockedLinks)
-            break
-          case 'event:stopIsAddingLinkBlock':
-            setIsAddingLinkBlock(false)
-            break
-        }
-
+      // TODO: should we also verify tabInfo.id matches sender.tab.id?
+      if (!tabId || !sender?.tab?.active) {
         sendResponse()
-        return true
+        return
       }
-    )
+
+      switch (message.type) {
+        case 'tabBlockInfo':
+          setNumBlockedItems(message.numBlockedItems)
+          setNumBlockedLinks(message.numBlockedLinks)
+          break
+        case 'event:stopIsAddingLinkBlock':
+          setIsAddingLinkBlock(false)
+          break
+      }
+
+      sendResponse()
+    })
   }, [])
 
   // ensure local state stays in sync with storage

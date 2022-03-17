@@ -400,6 +400,7 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
       break
     case 'event:updateIsAddingLinkBlock':
       updateIsAddingLinkBlock(!!message.isAddingLinkBlock)
+      sendResponse()
       break
   }
 })
