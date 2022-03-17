@@ -37,13 +37,11 @@ When blocking individual restaurants and menu items, they will be blurred out on
 
 ## Which services does it support?
 
-**Currently only a few sites have undergone thorough testing, but more robust support for the others on this list will come soon.**
-
 - [x] postmates
 - [x] amazon
 - [x] grubhub
 - [x] seamless
-- [ ] doordash
+- [x] doordash
 - [ ] uber eats
 - [ ] caviar
 - [ ] delivery.com
@@ -72,7 +70,10 @@ This project is a WIP and lacks some polish and features.
 - [x] add support for pausing / resuming
 - [x] add support for any site
 - [x] inject content script dynamically
-- [ ] test on other sites
+- [x] make link selection and blocking logic robust across sites
+- [ ] more cross-site testing
+- [ ] handle redirects
+  - example: `https://www.doordash.com/store/942804` gets expanded to `https://www.doordash.com/store/country-house-diner-clinton-hill-942804/`
 - [ ] add options page
 - [ ] make block page customizable
 - [ ] make block effect customizable (blur vs removal)
