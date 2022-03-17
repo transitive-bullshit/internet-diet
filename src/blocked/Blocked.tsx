@@ -5,6 +5,9 @@ import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
 
 import styles from './Blocked.module.css'
 
+// TODO: don't add link to host if isUrlBlocked
+// (requires async block engine initialization)
+
 export const Blocked = () => {
   const host = useSearchParam('host')
 
