@@ -1,7 +1,7 @@
 import normalizeUrlImpl from 'normalize-url'
 import pMap from 'p-map'
 import { EventEmitter } from 'events'
-import { getStableObjectHash } from 'utils'
+import { getStableObjectHash } from './utils'
 import { BlockRule } from './types'
 import * as log from './log'
 
