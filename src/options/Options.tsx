@@ -4,6 +4,23 @@ import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
 
 import styles from './Options.module.css'
 
+/*
+  TODO:
+    - view and edit blocked hosts
+    - view and edit block links (by host?)
+    - view and edit block items (by host?)
+    - select block effect
+    - custom block link
+
+    /sites - table of hosts
+    /sites/<hostname> - settings for a specific host
+      - block / unblock host
+      - table of blocked links
+      - list of text tags for blocked items
+    
+    => FIRST PRIORITY create a table of block links or hosts
+ */
+
 export const Options = () => {
   const onClickOpenSupportPage = React.useCallback(() => {
     chrome.tabs.create({

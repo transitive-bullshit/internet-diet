@@ -74,6 +74,7 @@ This project is a WIP and lacks some polish and features.
 - [x] fix popup confirmation modal overflow
 - [x] inject content script dynamically
 - [x] make link selection and blocking logic robust across sites
+- [ ] resolve diference between handling of links vs items
 - [ ] more cross-site testing
 - [ ] handle redirects
   - ex: `https://www.doordash.com/store/942804` gets expanded to `https://www.doordash.com/store/country-house-diner-clinton-hill-942804/`
