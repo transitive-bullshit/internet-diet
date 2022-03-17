@@ -153,12 +153,8 @@
   opacity: 0.5;
 }
 
-.ban,
-.ban2 {
+.ban {
   font-weight: 600;
   color: #e40e0b;
-}
-
-.ban2 {
   word-break: break-all;
 }
