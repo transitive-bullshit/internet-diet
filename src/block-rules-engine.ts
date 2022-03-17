@@ -1,10 +1,11 @@
 import normalizeUrlImpl from 'normalize-url'
-import stableStringify from 'fast-json-stable-stringify'
 import pMap from 'p-map'
-import { sha256 } from 'crypto-hash'
 import { EventEmitter } from 'events'
+import { getStableObjectHash } from 'utils'
 import { BlockRule } from './types'
 import * as log from './log'
+
+// TODO: cache _blockRulesByHostname map on every update
 
 export declare interface BlockRulesEngine {
   on(event: 'update', listener: (name: string) => void): this
@@ -36,15 +37,21 @@ export class BlockRulesEngine extends EventEmitter {
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area !== 'sync') return
 
+      let isUpdated = false
+
       if (changes.blockRules) {
+        isUpdated = true
         this._blockRules = changes.blockRules.newValue
         log.info('blockRules', this._blockRules)
-        this.emit('update')
       }
 
       if (changes.isPaused) {
+        isUpdated = true
         this._isPaused = changes.isPaused.newValue
         log.info('isPaused', this._isPaused)
+      }
+
+      if (isUpdated) {
         this.emit('update')
       }
     })
@@ -56,6 +63,21 @@ export class BlockRulesEngine extends EventEmitter {
 
   get isPaused(): boolean {
     return this._isPaused
+  }
+
+  get blockRules(): readonly BlockRule[] {
+    return this._blockRules as readonly BlockRule[]
+  }
+
+  /** get all of the affected hostnames in a unique, non-empty, sorted array */
+  getHostnames(): string[] {
+    return Array.from(this.getHostnamesAsSet()).sort()
+  }
+
+  getHostnamesAsSet(): Set<string> {
+    return new Set(
+      this._blockRules.map((blockRule) => blockRule.hostname).filter(Boolean)
+    )
   }
 
   async addBlockLinkRule({ hostname, url }: { hostname: string; url: string }) {
@@ -221,15 +243,9 @@ export class BlockRulesEngine extends EventEmitter {
 export async function dedupeBlockRules(
   blockRules: BlockRule[]
 ): Promise<BlockRule[]> {
-  // stable JSON hashing
-  function getHash(input: object): Promise<string> {
-    const text = stableStringify(input)
-    return sha256(text)
-  }
-
   const hashEntries = await pMap(
     blockRules,
-    async (blockRule) => [await getHash(blockRule), blockRule],
+    async (blockRule) => [await getStableObjectHash(blockRule), blockRule],
     {
       concurrency: 8
     }

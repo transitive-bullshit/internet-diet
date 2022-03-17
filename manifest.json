@@ -5,18 +5,11 @@
   "minimum_chrome_version": "88",
   "description": "Remove unhealthy foods from the web.",
   "homepage_url": "https://github.com/transitive-bullshit/internet-diet",
-  "permissions": ["storage", "tabs"],
+  "permissions": ["storage", "tabs", "scripting"],
+  "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "./background.js"
   },
-  "content_scripts": [
-    {
-      "matches": ["*://*.postmates.com/*", "*://*.amazon.com/*"],
-      "js": ["./content.js"],
-      "css": ["./content.css"],
-      "run_at": "document_start"
-    }
-  ],
   "web_accessible_resources": [
     {
       "resources": ["blocked.html", "toast.js"],

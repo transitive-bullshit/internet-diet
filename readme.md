@@ -70,8 +70,8 @@ This project is a WIP and lacks UI / polish / etc.
 - [x] add linting
 - [x] add confirmation dialogs for blocking pages and sites
 - [x] add support for pausing / resuming
-- [ ] add support for any site
-  - [ ] inject content script dynamically (using declarative content?)
+- [x] add support for any site
+- [x] inject content script dynamically
 - [ ] add options page
 - [ ] make block page customizable
 - [ ] make block effect customizable (blur vs removal)

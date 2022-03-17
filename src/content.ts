@@ -3,10 +3,36 @@ import debounce from 'lodash.debounce'
 import throttle from 'lodash.throttle'
 import type toast from 'react-hot-toast'
 import { BlockRulesEngine, normalizeUrl } from './block-rules-engine'
+import {
+  contentScriptID,
+  blockedNodeClassName,
+  selectedNodeClassName
+} from 'definitions'
 import * as log from './log'
 
-const blockedNodeClassName = 'internet-diet-blocked'
-const selectedNodeClassName = 'internet-diet-selected'
+// Make injecting this content script idempotent in case multiple copies are injected.
+//
+// When the extension's action is triggered, the popup JS will attempt to send a
+// message to the currently active tab's content script. If it doesn't get a response
+// within a brief period of time, it will inject the content script into that page.
+//
+// Most of the time, this check works as intended, but this guard exists just in case
+// it fails, in which case multiple copies of the content script are injected. This
+// edge case has been manually tested to work fine since duplicate scripts bail out
+// with this guard (by throwing an error), but it is not a very clean solution.
+//
+// The reason we're going with this approach, however, is to only inject the content
+// script into pages that either have active blocking rules or where the user has
+// manually invoked the extension's page action. In other words, we are trying to
+// dynamically inject our content script into as few tabs as possible instead of
+// statically injecting it into every tab.
+if ((window as any)[contentScriptID]) {
+  log.info('content script duplicate', contentScriptID)
+  throw new Error(`duplicate ${contentScriptID}`)
+} else {
+  log.info('content script', contentScriptID)
+  ;(window as any)[contentScriptID] = true
+}
 
 const blockRulesEngine = new BlockRulesEngine()
 let observer: MutationObserver | null = null
@@ -364,8 +390,11 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
       update()
       sendResponse()
       break
-    case 'tabBlockInfoQuery':
+    case 'query:tabBlockInfo':
       sendResponse(tabBlockInfo)
+      break
+    case 'query:contentScriptID':
+      sendResponse(contentScriptID)
       break
     case 'event:updateIsAddingLinkBlock':
       updateIsAddingLinkBlock(!!message.isAddingLinkBlock)

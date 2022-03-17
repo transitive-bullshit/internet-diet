@@ -152,7 +152,7 @@ export const Popup = () => {
     chrome.tabs.sendMessage(
       tabInfo.id,
       {
-        type: 'tabBlockInfoQuery'
+        type: 'query:tabBlockInfo'
       },
       (response) => {
         setNumBlockedItems(response.numBlockedItems)
