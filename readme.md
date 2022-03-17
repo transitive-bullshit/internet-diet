@@ -37,18 +37,20 @@ When blocking individual restaurants and menu items, they will be blurred out on
 
 ## Which services does it support?
 
+The extension is designed to work on any website where you want to restrict access to certain URL patterns and HTML elements containing keywords.
+
+With that being said, it has been thoroughly tested on the following services:
+
 - [x] postmates
 - [x] amazon
 - [x] grubhub
 - [x] seamless
+- [x] uber eats
 - [x] doordash
-- [ ] uber eats
-- [ ] caviar
+- [x] caviar
+- [x] instacart
 - [ ] delivery.com
-- [ ] instacart
-- [ ] etc.
-
-The extension is designed to work on any website where you want to restrict access to certain URL patterns and HTML elements containing keywords.
+  - TODO: not working; seems like a bug with link selection
 
 ## TODO
 
@@ -68,17 +70,22 @@ This project is a WIP and lacks some polish and features.
 - [x] add linting
 - [x] add confirmation dialogs for blocking pages and sites
 - [x] add support for pausing / resuming
-- [x] add support for any site
+- [x] add support for all websites
+- [x] fix popup confirmation modal overflow
 - [x] inject content script dynamically
 - [x] make link selection and blocking logic robust across sites
 - [ ] more cross-site testing
 - [ ] handle redirects
-  - example: `https://www.doordash.com/store/942804` gets expanded to `https://www.doordash.com/store/country-house-diner-clinton-hill-942804/`
+  - ex: `https://www.doordash.com/store/942804` gets expanded to `https://www.doordash.com/store/country-house-diner-clinton-hill-942804/`
+  - popup isn't aware of the change
+  - references to one don't block references to the other
+  - doordash and caviar both have the same build
 - [ ] add options page
 - [ ] make block page customizable
 - [ ] make block effect customizable (blur vs removal)
 - [ ] add inline tooltip on blocked items for context and pausing
 - [ ] add examples
+- [ ] linkify hostname in popup
 - [ ] publish to chrome store
 - [ ] add hotkey command for blocking a link
 - [ ] add context menu integration

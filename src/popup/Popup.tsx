@@ -458,7 +458,7 @@ export const Popup = () => {
         onConfirm={onClickBlockCurrentHost}
       >
         Are you sure you want to block all of{' '}
-        <span className={styles.ban}>{tabInfo?.hostname}</span>?
+        <span className={styles.ban2}>{tabInfo?.hostname}</span>?
       </ConfirmModal>
 
       <ConfirmModal
@@ -468,7 +468,7 @@ export const Popup = () => {
         onConfirm={onClickBlockCurrentPage}
       >
         Are you sure you want to block this page{' '}
-        <span className={styles.ban}>{tabInfo?.normalizedUrl}</span>?
+        <span className={styles.ban2}>{tabInfo?.normalizedUrl}</span>?
       </ConfirmModal>
     </>
   )
