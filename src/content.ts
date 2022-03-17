@@ -7,7 +7,6 @@ import * as log from './log'
 
 const blockedNodeClassName = 'internet-diet-blocked'
 const selectedNodeClassName = 'internet-diet-selected'
-const stylesNodeId = 'internet-diet-styles-0'
 
 const blockRulesEngine = new BlockRulesEngine()
 let observer: MutationObserver | null = null
@@ -326,56 +325,13 @@ function updateIsAddingLinkBlock(isAddingLinkBlockUpdate: boolean) {
   }
 }
 
-function addStyles(css: string) {
-  clearStyles()
-  const style = document.createElement('style')
-  style.id = stylesNodeId
-  style.textContent = css
-  document.head?.appendChild(style)
-}
-
-function clearStyles() {
-  const stylesNode = document.getElementById(stylesNodeId)
-  stylesNode?.parentNode?.removeChild(stylesNode)
-}
-
-function initStyles() {
-  if (!document.head) {
-    // styles need to be loaded asap (before `DOMContentLoaded`), so we initialize
-    // them separately from everything else
-    setTimeout(initStyles, 0)
-    return
-  }
-
-  // note: using "pointer-events: none" for the selected class messes up the mouseover and
-  // mouseout events, so we're not using them here
-  const css = `
-.${selectedNodeClassName} {
-  background: repeating-linear-gradient(135deg, rgba(225, 225, 226, 0.3), rgba(229, 229, 229, 0.3) 10px, rgba(173, 173, 173, 0.3) 10px, rgba(172, 172, 172, 0.3) 20px);
-  box-shadow: inset 0px 0px 0px 1px #d7d7d7;
-  cursor: pointer;
-}
-
-.${selectedNodeClassName} img {
-  filter: blur(16px);
-}
-
-.${blockedNodeClassName} {
-  pointer-events: none !important;
-  user-select: none !important;
-  filter: blur(16px) !important;
-}
-`
-  addStyles(css)
-}
-
 async function initReact() {
   try {
     // All react-related features used by the content script are imported dynamically
     // via a separate entry bundle. This keeps the core content bundle small and
-    // allows us to only load the react features once the initial DOM has been
-    // loaded. This is important because many react libraries assume that important
-    // DOM nodes like `document.head` and `document.body` exist.
+    // allows us to only load the react features once the initial DOM has been loaded.
+    // This is also important because some of the react libraries we're using assume
+    // that important DOM nodes like `document.head` and `document.body` always exist.
     await import(/*webpackIgnore: true*/ chrome.runtime.getURL('toast.js'))
   } catch (err) {
     console.info('toast load error', err)
@@ -418,7 +374,6 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
 })
 
 init()
-initStyles()
 update()
 window.addEventListener('load', update)
 blockRulesEngine.on('update', update)

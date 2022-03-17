@@ -61,6 +61,7 @@ const config: Configuration = {
     new CleanWebpackPlugin(),
     new CopyWebpackPlugin({
       patterns: [
+        'src/content.css',
         resolvePackage('webextension-polyfill'),
         {
           from: 'assets',

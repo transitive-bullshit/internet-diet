@@ -371,23 +371,42 @@ export const Popup = () => {
 
           <div className={styles.row}>
             <button
-              aria-label='Pause blocking'
-              className={cs(styles.toggle, !isPaused && styles.active)}
-              onClick={onClickToggleIsPaused}
+              aria-label='Add link to block'
+              className={cs(
+                styles.toggle,
+                isAddingLinkBlock && styles.active,
+                !isBlockPageEnabled && styles.disabled
+              )}
+              onClick={isBlockPageEnabled ? onClickToggleAddLinkBlock : noop}
+              disabled={!isBlockPageEnabled}
             >
-              {isPaused ? (
+              {isAddingLinkBlock && isBlockPageEnabled ? (
                 <>
-                  Unpause blocking <FaPlay />
+                  Select link on page to block <FaUnlink />
                 </>
               ) : (
                 <>
-                  Pause blocking <FaPause />
+                  Block a link on this page <FaUnlink />
                 </>
               )}
             </button>
           </div>
 
-          <div className={styles.spacer} />
+          <div className={styles.row}>
+            <button
+              aria-label='Block this page'
+              className={cs(
+                styles.toggle,
+                !isBlockPageEnabled && styles.disabled
+              )}
+              onClick={
+                isBlockPageEnabled ? onClickOpenBlockPageConfirmModal : noop
+              }
+              disabled={!isBlockPageEnabled}
+            >
+              Block this page <FaUnlink />
+            </button>
+          </div>
 
           <div className={styles.row}>
             <button
@@ -413,40 +432,21 @@ export const Popup = () => {
             </button>
           </div>
 
-          <div className={styles.row}>
-            <button
-              aria-label='Block this page'
-              className={cs(
-                styles.toggle,
-                !isBlockPageEnabled && styles.disabled
-              )}
-              onClick={
-                isBlockPageEnabled ? onClickOpenBlockPageConfirmModal : noop
-              }
-              disabled={!isBlockPageEnabled}
-            >
-              Block this page <FaUnlink />
-            </button>
-          </div>
+          <div className={styles.spacer} />
 
           <div className={styles.row}>
             <button
-              aria-label='Add link to block'
-              className={cs(
-                styles.toggle,
-                isAddingLinkBlock && styles.active,
-                !isBlockPageEnabled && styles.disabled
-              )}
-              onClick={isBlockPageEnabled ? onClickToggleAddLinkBlock : noop}
-              disabled={!isBlockPageEnabled}
+              aria-label='Pause blocking'
+              className={cs(styles.toggle, !isPaused && styles.active)}
+              onClick={onClickToggleIsPaused}
             >
-              {isAddingLinkBlock && isBlockPageEnabled ? (
+              {isPaused ? (
                 <>
-                  Select link on page to block <FaUnlink />
+                  Unpause blocking <FaPlay />
                 </>
               ) : (
                 <>
-                  Block a link on this page <FaUnlink />
+                  Pause blocking <FaPause />
                 </>
               )}
             </button>

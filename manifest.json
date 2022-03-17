@@ -13,6 +13,7 @@
     {
       "matches": ["*://*.postmates.com/*", "*://*.amazon.com/*"],
       "js": ["./content.js"],
+      "css": ["./content.css"],
       "run_at": "document_start"
     }
   ],

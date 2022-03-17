@@ -70,13 +70,19 @@ This project is a WIP and lacks UI / polish / etc.
 - [x] add linting
 - [x] add confirmation dialogs for blocking pages and sites
 - [x] add support for pausing / resuming
-- [ ] add options page
-- [ ] make block page customizable
-- [ ] add inline tooltip on blocked items for context and pausing
 - [ ] add support for any site
   - [ ] inject content script dynamically (using declarative content?)
+- [ ] add options page
+- [ ] make block page customizable
+- [ ] make block effect customizable (blur vs removal)
+- [ ] add inline tooltip on blocked items for context and pausing
 - [ ] test on other sites
 - [ ] add examples
+- [ ] publish to chrome store
+- [ ] add hotkey command for blocking a link
+- [ ] add context menu integration
+- [ ] add support for firefox
+- [ ] add support for safari
 
 ## Development
 
