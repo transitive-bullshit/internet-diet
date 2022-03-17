@@ -50,7 +50,7 @@ With that being said, it has been thoroughly tested on the following services:
 - [x] caviar
 - [x] instacart
 - [ ] delivery.com
-  - TODO: not working; seems like a bug with link selection
+  - TODO: seems to have a bug with link selection
 
 ## TODO
 
