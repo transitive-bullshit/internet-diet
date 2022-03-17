@@ -155,15 +155,15 @@ const updateHiddenBlockedLinksAndItems = throttle(
 
 function update() {
   if (!blockRulesEngine.isBlockingEnabledForHost(document.location)) {
-    log.info('update blocking disabled for host', document.location.hostname)
+    log.info('disabled for host', document.location.hostname)
     return
   } else if (blockRulesEngine.isUrlBlocked(document.location)) {
-    log.info('update page is blocked', document.location.hostname)
+    log.info('page blocked', document.location.hostname)
     const url = new URL(chrome.runtime.getURL('blocked.html'))
     url.searchParams.set('host', document.location.hostname)
     document.location.href = url.toString()
+    return
   } else {
-    log.info('update page is not blocked', document.location.hostname)
     if (!document.body) {
       setTimeout(update, 0)
       return
@@ -327,11 +327,6 @@ function clearStyles() {
 }
 
 function initStyles() {
-  if (!document.head) {
-    window.addEventListener('DOMContentLoaded', initStyles)
-    return
-  }
-
   // note: using "pointer-events: none" for the active class messes up the mouseover and
   // mouseout events, so we're not using them here
   const css = `
@@ -350,11 +345,6 @@ function initStyles() {
 }
 
 async function initReact() {
-  if (!document.body) {
-    window.addEventListener('DOMContentLoaded', initReact)
-    return
-  }
-
   try {
     // All react-related features used by the content script are imported dynamically
     // via a separate entry bundle. This keeps the core content bundle small and
@@ -386,8 +376,24 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
   }
 })
 
+function init() {
+  if (!document.head || !document.body) {
+    window.addEventListener('DOMContentLoaded', init)
+    return
+  }
+
+  update()
+  initStyles()
+  initReact()
+
+  document.body.addEventListener('keydown', (e) => {
+    if (e.key == 'Escape') {
+      updateIsAddingLinkBlock(false)
+    }
+  })
+}
+
+init()
 update()
-initStyles()
-initReact()
 window.addEventListener('load', update)
 blockRulesEngine.on('update', update)
