@@ -1,11 +1,14 @@
 import normalizeUrlImpl from 'normalize-url'
 import pMap from 'p-map'
 import { EventEmitter } from 'events'
+import { nanoid } from 'nanoid'
+
 import { getStableObjectHash } from './utils'
 import { BlockRule } from './types'
 import * as log from './log'
 
 // TODO: cache _blockRulesByHostname map on every update
+// TODO: memoize normalizeUrl
 
 export declare interface BlockRulesEngine {
   on(event: 'update', listener: (name: string) => void): this
@@ -104,21 +107,21 @@ export class BlockRulesEngine extends EventEmitter {
     })
   }
 
-  async addBlockRule(blockRule: BlockRule) {
+  async addBlockRule(blockRule: Partial<BlockRule>) {
     log.info('addBlockRule', blockRule)
     await this.isReady
 
-    this._blockRules.push(blockRule)
+    this._blockRules.push(resolveBlockRule(blockRule))
     this._blockRules = await dedupeBlockRules(this._blockRules)
 
     return chrome.storage.sync.set({ blockRules: this._blockRules })
   }
 
-  async addBlockRules(blockRules: BlockRule[]) {
+  async addBlockRules(blockRules: Partial<BlockRule>[]) {
     log.info('addBlockRules', blockRules)
     await this.isReady
 
-    this._blockRules = this._blockRules.concat(blockRules)
+    this._blockRules = this._blockRules.concat(blockRules.map(resolveBlockRule))
     this._blockRules = await dedupeBlockRules(this._blockRules)
 
     return chrome.storage.sync.set({ blockRules: this._blockRules })
@@ -240,12 +243,35 @@ export class BlockRulesEngine extends EventEmitter {
   }
 }
 
+export function resolveBlockRule(blockRule: Partial<BlockRule>): BlockRule {
+  if (!blockRule.id) {
+    blockRule.id = nanoid()
+  }
+
+  if (!blockRule.createdAt) {
+    blockRule.createdAt = new Date().toISOString()
+  }
+
+  return blockRule as BlockRule
+}
+
+export function resolveBlockRules(
+  blockRules: Partial<BlockRule>[]
+): BlockRule[] {
+  return blockRules.map(resolveBlockRule)
+}
+
 export async function dedupeBlockRules(
   blockRules: BlockRule[]
 ): Promise<BlockRule[]> {
   const hashEntries = await pMap(
     blockRules,
-    async (blockRule) => [await getStableObjectHash(blockRule), blockRule],
+    async (blockRule) => [
+      await getStableObjectHash(blockRule, {
+        omit: ['id', 'createdAt']
+      }),
+      blockRule
+    ],
     {
       concurrency: 8
     }

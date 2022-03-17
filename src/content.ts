@@ -59,6 +59,8 @@ function hideBlockedLinks() {
 
   for (const link of links) {
     if (blockRulesEngine.isUrlBlockedAsString(link.href)) {
+      // TODO: should getBestLinkBlockCandidate take the original link / href into account?
+      // (not sure it matters, but might be a good way to force using that normalizedUrl)
       const candidate = getBestLinkBlockCandidate(link)
       const element = candidate?.element || getClosestLinkBlockCandidate(link)
       if (hideElement(element)) {

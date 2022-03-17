@@ -1,6 +1,10 @@
 import test from 'ava'
 
-import { normalizeUrl, dedupeBlockRules } from './block-rules-engine'
+import {
+  normalizeUrl,
+  dedupeBlockRules,
+  resolveBlockRules
+} from './block-rules-engine'
 import { defaultBlockRules } from './default-block-rules'
 
 test('normalizeUrl invalid', (t) => {
@@ -30,15 +34,17 @@ test('normalizeUrl valid', (t) => {
 })
 
 test('dedupeBlockRules no-op', async (t) => {
-  const dedupedBlockRules = await dedupeBlockRules(defaultBlockRules)
+  const dedupedBlockRules = await dedupeBlockRules(
+    resolveBlockRules(defaultBlockRules)
+  )
   t.is(dedupedBlockRules.length, defaultBlockRules.length)
-  t.snapshot(dedupedBlockRules)
 })
 
 test('dedupeBlockRules dedupe', async (t) => {
   const dedupedBlockRules = await dedupeBlockRules(
-    defaultBlockRules.concat(defaultBlockRules)
+    resolveBlockRules(defaultBlockRules).concat(
+      resolveBlockRules(defaultBlockRules)
+    )
   )
   t.is(dedupedBlockRules.length, defaultBlockRules.length)
-  t.snapshot(dedupedBlockRules)
 })

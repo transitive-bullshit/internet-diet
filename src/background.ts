@@ -78,6 +78,16 @@ async function updateRegisteredContentScripts() {
     console.log('updateRegisteredContentScripts deduped', cachedHostnamesHash)
     return
   }
+  await (chrome.scripting as any).unregisterContentScripts()
+
+  if (!hostnames.length) {
+    // we can't register a content script with an empty array of matches,
+    // so just leave the content scripts as unregistered until we have
+    // some block rules to enforce
+    console.log('updateRegisteredContentScripts empty hosts', hostnamesHash)
+    cachedHostnamesHash = hostnamesHash
+    return
+  }
 
   const script = {
     id: contentScriptID,
@@ -96,7 +106,6 @@ async function updateRegisteredContentScripts() {
     script,
     hostnamesHash
   )
-  await (chrome.scripting as any).unregisterContentScripts()
   await (chrome.scripting as any).registerContentScripts([script])
   cachedHostnamesHash = hostnamesHash
 }

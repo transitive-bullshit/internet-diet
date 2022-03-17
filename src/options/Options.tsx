@@ -2,6 +2,10 @@ import React from 'react'
 import { FaCog } from '@react-icons/all-files/fa/FaCog'
 import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
 
+import { BlockRulesEngine } from 'block-rules-engine'
+import { BlockRulesTable } from 'components/BlockRulesTable/BlockRulesTable'
+import { BlockRule } from 'types'
+
 import styles from './Options.module.css'
 
 /*
@@ -22,6 +26,9 @@ import styles from './Options.module.css'
  */
 
 export const Options = () => {
+  const [blockRulesEngine, setBlockRulesEngine] =
+    React.useState<BlockRulesEngine>()
+
   const onClickOpenSupportPage = React.useCallback(() => {
     chrome.tabs.create({
       url: 'https://github.com/transitive-bullshit/internet-diet'
@@ -32,6 +39,18 @@ export const Options = () => {
     chrome.runtime.openOptionsPage()
   }, [])
 
+  React.useEffect(() => {
+    ;async () => {
+      const engine = new BlockRulesEngine()
+      await engine.isReady
+      setBlockRulesEngine(engine)
+    }
+  }, [])
+
+  const filter = React.useCallback((blockRule: BlockRule) => {
+    return blockRule.type === 'pathname'
+  }, [])
+
   return (
     <div className={styles.container}>
       <div className={styles.header} />
@@ -39,7 +58,14 @@ export const Options = () => {
       <div className={styles.body}>
         <h1>Settings</h1>
 
-        <p>TODO</p>
+        <div className={styles.content}>
+          {blockRulesEngine && (
+            <BlockRulesTable
+              blockRulesEngine={blockRulesEngine}
+              filter={filter}
+            />
+          )}
+        </div>
 
         <div className={styles.options}>
           <button
