@@ -295,7 +295,7 @@ const updateHiddenBlockedLinksAndItems = throttle(
   }
 )
 
-function update() {
+async function update() {
   if (blockRulesEngine.isPaused) {
     for (const element of select.all(`.${blockedNodeClassName}`)) {
       element.classList.remove(blockedNodeClassName)
@@ -313,6 +313,8 @@ function update() {
 
     return
   }
+
+  await blockRulesEngine.isReady
 
   if (!blockRulesEngine.isBlockingEnabledForHost(document.location)) {
     log.info('disabled for host', document.location.hostname)

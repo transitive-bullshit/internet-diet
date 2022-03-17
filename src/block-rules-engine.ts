@@ -13,8 +13,8 @@ export declare interface BlockRulesEngine {
 }
 
 export class BlockRulesEngine extends EventEmitter {
-  _isPaused = false
   _blockRules: BlockRule[] = []
+  _isPaused = false
   _isReadyP: Promise<void>
 
   constructor() {
