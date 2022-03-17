@@ -16,6 +16,12 @@ async function main() {
     active: true
   })
 
+  const isTabPrivate = !!activeTab?.url?.startsWith('chrome')
+  if (isTabPrivate) {
+    // ignore internal chrome:// and chrome-extension:// pages
+    return
+  }
+
   if (activeTab?.id) {
     const tabId = activeTab.id
 

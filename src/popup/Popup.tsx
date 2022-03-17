@@ -155,6 +155,11 @@ export const Popup = () => {
         type: 'query:tabBlockInfo'
       },
       (response) => {
+        if (!response) {
+          // there was likely a problem injecting the content script
+          return
+        }
+
         setNumBlockedItems(response.numBlockedItems)
         setNumBlockedLinks(response.numBlockedLinks)
       }
