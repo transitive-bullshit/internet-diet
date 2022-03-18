@@ -3,11 +3,13 @@ import test from 'ava'
 import { dedupeBlockRules, resolveBlockRules } from './block-rules-engine'
 import { defaultBlockRules } from './default-block-rules'
 
+// NOTE: we can't snapshot dedupedBlockRules because their `id` and
+// `createdAt` fields will be different every time
+
 test('dedupeBlockRules no-op', async (t) => {
   const rules = JSON.parse(JSON.stringify(defaultBlockRules))
   const dedupedBlockRules = await dedupeBlockRules(resolveBlockRules(rules))
   t.is(dedupedBlockRules.length, rules.length)
-  t.snapshot(dedupedBlockRules)
 })
 
 test('dedupeBlockRules dedupe', async (t) => {
@@ -17,5 +19,4 @@ test('dedupeBlockRules dedupe', async (t) => {
     resolveBlockRules(rules0).concat(resolveBlockRules(rules1))
   )
   t.is(dedupedBlockRules.length, defaultBlockRules.length)
-  t.snapshot(dedupedBlockRules)
 })
