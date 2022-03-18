@@ -143,7 +143,6 @@ export const BlockRulesTable: React.FC<{
             <Space size='middle'>
               <Button
                 danger
-                type='primary'
                 shape='round'
                 onClick={() => onClickRemoveBlockRule(blockRule)}
               >

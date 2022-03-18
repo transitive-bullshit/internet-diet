@@ -19,7 +19,7 @@ export class StatsStore extends EventEmitter {
       .get(['stats'])
       .then(({ stats }) => {
         this._stats = resolveStats(stats)
-        log.info('stats init', this._stats)
+        log.debug('stats init', this._stats)
         this.emit('update')
       })
       .catch((err) => {
@@ -32,7 +32,7 @@ export class StatsStore extends EventEmitter {
 
       if (changes.stats) {
         this._stats = resolveStats(changes.stats.newValue)
-        log.info('stats update', this._stats)
+        log.debug('stats update', this._stats)
         this.emit('update')
       }
     })
@@ -57,11 +57,11 @@ export class StatsStore extends EventEmitter {
     const oldStatsHash = await getStableObjectHash(this._stats)
     const newStatsHash = await getStableObjectHash(newStats)
     if (oldStatsHash === newStatsHash) {
-      log.info('updateStats dedupe', newStats, this._stats)
+      log.debug('updateStats dedupe', newStats, this._stats)
       return
     } else {
       this._stats = newStats
-      log.info('updateStats', this._stats)
+      log.debug('updateStats', this._stats)
       return chrome.storage.sync.set({ stats: this._stats })
     }
   }

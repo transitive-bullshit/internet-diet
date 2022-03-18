@@ -296,7 +296,7 @@ export const Popup = () => {
             rel='noopener noreferrer'
           >
             <img src='/assets/icon@128.png' />
-            <span>Internet Diet</span>
+            <h3 className={styles.title}>Internet Diet</h3>
           </a>
 
           <div className={styles.options}>
@@ -454,7 +454,9 @@ export const Popup = () => {
 
           <div className={styles.row}>
             <button
-              aria-label='Pause blocking'
+              aria-label={
+                settings?.isPaused ? 'Resume blocking' : 'Pause blocking'
+              }
               className={cs(
                 styles.toggle,
                 !settings?.isPaused && styles.active
@@ -463,7 +465,7 @@ export const Popup = () => {
             >
               {settings?.isPaused ? (
                 <>
-                  Unpause blocking <FaPlay />
+                  Resume blocking <FaPlay />
                 </>
               ) : (
                 <>

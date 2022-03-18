@@ -26,7 +26,7 @@ export class BlockRulesEngine extends EventEmitter {
       .get(['blockRules'])
       .then(({ blockRules = [] }) => {
         this._blockRules = blockRules
-        log.info('blockRules', this._blockRules)
+        log.info('blockRules init', this._blockRules)
         this.emit('update')
       })
       .catch((err) => {
@@ -39,7 +39,7 @@ export class BlockRulesEngine extends EventEmitter {
 
       if (changes.blockRules) {
         this._blockRules = changes.blockRules.newValue
-        log.info('blockRules', this._blockRules)
+        log.info('blockRules update', this._blockRules)
         this.emit('update')
       }
     })

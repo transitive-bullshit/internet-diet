@@ -20,7 +20,7 @@ export class SettingsStore extends EventEmitter {
       .get(['settings'])
       .then(({ settings }) => {
         this._settings = resolveSettings(settings)
-        log.info('settings init', this._settings)
+        log.debug('settings init', this._settings)
         this.emit('update')
       })
       .catch((err) => {
@@ -33,7 +33,7 @@ export class SettingsStore extends EventEmitter {
 
       if (changes.settings) {
         this._settings = resolveSettings(changes.settings.newValue)
-        log.info('settings update', this._settings)
+        log.debug('settings update', this._settings)
         this.emit('update')
       }
     })
@@ -58,11 +58,11 @@ export class SettingsStore extends EventEmitter {
     const oldSettingsHash = await getStableObjectHash(this._settings)
     const newSettingsHash = await getStableObjectHash(newSettings)
     if (oldSettingsHash === newSettingsHash) {
-      log.info('updateSettings dedupe', newSettings, this._settings)
+      log.debug('updateSettings dedupe', newSettings, this._settings)
       return
     } else {
       this._settings = newSettings
-      log.info('updateSettings', this._settings)
+      log.debug('updateSettings', this._settings)
       return chrome.storage.sync.set({ settings: this._settings })
     }
   }

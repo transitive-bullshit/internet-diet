@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lusitana:wght@400;700&family=Roboto:wght@300;400;600;700&display=swap');
 
 * {
   box-sizing: border-box;
@@ -13,7 +13,8 @@ body,
 html {
   padding: 0;
   margin: 0;
-  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 300;
   font-size: 14px;
 }
 
@@ -23,4 +24,39 @@ body {
   overflow: hidden;
   padding: 12px;
   background: #f4f4f4;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Lusitana', serif;
+  font-weight: 400;
+  margin: 0.15em 0;
+}
+
+h1 {
+  font-size: 64px;
+}
+
+h2 {
+  font-size: 48px;
+}
+
+h3 {
+  font-size: 36px;
+}
+
+h3 {
+  font-size: 30px;
+}
+
+h5 {
+  font-size: 24px;
+}
+
+h6 {
+  font-size: 18px;
 }

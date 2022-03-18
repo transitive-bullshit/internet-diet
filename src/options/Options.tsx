@@ -2,7 +2,7 @@ import React from 'react'
 import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
 import { FaPlay } from '@react-icons/all-files/fa/FaPlay'
 import { FaPause } from '@react-icons/all-files/fa/FaPause'
-import { Form, Input, Select, Row, Col, Statistic, Tooltip } from 'antd'
+import { Form, Input, Select, Row, Col, Statistic, Tooltip, Button } from 'antd'
 import toast, { Toaster } from 'react-hot-toast'
 
 import { BlockRulesEngine } from 'block-rules-engine'
@@ -10,7 +10,6 @@ import { SettingsStore, getNormalizedUrl } from 'settings-store'
 import { StatsStore } from 'stats-store'
 import { BlockRulesTable } from 'components/BlockRulesTable/BlockRulesTable'
 import { Settings, Stats, BlockEffect } from 'types'
-import { cs } from 'utils'
 
 import styles from './Options.module.css'
 
@@ -230,7 +229,7 @@ export const Options = () => {
               <Form form={form} layout='horizontal' className={styles.form}>
                 <Form.Item
                   label='Custom blocked page URL'
-                  tooltip='Use this to override the page you are redirected to after visiting a blocked link.'
+                  tooltip='Override the page you are redirected to after visiting a blocked link.'
                   hasFeedback={true}
                   validateStatus={isValidCustomBlockUrl ? 'success' : 'error'}
                 >
@@ -267,28 +266,23 @@ export const Options = () => {
                         : 'Blocking is currently enabled'
                     }
                   >
-                    <button
-                      aria-label={
-                        settings?.isPaused
-                          ? 'Unpause blocking'
-                          : 'Pause blocking'
-                      }
-                      className={cs(
-                        styles.toggle,
-                        !settings?.isPaused && styles.active
-                      )}
+                    <Button
+                      block
+                      type={settings?.isPaused ? 'primary' : 'default'}
+                      danger={!settings?.isPaused}
+                      className={styles.toggle}
                       onClick={onClickToggleIsPaused}
                     >
                       {settings?.isPaused ? (
                         <>
-                          Unpause blocking <FaPlay />
+                          Resume blocking <FaPlay />
                         </>
                       ) : (
                         <>
                           Pause blocking <FaPause />
                         </>
                       )}
-                    </button>
+                    </Button>
                   </Tooltip>
                 </Form.Item>
               </Form>

@@ -33,10 +33,10 @@ import * as log from './log'
   statically injecting it into every tab.
 */
 if ((window as any)[contentScriptID]) {
-  log.info('content script duplicate', contentScriptID)
+  log.warn('loaded duplicate content script', contentScriptID)
   throw new Error(`duplicate ${contentScriptID}`)
 } else {
-  log.info('content script', contentScriptID)
+  log.debug('loaded content script', contentScriptID)
   ;(window as any)[contentScriptID] = true
 }
 
@@ -293,6 +293,8 @@ const updateHiddenBlockedLinksAndItems = throttle(
 )
 
 async function update() {
+  await Promise.all([blockRulesEngine.isReady, settingsStore.isReady])
+
   if (settingsStore.settings.isPaused) {
     if (mutationObserver) {
       mutationObserver.disconnect()
@@ -315,8 +317,6 @@ async function update() {
 
     return
   }
-
-  await Promise.all([blockRulesEngine.isReady, settingsStore.isReady])
 
   if (!blockRulesEngine.isBlockingEnabledForHost(document.location)) {
     log.info('disabled for host', document.location.hostname)

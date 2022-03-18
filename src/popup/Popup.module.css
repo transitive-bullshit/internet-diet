@@ -22,6 +22,10 @@
   margin-right: 8px;
 }
 
+.title {
+  font-size: 26px;
+}
+
 .body {
   background: #fff;
   border-radius: 4px;
