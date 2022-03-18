@@ -173,8 +173,6 @@ export const Options = () => {
 
           <div className={styles.content}>
             <section className={styles.section}>
-              <h4>Stats</h4>
-
               <Row gutter={16} justify='center' style={{ textAlign: 'center' }}>
                 <Col span={8}>
                   {stats?.numBlockedLinksTotal !== undefined && (
@@ -194,30 +192,6 @@ export const Options = () => {
                   )}
                 </Col>
               </Row>
-
-              {/* <div className={styles.stats}>
-                <div>
-                  {stats?.numBlockedLinksTotal !== undefined && (
-                    <>
-                      <span className={styles.stat}>
-                        {stats?.numBlockedLinksTotal?.toLocaleString('en-US')}
-                      </span>{' '}
-                      links blocked in total
-                    </>
-                  )}
-                </div>
-
-                <div>
-                  {stats?.numBlockedItemsTotal !== undefined && (
-                    <>
-                      <span className={styles.stat}>
-                        {stats?.numBlockedItemsTotal?.toLocaleString('en-US')}
-                      </span>{' '}
-                      items blocked in total
-                    </>
-                  )}
-                </div>
-              </div> */}
             </section>
 
             <section className={styles.section}>
