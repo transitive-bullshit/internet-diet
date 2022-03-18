@@ -1,6 +1,6 @@
 import React from 'react'
 import { format } from 'date-fns'
-import { Table, Tooltip, Space, Button, Tag } from 'antd'
+import { Table, Tooltip, Space, Button, Tag, TableColumnType } from 'antd'
 import toast from 'react-hot-toast'
 
 import type { BlockRulesEngine } from 'block-rules-engine'
@@ -42,13 +42,15 @@ export const BlockRulesTable: React.FC<{
     [blockRulesEngine]
   )
 
-  const columns = React.useMemo(
+  const columns = React.useMemo<TableColumnType<BlockRule>[]>(
     () =>
       [
         {
           title: 'Hostname',
           dataIndex: 'hostname',
           key: 'hostname',
+          sorter: (a: BlockRule, b: BlockRule) =>
+            a.hostname.localeCompare(b.hostname),
           render: (hostname: string) => {
             let url
             try {
@@ -123,6 +125,9 @@ export const BlockRulesTable: React.FC<{
           title: 'Date Added',
           dataIndex: 'createdAt',
           key: 'createdAt',
+          defaultSortOrder: 'descend' as any,
+          sorter: (a: BlockRule, b: BlockRule) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
           render: (createdAt: string) => (
             <Tooltip
               title={format(new Date(createdAt), 'MM/dd/yyyy HH:mm:ss OOOO')}
