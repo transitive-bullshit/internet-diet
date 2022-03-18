@@ -1,13 +1,9 @@
 import React from 'react'
 import { render } from 'react-dom'
-import { ChakraProvider } from '@chakra-ui/react'
 
 import { Options } from './Options'
+
+import 'antd/dist/antd.css'
 import './index.css'
 
-render(
-  <ChakraProvider>
-    <Options />
-  </ChakraProvider>,
-  document.querySelector('#root')
-)
+render(<Options />, document.querySelector('#root'))

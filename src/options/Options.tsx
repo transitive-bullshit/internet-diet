@@ -40,11 +40,17 @@ export const Options = () => {
   }, [])
 
   React.useEffect(() => {
-    ;async () => {
+    ;(async () => {
       const engine = new BlockRulesEngine()
-      await engine.isReady
+      try {
+        await engine.isReady
+      } catch (err) {
+        console.error('error initializing block rules engine', err)
+        return
+      }
+
       setBlockRulesEngine(engine)
-    }
+    })()
   }, [])
 
   const filter = React.useCallback((blockRule: BlockRule) => {
