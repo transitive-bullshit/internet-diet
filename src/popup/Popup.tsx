@@ -8,6 +8,9 @@ import { FaPause } from '@react-icons/all-files/fa/FaPause'
 
 import { ConfirmModal } from 'components/ConfirmModal/ConfirmModal'
 import { normalizeUrl } from '../block-rules-engine'
+import { SettingsStore } from '../settings-store'
+import { StatsStore } from '../stats-store'
+import { Stats, Settings } from '../types'
 import { cs } from '../utils'
 import styles from './Popup.module.css'
 
@@ -22,23 +25,22 @@ interface TabInfo {
 const noop = () => undefined
 
 export const Popup = () => {
+  const [settingsStore, setSettingsStore] = React.useState<SettingsStore>()
+  const [settings, setSettings] = React.useState<Partial<Settings>>()
+
+  const [statsStore, setStatsStore] = React.useState<StatsStore>()
+  const [stats, setStats] = React.useState<Partial<Stats>>()
+
   const [isBlockSiteConfirmModalOpen, setIsConfirmBlockSiteModalOpen] =
     React.useState(false)
   const [isBlockPageConfirmModalOpen, setIsConfirmBlockPageModalOpen] =
     React.useState(false)
   const [isAddingLinkBlock, setIsAddingLinkBlock] = React.useState(false)
-  const [isPaused, setIsPaused] = React.useState<boolean | undefined>(undefined)
   const [tabInfo, setTabInfo] = React.useState<TabInfo | null>(null)
   const [numBlockedItems, setNumBlockedItems] = React.useState<
     number | undefined
   >(undefined)
   const [numBlockedLinks, setNumBlockedLinks] = React.useState<
-    number | undefined
-  >(undefined)
-  const [numBlockedItemsTotal, setNumBlockedItemsTotal] = React.useState<
-    number | undefined
-  >(undefined)
-  const [numBlockedLinksTotal, setNumBlockedLinksTotal] = React.useState<
     number | undefined
   >(undefined)
 
@@ -73,8 +75,11 @@ export const Popup = () => {
   }, [isAddingLinkBlock])
 
   const onClickToggleIsPaused = React.useCallback(() => {
-    setIsPaused(!isPaused)
-  }, [isPaused])
+    setSettings({
+      ...settings,
+      isPaused: !settings?.isPaused
+    })
+  }, [settings])
 
   const onClickBlockCurrentPage = React.useCallback(() => {
     if (!tabInfo || !tabInfo.hostname || !tabInfo.url) {
@@ -166,6 +171,7 @@ export const Popup = () => {
     )
   }, [tabInfo])
 
+  // sync variables from current tab
   React.useEffect(() => {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const tabId = sender?.tab?.id
@@ -190,42 +196,62 @@ export const Popup = () => {
     })
   }, [])
 
-  // ensure local state stays in sync with storage
+  // initialize the settings store
   React.useEffect(() => {
-    ;(async function () {
-      // fetch initial values from storage
-      const {
-        numBlockedLinksTotal = 0,
-        numBlockedItemsTotal = 0,
-        isPaused = false
-      } = await chrome.storage.sync.get([
-        'numBlockedLinksTotal',
-        'numBlockedItemsTotal',
-        'isPaused'
-      ])
+    ;(async () => {
+      const store = new SettingsStore()
+      try {
+        await store.isReady
+      } catch (err) {
+        console.error('error initializing settings store', err)
+        return
+      }
 
-      setNumBlockedItemsTotal(numBlockedItemsTotal)
-      setNumBlockedLinksTotal(numBlockedLinksTotal)
-      setIsPaused(isPaused)
-
-      // ensure local state stays in sync with storage
-      chrome.storage.onChanged.addListener((changes, area) => {
-        if (area !== 'sync') return
-
-        if (changes.numBlockedLinksTotal) {
-          setNumBlockedLinksTotal(changes.numBlockedLinksTotal.newValue)
-        }
-
-        if (changes.numBlockedItemsTotal) {
-          setNumBlockedItemsTotal(changes.numBlockedItemsTotal.newValue)
-        }
-
-        if (changes.isPaused) {
-          setIsPaused(changes.isPaused.newValue)
-        }
-      })
+      setSettingsStore(store)
+      setSettings(store.settings)
     })()
   }, [])
+
+  // initialize the stats store
+  React.useEffect(() => {
+    ;(async () => {
+      const store = new StatsStore()
+      try {
+        await store.isReady
+      } catch (err) {
+        console.error('error initializing stats store', err)
+        return
+      }
+
+      setStatsStore(store)
+      setStats(store.stats)
+    })()
+  }, [])
+
+  // sync settings store changes to local
+  React.useEffect(() => {
+    settingsStore?.on('update', () => {
+      setSettings(settingsStore.settings)
+    })
+  }, [settingsStore])
+
+  // sync stats store changes to local
+  React.useEffect(() => {
+    statsStore?.on('update', () => {
+      setStats(statsStore.stats)
+    })
+  }, [statsStore])
+
+  // sync local settings changes to store
+  React.useEffect(() => {
+    ;(async () => {
+      if (!settings || !settingsStore) {
+        return
+      }
+
+      await settingsStore.updateSettings(settings)
+    })()
+  }, [settings, settingsStore])
 
   React.useEffect(() => {
     if (!tabInfo) {
@@ -249,25 +275,15 @@ export const Popup = () => {
     )
   }, [tabInfo, isAddingLinkBlock])
 
-  React.useEffect(() => {
-    if (isPaused === undefined) {
-      return
-    }
-
-    ;(async () => {
-      await chrome.storage.sync.set({ isPaused })
-    })()
-  }, [isPaused])
-
   const isTabPrivate = tabInfo?.url?.startsWith('chrome')
   const isBlockPageEnabled =
     tabInfo &&
     tabInfo.hostname &&
     tabInfo.normalizedUrl &&
     !isTabPrivate &&
-    !isPaused
+    !settings?.isPaused
   const isBlockHostEnabled =
-    tabInfo && tabInfo.hostname && !isTabPrivate && !isPaused
+    tabInfo && tabInfo.hostname && !isTabPrivate && !settings?.isPaused
 
   return (
     <>
@@ -329,10 +345,10 @@ export const Popup = () => {
               </div>
 
               <div>
-                {numBlockedLinksTotal !== undefined && (
+                {stats?.numBlockedLinksTotal !== undefined && (
                   <>
                     <span className={styles.stat}>
-                      {numBlockedLinksTotal.toLocaleString('en-US')}
+                      {stats?.numBlockedLinksTotal?.toLocaleString('en-US')}
                     </span>{' '}
                     in total
                   </>
@@ -357,10 +373,10 @@ export const Popup = () => {
               </div>
 
               <div>
-                {numBlockedItemsTotal !== undefined && (
+                {stats?.numBlockedItemsTotal !== undefined && (
                   <>
                     <span className={styles.stat}>
-                      {numBlockedItemsTotal.toLocaleString('en-US')}
+                      {stats?.numBlockedItemsTotal?.toLocaleString('en-US')}
                     </span>{' '}
                     in total
                   </>
@@ -439,10 +455,13 @@ export const Popup = () => {
           <div className={styles.row}>
             <button
               aria-label='Pause blocking'
-              className={cs(styles.toggle, !isPaused && styles.active)}
+              className={cs(
+                styles.toggle,
+                !settings?.isPaused && styles.active
+              )}
               onClick={onClickToggleIsPaused}
             >
-              {isPaused ? (
+              {settings?.isPaused ? (
                 <>
                   Unpause blocking <FaPlay />
                 </>

@@ -6,24 +6,22 @@ import { Toaster } from 'react-hot-toast'
 
 import { BlockRulesEngine } from 'block-rules-engine'
 import { SettingsStore, getNormalizedUrl } from 'settings-store'
+import { StatsStore } from 'stats-store'
 import { BlockRulesTable } from 'components/BlockRulesTable/BlockRulesTable'
-import { Settings, BlockEffect } from 'types'
+import { Settings, Stats, BlockEffect } from 'types'
 
 import styles from './Options.module.css'
-
-/*
-  TODO:
-    - view total stats
-    - pause / unpause
-    - add new block rules
- */
 
 export const Options = () => {
   const [form] = Form.useForm()
   const [blockRulesEngine, setBlockRulesEngine] =
     React.useState<BlockRulesEngine>()
+
   const [settingsStore, setSettingsStore] = React.useState<SettingsStore>()
   const [settings, setSettings] = React.useState<Partial<Settings>>()
+
+  const [statsStore, setStatsStore] = React.useState<StatsStore>()
+  const [stats, setStats] = React.useState<Partial<Stats>>()
 
   const onClickOpenSupportPage = React.useCallback(() => {
     chrome.tabs.create({
@@ -66,6 +64,22 @@ export const Options = () => {
     })()
   }, [])
 
+  // initialize the stats store
+  React.useEffect(() => {
+    ;(async () => {
+      const store = new StatsStore()
+      try {
+        await store.isReady
+      } catch (err) {
+        console.error('error initializing stats store', err)
+        return
+      }
+
+      setStatsStore(store)
+      setStats(store.stats)
+    })()
+  }, [])
+
   const onChangeCustomBlockUrl = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setSettings({
@@ -86,12 +100,19 @@ export const Options = () => {
     [settings]
   )
 
-  // sync store settings changes to local
+  // sync settings store changes to local
   React.useEffect(() => {
-    settingsStore?.on('updated', () => {
+    settingsStore?.on('update', () => {
       setSettings(settingsStore.settings)
     })
   }, [settingsStore])
+
+  // sync stats store changes to local
+  React.useEffect(() => {
+    statsStore?.on('update', () => {
+      setStats(statsStore.stats)
+    })
+  }, [statsStore])
 
   // sync local settings changes to store
   React.useEffect(() => {
@@ -121,7 +142,35 @@ export const Options = () => {
           <h1 className={styles.title}>Settings</h1>
 
           <div className={styles.content}>
-            <div className={styles.section}>
+            <section className={styles.section}>
+              <h4>Stats</h4>
+
+              <div className={styles.stats}>
+                <div>
+                  {stats?.numBlockedLinksTotal !== undefined && (
+                    <>
+                      <span className={styles.stat}>
+                        {stats?.numBlockedLinksTotal?.toLocaleString('en-US')}
+                      </span>{' '}
+                      links blocked in total
+                    </>
+                  )}
+                </div>
+
+                <div>
+                  {stats?.numBlockedItemsTotal !== undefined && (
+                    <>
+                      <span className={styles.stat}>
+                        {stats?.numBlockedItemsTotal?.toLocaleString('en-US')}
+                      </span>{' '}
+                      items blocked in total
+                    </>
+                  )}
+                </div>
+              </div>
+            </section>
+
+            <section className={styles.section}>
               <h4>Blocked Links</h4>
 
               {blockRulesEngine && (
@@ -130,9 +179,9 @@ export const Options = () => {
                   type='pathname'
                 />
               )}
-            </div>
+            </section>
 
-            <div className={styles.section}>
+            <section className={styles.section}>
               <h4>Blocked Hosts</h4>
 
               {blockRulesEngine && (
@@ -141,9 +190,9 @@ export const Options = () => {
                   type='host'
                 />
               )}
-            </div>
+            </section>
 
-            <div className={styles.section}>
+            <section className={styles.section}>
               <h4>Blocked Items</h4>
 
               {blockRulesEngine && (
@@ -152,9 +201,9 @@ export const Options = () => {
                   type='item'
                 />
               )}
-            </div>
+            </section>
 
-            <div className={styles.section}>
+            <section className={styles.section}>
               <h4>General Options</h4>
 
               <Form form={form} layout='horizontal' className={styles.form}>
@@ -189,7 +238,7 @@ export const Options = () => {
                   </Select>
                 </Form.Item>
               </Form>
-            </div>
+            </section>
           </div>
         </div>
 

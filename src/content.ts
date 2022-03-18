@@ -4,6 +4,7 @@ import throttle from 'lodash.throttle'
 import type toast from 'react-hot-toast'
 import { BlockRulesEngine, normalizeUrl } from './block-rules-engine'
 import { SettingsStore } from './settings-store'
+import { StatsStore } from './stats-store'
 import {
   contentScriptID,
   selectedNodeClassName,
@@ -41,8 +42,9 @@ if ((window as any)[contentScriptID]) {
 
 const blockRulesEngine = new BlockRulesEngine()
 const settingsStore = new SettingsStore()
+const statsStore = new StatsStore()
 
-let observer: MutationObserver | null = null
+let mutationObserver: MutationObserver | null = null
 let selectedElement: HTMLElement | null = null
 let selectedLink: HTMLAnchorElement | null = null
 let selectedLinkOldHref: string | null = null
@@ -248,6 +250,10 @@ function getClosestItemBlockCandidate(element: HTMLElement) {
 }
 
 async function updateHiddenBlockedLinksAndItemsForce() {
+  if (settingsStore.settings.isPaused) {
+    return
+  }
+
   log.debug('----------------')
 
   const { numBlockedLinks, numBlockedLinksFresh } = hideBlockedLinks()
@@ -268,22 +274,12 @@ async function updateHiddenBlockedLinksAndItemsForce() {
 
   log.debug('----------------')
 
-  if (numBlockedLinksFresh > 0) {
-    const { numBlockedLinksTotal = 0 } = await chrome.storage.sync.get([
-      'numBlockedLinksTotal'
-    ])
-    await chrome.storage.sync.set({
-      numBlockedLinksTotal: numBlockedLinksTotal + numBlockedLinksFresh
-    })
-  }
-
-  if (numBlockedItemsFresh > 0) {
-    const { numBlockedItemsTotal = 0 } = await chrome.storage.sync.get([
-      'numBlockedItemsTotal'
-    ])
-
-    await chrome.storage.sync.set({
-      numBlockedItemsTotal: numBlockedItemsTotal + numBlockedItemsFresh
+  if (numBlockedLinksFresh > 0 || numBlockedItemsFresh > 0) {
+    await statsStore.updateStats({
+      numBlockedItemsTotal:
+        statsStore.stats.numBlockedItemsTotal + numBlockedItemsFresh,
+      numBlockedLinksTotal:
+        statsStore.stats.numBlockedLinksTotal + numBlockedLinksFresh
     })
   }
 }
@@ -297,7 +293,12 @@ const updateHiddenBlockedLinksAndItems = throttle(
 )
 
 async function update() {
-  if (blockRulesEngine.isPaused) {
+  if (settingsStore.settings.isPaused) {
+    if (mutationObserver) {
+      mutationObserver.disconnect()
+      mutationObserver = null
+    }
+
     for (const element of select.all(`.${blockedNodeClassName}`)) {
       element.classList.remove(blockedNodeClassName)
     }
@@ -364,18 +365,18 @@ async function update() {
 
   updateHiddenBlockedLinksAndItemsForce()
 
-  if (observer) {
-    observer.disconnect()
-    observer = null
+  if (mutationObserver) {
+    mutationObserver.disconnect()
+    mutationObserver = null
   }
 
-  observer = new MutationObserver(function () {
+  mutationObserver = new MutationObserver(function () {
     // TODO: some filtering or targeting of a subtree here would be nice
     // in order to avoid unnecessary effort
     updateHiddenBlockedLinksAndItems()
   })
 
-  observer.observe(document.body, {
+  mutationObserver.observe(document.body, {
     subtree: true,
     childList: true
   })

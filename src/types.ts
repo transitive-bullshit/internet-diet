@@ -36,6 +36,12 @@ export type BlockRule =
   | BlockRuleUrl
 
 export interface Settings {
+  isPaused: boolean
   customBlockUrl: string
   blockEffect: BlockEffect
+}
+
+export interface Stats {
+  numBlockedLinksTotal: number
+  numBlockedItemsTotal: number
 }

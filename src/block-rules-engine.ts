@@ -17,19 +17,16 @@ export declare interface BlockRulesEngine {
 
 export class BlockRulesEngine extends EventEmitter {
   _blockRules: BlockRule[] = []
-  _isPaused = false
   _isReadyP: Promise<void>
 
   constructor() {
     super()
 
     this._isReadyP = chrome.storage.sync
-      .get(['blockRules', 'isPaused'])
-      .then(({ blockRules = [], isPaused = false }) => {
+      .get(['blockRules'])
+      .then(({ blockRules = [] }) => {
         this._blockRules = blockRules
-        this._isPaused = isPaused
         log.info('blockRules', this._blockRules)
-        log.info('isPaused', this._isPaused)
         this.emit('update')
       })
       .catch((err) => {
@@ -40,21 +37,9 @@ export class BlockRulesEngine extends EventEmitter {
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area !== 'sync') return
 
-      let isUpdated = false
-
       if (changes.blockRules) {
-        isUpdated = true
         this._blockRules = changes.blockRules.newValue
         log.info('blockRules', this._blockRules)
-      }
-
-      if (changes.isPaused) {
-        isUpdated = true
-        this._isPaused = changes.isPaused.newValue
-        log.info('isPaused', this._isPaused)
-      }
-
-      if (isUpdated) {
         this.emit('update')
       }
     })
@@ -62,10 +47,6 @@ export class BlockRulesEngine extends EventEmitter {
 
   get isReady(): Promise<void> {
     return this._isReadyP
-  }
-
-  get isPaused(): boolean {
-    return this._isPaused
   }
 
   get blockRules(): readonly BlockRule[] {
@@ -140,10 +121,6 @@ export class BlockRulesEngine extends EventEmitter {
   }
 
   isHostBlocked(url: URL | Location): boolean {
-    if (this.isPaused) {
-      return false
-    }
-
     for (const blockRule of this._blockRules) {
       if (blockRule.type === 'host' && url.hostname === blockRule.hostname) {
         return true
@@ -154,10 +131,6 @@ export class BlockRulesEngine extends EventEmitter {
   }
 
   isBlockingEnabledForHost(url: URL | Location): boolean {
-    if (this.isPaused) {
-      return false
-    }
-
     for (const blockRule of this._blockRules) {
       if (url.hostname === blockRule.hostname) {
         return true
@@ -168,10 +141,6 @@ export class BlockRulesEngine extends EventEmitter {
   }
 
   isUrlBlocked(url: URL | Location): boolean {
-    if (this.isPaused) {
-      return false
-    }
-
     for (const blockRule of this._blockRules) {
       if (url.hostname !== blockRule.hostname) {
         continue
@@ -215,10 +184,6 @@ export class BlockRulesEngine extends EventEmitter {
   }
 
   isItemBlocked(url: URL | Location, text: string | null | undefined): boolean {
-    if (this.isPaused) {
-      return false
-    }
-
     const sanitizedText = (text || '').toLowerCase().trim()
     if (!sanitizedText) {
       return false

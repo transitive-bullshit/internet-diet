@@ -73,8 +73,9 @@ export class SettingsStore extends EventEmitter {
   }
 }
 
-export function resolveSettings(settings: Partial<Settings> = {}): Settings {
+export function resolveSettings(settings?: Partial<Settings>): Settings {
   return {
+    isPaused: false,
     customBlockUrl: '',
     blockEffect: 'blur',
     ...settings
