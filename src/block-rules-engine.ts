@@ -303,10 +303,10 @@ export function normalizeUrl(url?: string): string {
       stripProtocol: true,
       stripHash: true,
       stripWWW: true,
-      // stripTextFragment: true,
-      normalizeProtocol: true
-      // removeQueryParameters: true,
-      // removeDirectoryIndex: true
+      stripTextFragment: true,
+      normalizeProtocol: true,
+      removeQueryParameters: true,
+      removeDirectoryIndex: true
     })
   } catch (err) {
     return ''

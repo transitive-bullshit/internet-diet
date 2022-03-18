@@ -87,6 +87,7 @@ export function getNormalizedUrl(url?: string | null): string {
   }
 
   try {
+    // normalize the URL and then make sure it is valid
     return new URL(normalizeUrl(url)).toString()
   } catch (err) {
     return ''
