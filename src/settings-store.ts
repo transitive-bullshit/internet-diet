@@ -1,3 +1,4 @@
+import normalizeUrl from 'normalize-url'
 import { EventEmitter } from 'events'
 
 import { getStableObjectHash } from './utils'
@@ -66,6 +67,10 @@ export class SettingsStore extends EventEmitter {
       return chrome.storage.sync.set({ settings: this._settings })
     }
   }
+
+  getNormalizedCustomBlockUrl(): string {
+    return getNormalizedUrl(this._settings.customBlockUrl)
+  }
 }
 
 export function resolveSettings(settings: Partial<Settings> = {}): Settings {
@@ -73,5 +78,17 @@ export function resolveSettings(settings: Partial<Settings> = {}): Settings {
     customBlockUrl: '',
     blockEffect: 'blur',
     ...settings
+  }
+}
+
+export function getNormalizedUrl(url?: string | null): string {
+  if (!url) {
+    return ''
+  }
+
+  try {
+    return new URL(normalizeUrl(url)).toString()
+  } catch (err) {
+    return ''
   }
 }

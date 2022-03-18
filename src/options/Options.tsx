@@ -4,7 +4,7 @@ import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
 import { Form, Input, Select } from 'antd'
 
 import { BlockRulesEngine } from 'block-rules-engine'
-import { SettingsStore } from 'settings-store'
+import { SettingsStore, getNormalizedUrl } from 'settings-store'
 import { BlockRulesTable } from 'components/BlockRulesTable/BlockRulesTable'
 import { Settings, BlockEffect } from 'types'
 
@@ -103,6 +103,12 @@ export const Options = () => {
     })()
   }, [settings, settingsStore])
 
+  const isValidCustomBlockUrl = React.useMemo(() => {
+    return (
+      !settings?.customBlockUrl || !!getNormalizedUrl(settings.customBlockUrl)
+    )
+  }, [settings])
+
   return (
     <div className={styles.container}>
       <div className={styles.header} />
@@ -151,6 +157,8 @@ export const Options = () => {
               <Form.Item
                 label='Custom blocked page URL'
                 tooltip='Use this to override the page you are redirected to after visiting a blocked page.'
+                hasFeedback={true}
+                validateStatus={isValidCustomBlockUrl ? 'success' : 'error'}
               >
                 <Input
                   placeholder='Default block page'

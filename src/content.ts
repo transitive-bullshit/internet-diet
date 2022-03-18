@@ -3,6 +3,7 @@ import debounce from 'lodash.debounce'
 import throttle from 'lodash.throttle'
 import type toast from 'react-hot-toast'
 import { BlockRulesEngine, normalizeUrl } from './block-rules-engine'
+import { SettingsStore } from './settings-store'
 import {
   contentScriptID,
   blockedNodeClassName,
@@ -37,6 +38,8 @@ if ((window as any)[contentScriptID]) {
 }
 
 const blockRulesEngine = new BlockRulesEngine()
+const settingsStore = new SettingsStore()
+
 let observer: MutationObserver | null = null
 let selectedElement: HTMLElement | null = null
 let selectedLink: HTMLAnchorElement | null = null
@@ -316,7 +319,7 @@ async function update() {
     return
   }
 
-  await blockRulesEngine.isReady
+  await Promise.all([blockRulesEngine.isReady, settingsStore.isReady])
 
   if (!blockRulesEngine.isBlockingEnabledForHost(document.location)) {
     log.info('disabled for host', document.location.hostname)
@@ -325,9 +328,24 @@ async function update() {
 
   if (blockRulesEngine.isUrlBlocked(document.location)) {
     log.info('page blocked', document.location.hostname)
-    const url = new URL(chrome.runtime.getURL('blocked.html'))
-    url.searchParams.set('host', document.location.hostname)
-    document.location.href = url.toString()
+    let blockedRedirectUrl = settingsStore.getNormalizedCustomBlockUrl()
+
+    if (blockedRedirectUrl) {
+      log.info('redirecting to custom block url', blockedRedirectUrl)
+    } else {
+      if (settingsStore.settings.customBlockUrl) {
+        log.warn(
+          'invalid custom block url',
+          settingsStore.settings.customBlockUrl
+        )
+      }
+
+      const url = new URL(chrome.runtime.getURL('blocked.html'))
+      url.searchParams.set('host', document.location.hostname)
+      blockedRedirectUrl = url.toString()
+    }
+
+    document.location.href = blockedRedirectUrl
     return
   }
 
@@ -530,3 +548,4 @@ init()
 update()
 window.addEventListener('load', update)
 blockRulesEngine.on('update', update)
+settingsStore.on('update', update)
