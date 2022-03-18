@@ -111,7 +111,9 @@ export const BlockRulesTable: React.FC<{
             }
 
             return (
-              <Tooltip title=''>
+              <Tooltip
+                title={`Items appearing on "${blockRule.hostname}" with the word "${item}" will be blocked.`}
+              >
                 <Tag color='blue'>{item}</Tag>
               </Tooltip>
             )
