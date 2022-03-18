@@ -85,8 +85,8 @@ This project is a WIP and lacks some polish and features.
   - [x] view / edit block rules
   - [x] make block page customizable
   - [x] make block effect customizable (blur vs removal)
-  - [ ] view total stats
-  - [ ] pause / unpause
+  - [x] view total stats
+  - [x] pause / unpause
   - [ ] add new block rules
 - [ ] add inline tooltip on blocked items for context and pausing
 - [ ] add examples

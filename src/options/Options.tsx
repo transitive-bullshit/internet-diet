@@ -1,14 +1,17 @@
 import React from 'react'
 import { FaCog } from '@react-icons/all-files/fa/FaCog'
 import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
-import { Form, Input, Select, Row, Col, Statistic } from 'antd'
-import { Toaster } from 'react-hot-toast'
+import { FaPlay } from '@react-icons/all-files/fa/FaPlay'
+import { FaPause } from '@react-icons/all-files/fa/FaPause'
+import { Form, Input, Select, Row, Col, Statistic, Tooltip } from 'antd'
+import toast, { Toaster } from 'react-hot-toast'
 
 import { BlockRulesEngine } from 'block-rules-engine'
 import { SettingsStore, getNormalizedUrl } from 'settings-store'
 import { StatsStore } from 'stats-store'
 import { BlockRulesTable } from 'components/BlockRulesTable/BlockRulesTable'
 import { Settings, Stats, BlockEffect } from 'types'
+import { cs } from 'utils'
 
 import styles from './Options.module.css'
 
@@ -22,6 +25,7 @@ export const Options = () => {
 
   const [statsStore, setStatsStore] = React.useState<StatsStore>()
   const [stats, setStats] = React.useState<Partial<Stats>>()
+  const [toastId, setToastId] = React.useState<string>()
 
   const onClickOpenSupportPage = React.useCallback(() => {
     chrome.tabs.create({
@@ -32,6 +36,32 @@ export const Options = () => {
   const onClickOpenOptionsPage = React.useCallback(() => {
     chrome.runtime.openOptionsPage()
   }, [])
+
+  const onClickToggleIsPaused = React.useCallback(() => {
+    const isPaused = !settings?.isPaused
+    setSettings({
+      ...settings,
+      isPaused: isPaused
+    })
+
+    if (toastId) {
+      toast.dismiss(toastId)
+    }
+
+    if (isPaused) {
+      setToastId(
+        toast.success('Blocking is now paused across all sites', {
+          duration: 5000
+        })
+      )
+    } else {
+      setToastId(
+        toast.success('Blocking is now enabled across all sites', {
+          duration: 5000
+        })
+      )
+    }
+  }, [settings, toastId])
 
   // initialize the block rules engine
   React.useEffect(() => {
@@ -256,6 +286,39 @@ export const Options = () => {
                       Hide blocked elements
                     </Select.Option>
                   </Select>
+                </Form.Item>
+
+                <Form.Item>
+                  <Tooltip
+                    title={
+                      settings?.isPaused
+                        ? 'Blocking is currently paused'
+                        : 'Blocking is currently enabled'
+                    }
+                  >
+                    <button
+                      aria-label={
+                        settings?.isPaused
+                          ? 'Unpause blocking'
+                          : 'Pause blocking'
+                      }
+                      className={cs(
+                        styles.toggle,
+                        !settings?.isPaused && styles.active
+                      )}
+                      onClick={onClickToggleIsPaused}
+                    >
+                      {settings?.isPaused ? (
+                        <>
+                          Unpause blocking <FaPlay />
+                        </>
+                      ) : (
+                        <>
+                          Pause blocking <FaPause />
+                        </>
+                      )}
+                    </button>
+                  </Tooltip>
                 </Form.Item>
               </Form>
             </section>

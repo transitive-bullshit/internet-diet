@@ -89,3 +89,54 @@
 .form {
   max-width: 800px;
 }
+
+.toggle {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 12px;
+  user-select: none;
+  outline: none;
+  border-radius: 8px;
+  font-size: 24px;
+  font-weight: 500;
+
+  border: 1px solid #3181ce;
+  background: #3181ce;
+  color: #fff;
+}
+
+.toggle:not(.active):hover {
+  border: 1px solid #2b6cb0;
+  background: #2b6cb0;
+}
+
+.toggle:not(.active):active {
+  border: 1px solid #2c5282;
+  background: #2c5282;
+}
+
+.toggle svg {
+  margin-left: 6px;
+}
+
+.active {
+  border: 1px solid #3181ce;
+  background: #fff;
+  color: #3181ce;
+}
+
+.active:hover {
+  border: 1px solid #2b6cb0;
+  background: #fff;
+  color: #2b6cb0;
+}
+
+.active:active {
+  border: 1px solid #2c5282;
+  background: #fff;
+  color: #2c5282;
+}
