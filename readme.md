@@ -140,9 +140,13 @@ With that being said, it has been thoroughly tested on the following services:
 
 ## Status
 
-This extension is a WIP and has not yet been launched on the Chrome extensions store. Progress towards a v1 launch is being tracked in this [issue](https://github.com/transitive-bullshit/internet-diet/issues/1).
+This extension is a WIP and has not been launched publicly on the Chrome extensions store yet.
+
+Progress towards a v1 launch is being tracked in this [issue](https://github.com/transitive-bullshit/internet-diet/issues/1).
 
 ## Development
+
+If you want to check out the repo locally, make sure you're running a recent version of Node.js.
 
 ```bash
 npm install
