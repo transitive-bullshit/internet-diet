@@ -160,7 +160,7 @@ export const Options = () => {
               <Form form={form} layout='horizontal' className={styles.form}>
                 <Form.Item
                   label='Custom blocked page URL'
-                  tooltip='Use this to override the page you are redirected to after visiting a blocked page.'
+                  tooltip='Use this to override the page you are redirected to after visiting a blocked link.'
                   hasFeedback={true}
                   validateStatus={isValidCustomBlockUrl ? 'success' : 'error'}
                 >
