@@ -358,7 +358,7 @@ export const Popup = () => {
           </div>
 
           <div className={styles.row}>
-            <div>Blocked items:</div>
+            <div>Blocked menu items:</div>
 
             <div className={styles.subRow}>
               <div>

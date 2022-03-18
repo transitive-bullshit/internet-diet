@@ -1,7 +1,7 @@
 import React from 'react'
 import { FaCog } from '@react-icons/all-files/fa/FaCog'
 import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
-import { Form, Input, Select } from 'antd'
+import { Form, Input, Select, Row, Col, Statistic } from 'antd'
 import { Toaster } from 'react-hot-toast'
 
 import { BlockRulesEngine } from 'block-rules-engine'
@@ -145,7 +145,27 @@ export const Options = () => {
             <section className={styles.section}>
               <h4>Stats</h4>
 
-              <div className={styles.stats}>
+              <Row gutter={16} justify='center' style={{ textAlign: 'center' }}>
+                <Col span={8}>
+                  {stats?.numBlockedLinksTotal !== undefined && (
+                    <Statistic
+                      title='Total Links Blocked'
+                      value={stats?.numBlockedLinksTotal}
+                    />
+                  )}
+                </Col>
+
+                <Col span={8}>
+                  {stats?.numBlockedItemsTotal !== undefined && (
+                    <Statistic
+                      title='Total Menu Items Blocked'
+                      value={stats?.numBlockedItemsTotal}
+                    />
+                  )}
+                </Col>
+              </Row>
+
+              {/* <div className={styles.stats}>
                 <div>
                   {stats?.numBlockedLinksTotal !== undefined && (
                     <>
@@ -167,7 +187,7 @@ export const Options = () => {
                     </>
                   )}
                 </div>
-              </div>
+              </div> */}
             </section>
 
             <section className={styles.section}>
@@ -193,7 +213,7 @@ export const Options = () => {
             </section>
 
             <section className={styles.section}>
-              <h4>Blocked Items</h4>
+              <h4>Blocked Menu Items</h4>
 
               {blockRulesEngine && (
                 <BlockRulesTable
