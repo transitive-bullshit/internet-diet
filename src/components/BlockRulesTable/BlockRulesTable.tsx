@@ -6,8 +6,6 @@ import toast from 'react-hot-toast'
 import type { BlockRulesEngine } from 'block-rules-engine'
 import { BlockRule, BlockRuleType } from 'types'
 
-// import styles from './BlockRuleTable.module.css'
-
 export const BlockRulesTable: React.FC<{
   blockRulesEngine: BlockRulesEngine
   type?: BlockRuleType

@@ -82,8 +82,12 @@ This project is a WIP and lacks some polish and features.
   - references to one don't block references to the other
   - doordash and caviar both have the same build
 - [x] add options page
-- [x] make block page customizable
-- [x] make block effect customizable (blur vs removal)
+  - [x] view / edit block rules
+  - [x] make block page customizable
+  - [x] make block effect customizable (blur vs removal)
+  - [ ] view total stats
+  - [ ] pause / unpause
+  - [ ] add new block rules
 - [ ] add inline tooltip on blocked items for context and pausing
 - [ ] add examples
 - [ ] linkify hostname in popup

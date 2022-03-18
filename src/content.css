@@ -22,3 +22,7 @@
   user-select: none !important;
   filter: blur(16px) !important;
 }
+
+.internet-diet-block-effect-hide .internet-diet-blocked {
+  display: none !important;
+}

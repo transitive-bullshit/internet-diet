@@ -1,3 +1,5 @@
 export const contentScriptID = 'internet-diet:content:block'
-export const blockedNodeClassName = 'internet-diet-blocked'
 export const selectedNodeClassName = 'internet-diet-selected'
+export const blockedNodeClassName = 'internet-diet-blocked'
+export const blockEffectBlurClassName = 'internet-diet-block-effect-blur'
+export const blockEffectHideClassName = 'internet-diet-block-effect-hide'

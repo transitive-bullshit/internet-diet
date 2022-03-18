@@ -6,8 +6,10 @@ import { BlockRulesEngine, normalizeUrl } from './block-rules-engine'
 import { SettingsStore } from './settings-store'
 import {
   contentScriptID,
+  selectedNodeClassName,
   blockedNodeClassName,
-  selectedNodeClassName
+  blockEffectBlurClassName,
+  blockEffectHideClassName
 } from 'definitions'
 import * as log from './log'
 
@@ -107,12 +109,6 @@ function hideElement(element: HTMLElement): boolean {
   if (!element) {
     return false
   }
-
-  // TODO: this should be an option available from the options page
-  // TODO: change to use the class approach so it's reversible
-  // const isHidden = element.style.display === 'none'
-  // element.style.display = 'none'
-  // element.style.backgroundColor = 'red'
 
   const isHidden = element.classList.contains(blockedNodeClassName)
   if (!isHidden) {
@@ -353,6 +349,18 @@ async function update() {
     setTimeout(update, 0)
     return
   }
+
+  const activeBlockEffectClassName =
+    settingsStore.settings.blockEffect === 'blur'
+      ? blockEffectBlurClassName
+      : blockEffectHideClassName
+  const inactiveBlockEffectClassName =
+    settingsStore.settings.blockEffect === 'hide'
+      ? blockEffectBlurClassName
+      : blockEffectHideClassName
+
+  document.body.classList.remove(inactiveBlockEffectClassName)
+  document.body.classList.add(activeBlockEffectClassName)
 
   updateHiddenBlockedLinksAndItemsForce()
 
