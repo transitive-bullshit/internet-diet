@@ -8,12 +8,6 @@
 
 [![Build Status](https://github.com/transitive-bullshit/internet-diet/actions/workflows/test.yml/badge.svg)](https://github.com/transitive-bullshit/internet-diet/actions/workflows/test.yml) [![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg)](https://prettier.io)
 
-## Amazon Demo
-
-<p align="center">
-  <img alt="Internet Diet" src="media/amazon-demo.gif">
-</p>
-
 ## Intro
 
 I order a lot of online food.
@@ -21,6 +15,12 @@ I order a lot of online food.
 But there are so many unhealthy restaurants, foods, and options that I'd rather avoid.
 
 So I built an easy way to block all of the unwanted crap.
+
+## Amazon Demo
+
+<p align="center">
+  <img alt="Internet Diet" src="media/amazon-demo.gif">
+</p>
 
 ## What can it block?
 
