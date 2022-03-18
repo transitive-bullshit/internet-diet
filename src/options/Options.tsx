@@ -4,7 +4,6 @@ import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
 
 import { BlockRulesEngine } from 'block-rules-engine'
 import { BlockRulesTable } from 'components/BlockRulesTable/BlockRulesTable'
-import { BlockRule } from 'types'
 
 import styles from './Options.module.css'
 
@@ -51,24 +50,46 @@ export const Options = () => {
     })()
   }, [])
 
-  const filter = React.useCallback((blockRule: BlockRule) => {
-    return blockRule.type === 'pathname'
-  }, [])
-
   return (
     <div className={styles.container}>
       <div className={styles.header} />
 
       <div className={styles.body}>
-        <h1>Settings</h1>
+        <h1 className={styles.title}>Settings</h1>
 
         <div className={styles.content}>
-          {blockRulesEngine && (
-            <BlockRulesTable
-              blockRulesEngine={blockRulesEngine}
-              filter={filter}
-            />
-          )}
+          <div className={styles.section}>
+            <h4>Blocked Links</h4>
+
+            {blockRulesEngine && (
+              <BlockRulesTable
+                blockRulesEngine={blockRulesEngine}
+                type='pathname'
+              />
+            )}
+          </div>
+
+          <div className={styles.section}>
+            <h4>Blocked Hosts</h4>
+
+            {blockRulesEngine && (
+              <BlockRulesTable
+                blockRulesEngine={blockRulesEngine}
+                type='host'
+              />
+            )}
+          </div>
+
+          <div className={styles.section}>
+            <h4>Blocked Items</h4>
+
+            {blockRulesEngine && (
+              <BlockRulesTable
+                blockRulesEngine={blockRulesEngine}
+                type='item'
+              />
+            )}
+          </div>
         </div>
       </div>
 
