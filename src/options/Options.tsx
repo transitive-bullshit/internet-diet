@@ -1,14 +1,14 @@
 import React from 'react'
-import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
 import { FaPlay } from '@react-icons/all-files/fa/FaPlay'
 import { FaPause } from '@react-icons/all-files/fa/FaPause'
 import { Form, Input, Select, Row, Col, Statistic, Tooltip, Button } from 'antd'
 import toast, { Toaster } from 'react-hot-toast'
 
+import { Footer } from 'components/Footer/Footer'
+import { BlockRulesTable } from 'components/BlockRulesTable/BlockRulesTable'
 import { BlockRulesEngine } from 'block-rules-engine'
 import { SettingsStore, getNormalizedUrl } from 'settings-store'
 import { StatsStore } from 'stats-store'
-import { BlockRulesTable } from 'components/BlockRulesTable/BlockRulesTable'
 import { Settings, Stats, BlockEffect } from 'types'
 
 import styles from './Options.module.css'
@@ -24,12 +24,6 @@ export const Options = () => {
   const [statsStore, setStatsStore] = React.useState<StatsStore>()
   const [stats, setStats] = React.useState<Partial<Stats>>()
   const [toastId, setToastId] = React.useState<string>()
-
-  const onClickOpenSupportPage = React.useCallback(() => {
-    chrome.tabs.create({
-      url: 'https://github.com/transitive-bullshit/internet-diet'
-    })
-  }, [])
 
   const onClickToggleIsPaused = React.useCallback(() => {
     const isPaused = !settings?.isPaused
@@ -290,17 +284,7 @@ export const Options = () => {
           </div>
         </div>
 
-        <footer className={styles.footer}>
-          <div className={styles.options}>
-            <button
-              aria-label='Support'
-              className={styles.button}
-              onClick={onClickOpenSupportPage}
-            >
-              <FaQuestion />
-            </button>
-          </div>
-        </footer>
+        <Footer showOptions={false} />
       </div>
     </>
   )

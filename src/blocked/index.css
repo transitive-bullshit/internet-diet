@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Lusitana:wght@400;700&family=Roboto:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lusitana:wght@400;700&family=Roboto:wght@300;400;500;600;700&display=swap');
 
 * {
   box-sizing: border-box;
@@ -24,5 +24,31 @@ h3,
 h4,
 h5,
 h6 {
-  font-weight: 700;
+  font-family: 'Lusitana', serif;
+  font-weight: 400;
+  margin: 0.15em 0;
+}
+
+h1 {
+  font-size: 64px;
+}
+
+h2 {
+  font-size: 48px;
+}
+
+h3 {
+  font-size: 36px;
+}
+
+h3 {
+  font-size: 30px;
+}
+
+h5 {
+  font-size: 24px;
+}
+
+h6 {
+  font-size: 18px;
 }

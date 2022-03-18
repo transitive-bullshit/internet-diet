@@ -299,7 +299,7 @@ export const Popup = () => {
             <h3 className={styles.title}>Internet Diet</h3>
           </a>
 
-          <div className={styles.options}>
+          <div className={styles.links}>
             <button
               aria-label='Support'
               className={styles.button}
