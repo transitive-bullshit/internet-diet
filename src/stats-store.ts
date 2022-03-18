@@ -5,8 +5,7 @@ import { Stats } from './types'
 import * as log from './log'
 
 export declare interface StatsStore {
-  on(event: 'update', listener: (name: string) => void): this
-  on(event: string, listener: (...args: unknown[]) => unknown): this
+  on(event: 'update', listener: () => unknown): this
 }
 
 export class StatsStore extends EventEmitter {

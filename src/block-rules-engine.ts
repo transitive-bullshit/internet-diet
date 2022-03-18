@@ -7,12 +7,12 @@ import { getStableObjectHash } from './utils'
 import { BlockRule } from './types'
 import * as log from './log'
 
+// TODO: refactor into BlockRulesStore and BlockRulesEngine
 // TODO: cache _blockRulesByHostname map on every update
 // TODO: memoize normalizeUrl
 
 export declare interface BlockRulesEngine {
-  on(event: 'update', listener: (name: string) => void): this
-  on(event: string, listener: (...args: unknown[]) => unknown): this
+  on(event: 'update', listener: () => unknown): this
 }
 
 export class BlockRulesEngine extends EventEmitter {

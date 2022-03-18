@@ -6,8 +6,7 @@ import { Settings } from './types'
 import * as log from './log'
 
 export declare interface SettingsStore {
-  on(event: 'update', listener: (name: string) => void): this
-  on(event: string, listener: (...args: unknown[]) => unknown): this
+  on(event: 'update', listener: () => unknown): this
 }
 
 export class SettingsStore extends EventEmitter {
