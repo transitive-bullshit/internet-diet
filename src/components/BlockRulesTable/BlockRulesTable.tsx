@@ -1,6 +1,7 @@
 import React from 'react'
 import { format } from 'date-fns'
 import { Table, Tooltip, Space, Button, Tag } from 'antd'
+import toast from 'react-hot-toast'
 
 import type { BlockRulesEngine } from 'block-rules-engine'
 import { BlockRule, BlockRuleType } from 'types'
@@ -37,6 +38,7 @@ export const BlockRulesTable: React.FC<{
     (blockRule: BlockRule) => {
       ;(async () => {
         await blockRulesEngine.removeBlockRuleById(blockRule.id)
+        toast.success(`Removed rule for ${blockRule.hostname}`)
       })()
     },
     [blockRulesEngine]

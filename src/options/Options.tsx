@@ -2,6 +2,7 @@ import React from 'react'
 import { FaCog } from '@react-icons/all-files/fa/FaCog'
 import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
 import { Form, Input, Select } from 'antd'
+import { Toaster } from 'react-hot-toast'
 
 import { BlockRulesEngine } from 'block-rules-engine'
 import { SettingsStore, getNormalizedUrl } from 'settings-store'
@@ -110,104 +111,108 @@ export const Options = () => {
   }, [settings])
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header} />
+    <>
+      <Toaster position='top-right' />
 
-      <div className={styles.body}>
-        <h1 className={styles.title}>Settings</h1>
+      <div className={styles.container}>
+        <div className={styles.header} />
 
-        <div className={styles.content}>
-          <div className={styles.section}>
-            <h4>Blocked Links</h4>
+        <div className={styles.body}>
+          <h1 className={styles.title}>Settings</h1>
 
-            {blockRulesEngine && (
-              <BlockRulesTable
-                blockRulesEngine={blockRulesEngine}
-                type='pathname'
-              />
-            )}
-          </div>
+          <div className={styles.content}>
+            <div className={styles.section}>
+              <h4>Blocked Links</h4>
 
-          <div className={styles.section}>
-            <h4>Blocked Hosts</h4>
-
-            {blockRulesEngine && (
-              <BlockRulesTable
-                blockRulesEngine={blockRulesEngine}
-                type='host'
-              />
-            )}
-          </div>
-
-          <div className={styles.section}>
-            <h4>Blocked Items</h4>
-
-            {blockRulesEngine && (
-              <BlockRulesTable
-                blockRulesEngine={blockRulesEngine}
-                type='item'
-              />
-            )}
-          </div>
-
-          <div className={styles.section}>
-            <h4>General Options</h4>
-
-            <Form form={form} layout='horizontal' className={styles.form}>
-              <Form.Item
-                label='Custom blocked page URL'
-                tooltip='Use this to override the page you are redirected to after visiting a blocked page.'
-                hasFeedback={true}
-                validateStatus={isValidCustomBlockUrl ? 'success' : 'error'}
-              >
-                <Input
-                  placeholder='Default block page'
-                  value={settings?.customBlockUrl}
-                  onChange={onChangeCustomBlockUrl}
+              {blockRulesEngine && (
+                <BlockRulesTable
+                  blockRulesEngine={blockRulesEngine}
+                  type='pathname'
                 />
-              </Form.Item>
+              )}
+            </div>
 
-              <Form.Item
-                label='Block effect'
-                tooltip='This setting controls how page elements are blocked. They can either be blurred out (default) or hidden entirely.'
-              >
-                <Select
-                  onChange={onChangeBlockEffect}
-                  value={settings?.blockEffect}
+            <div className={styles.section}>
+              <h4>Blocked Hosts</h4>
+
+              {blockRulesEngine && (
+                <BlockRulesTable
+                  blockRulesEngine={blockRulesEngine}
+                  type='host'
+                />
+              )}
+            </div>
+
+            <div className={styles.section}>
+              <h4>Blocked Items</h4>
+
+              {blockRulesEngine && (
+                <BlockRulesTable
+                  blockRulesEngine={blockRulesEngine}
+                  type='item'
+                />
+              )}
+            </div>
+
+            <div className={styles.section}>
+              <h4>General Options</h4>
+
+              <Form form={form} layout='horizontal' className={styles.form}>
+                <Form.Item
+                  label='Custom blocked page URL'
+                  tooltip='Use this to override the page you are redirected to after visiting a blocked page.'
+                  hasFeedback={true}
+                  validateStatus={isValidCustomBlockUrl ? 'success' : 'error'}
                 >
-                  <Select.Option value='blur'>
-                    Blur blocked elements (default)
-                  </Select.Option>
+                  <Input
+                    placeholder='Default block page'
+                    value={settings?.customBlockUrl}
+                    onChange={onChangeCustomBlockUrl}
+                  />
+                </Form.Item>
 
-                  <Select.Option value='hide'>
-                    Hide blocked elements
-                  </Select.Option>
-                </Select>
-              </Form.Item>
-            </Form>
+                <Form.Item
+                  label='Block effect'
+                  tooltip='This setting controls how page elements are blocked. They can either be blurred out (default) or hidden entirely.'
+                >
+                  <Select
+                    onChange={onChangeBlockEffect}
+                    value={settings?.blockEffect}
+                  >
+                    <Select.Option value='blur'>
+                      Blur blocked elements (default)
+                    </Select.Option>
+
+                    <Select.Option value='hide'>
+                      Hide blocked elements
+                    </Select.Option>
+                  </Select>
+                </Form.Item>
+              </Form>
+            </div>
           </div>
         </div>
+
+        <footer className={styles.footer}>
+          <div className={styles.options}>
+            <button
+              aria-label='Support'
+              className={styles.button}
+              onClick={onClickOpenSupportPage}
+            >
+              <FaQuestion />
+            </button>
+
+            <button
+              aria-label='Open settings'
+              className={styles.button}
+              onClick={onClickOpenOptionsPage}
+            >
+              <FaCog />
+            </button>
+          </div>
+        </footer>
       </div>
-
-      <footer className={styles.footer}>
-        <div className={styles.options}>
-          <button
-            aria-label='Support'
-            className={styles.button}
-            onClick={onClickOpenSupportPage}
-          >
-            <FaQuestion />
-          </button>
-
-          <button
-            aria-label='Open settings'
-            className={styles.button}
-            onClick={onClickOpenOptionsPage}
-          >
-            <FaCog />
-          </button>
-        </div>
-      </footer>
-    </div>
+    </>
   )
 }
