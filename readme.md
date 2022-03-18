@@ -58,7 +58,7 @@ With that being said, it has been thoroughly tested on the following services:
 - [x] amazon fresh
 - [x] amazon products
 
-#### Postmates
+### Postmates
 
 <p align="center">
   <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/postmates-before.jpg" width="45%"> 
@@ -66,7 +66,7 @@ With that being said, it has been thoroughly tested on the following services:
   <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/postmates-after.jpg" width="45%">
 </p>
 
-#### Grubhub
+### Grubhub
 
 <p align="center">
   <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/grubhub-before.jpg" width="45%"> 
@@ -74,7 +74,7 @@ With that being said, it has been thoroughly tested on the following services:
   <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/grubhub-after.jpg" width="45%">
 </p>
 
-#### Seamless
+### Seamless
 
 <p align="center">
   <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/seamless-before.jpg" width="45%"> 
@@ -82,7 +82,7 @@ With that being said, it has been thoroughly tested on the following services:
   <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/seamless-after.jpg" width="45%">
 </p>
 
-#### Doordash
+### Doordash
 
 <p align="center">
   <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/doordash-before.jpg" width="45%"> 
@@ -90,7 +90,7 @@ With that being said, it has been thoroughly tested on the following services:
   <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/doordash-after.jpg" width="45%">
 </p>
 
-#### Caviar
+### Caviar
 
 <p align="center">
   <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/caviar-before.jpg" width="45%"> 
@@ -98,7 +98,7 @@ With that being said, it has been thoroughly tested on the following services:
   <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/caviar-after.jpg" width="45%">
 </p>
 
-#### Uber Eats
+### Uber Eats
 
 <p align="center">
   <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/ubereats-before.jpg" width="45%"> 
@@ -106,7 +106,7 @@ With that being said, it has been thoroughly tested on the following services:
   <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/ubereats-after.jpg" width="45%">
 </p>
 
-#### Delivery.com
+### Delivery.com
 
 <p align="center">
   <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/delivery-com-before.jpg" width="45%"> 
@@ -114,7 +114,7 @@ With that being said, it has been thoroughly tested on the following services:
   <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/delivery-com-after.jpg" width="45%">
 </p>
 
-#### Instacart
+### Instacart
 
 <p align="center">
   <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/instacart-before.jpg" width="45%"> 
@@ -122,7 +122,7 @@ With that being said, it has been thoroughly tested on the following services:
   <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/instacart-after.jpg" width="45%">
 </p>
 
-#### Amazon Fresh
+### Amazon Fresh
 
 <p align="center">
   <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/amazon-fresh-before.jpg" width="45%"> 
@@ -130,7 +130,7 @@ With that being said, it has been thoroughly tested on the following services:
   <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/amazon-fresh-after.jpg" width="45%">
 </p>
 
-#### Amazon Products
+### Amazon Products
 
 <p align="center">
   <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/amazon-products-before.jpg" width="45%"> 
