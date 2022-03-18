@@ -1,6 +1,6 @@
 import React from 'react'
 import { format } from 'date-fns'
-import { Table, Tooltip } from 'antd'
+import { Table, Tooltip, Space, Button } from 'antd'
 
 import type { BlockRulesEngine } from 'block-rules-engine'
 import { BlockRule } from 'types'
@@ -21,6 +21,15 @@ export const BlockRulesTable: React.FC<{
     updateBlockRules()
     blockRulesEngine.on('update', updateBlockRules)
   }, [blockRulesEngine, updateBlockRules])
+
+  const onClickRemoveBlockRule = React.useCallback(
+    (blockRule: BlockRule) => {
+      ;(async () => {
+        await blockRulesEngine.removeBlockRuleById(blockRule.id)
+      })()
+    },
+    [blockRulesEngine]
+  )
 
   const columns = React.useMemo(
     () => [
@@ -49,8 +58,6 @@ export const BlockRulesTable: React.FC<{
         title: 'URL Pathname',
         dataIndex: 'pathname',
         key: 'pathname',
-        ellipsis: true,
-        width: '30%',
         render: (pathname: string, blockRule: BlockRule) => {
           if (blockRule.type !== 'pathname') {
             return null
@@ -65,7 +72,14 @@ export const BlockRulesTable: React.FC<{
 
           return (
             <Tooltip title={url}>
-              <a href={url} target='_blank' rel='noopener noreferrer'>
+              <a
+                href={url}
+                target='_blank'
+                rel='noopener noreferrer'
+                style={{
+                  wordBreak: 'break-all'
+                }}
+              >
                 {pathname}
               </a>
             </Tooltip>
@@ -87,11 +101,24 @@ export const BlockRulesTable: React.FC<{
       {
         title: 'Actions',
         key: 'actions',
-        render: () => <span>TODO</span>
+        render: (_: any, blockRule: BlockRule) => (
+          <Space size='middle'>
+            <Button
+              danger
+              type='text'
+              shape='round'
+              onClick={() => onClickRemoveBlockRule(blockRule)}
+            >
+              Remove rule
+            </Button>
+          </Space>
+        )
       }
     ],
-    []
+    [onClickRemoveBlockRule]
   )
 
-  return <Table columns={columns} dataSource={blockRules} rowKey='id' />
+  return (
+    <Table columns={columns} dataSource={blockRules} rowKey='id' size='small' />
+  )
 }

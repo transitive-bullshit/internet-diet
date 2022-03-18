@@ -21,8 +21,6 @@ import styles from './Options.module.css'
       - block / unblock host
       - table of blocked links
       - list of text tags for blocked items
-    
-    => FIRST PRIORITY create a table of block links or hosts
  */
 
 export const Options = () => {
@@ -72,7 +70,9 @@ export const Options = () => {
             />
           )}
         </div>
+      </div>
 
+      <footer className={styles.footer}>
         <div className={styles.options}>
           <button
             aria-label='Support'
@@ -90,7 +90,7 @@ export const Options = () => {
             <FaCog />
           </button>
         </div>
-      </div>
+      </footer>
     </div>
   )
 }

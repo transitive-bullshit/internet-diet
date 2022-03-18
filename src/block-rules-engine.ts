@@ -112,17 +112,29 @@ export class BlockRulesEngine extends EventEmitter {
     await this.isReady
 
     this._blockRules.push(resolveBlockRule(blockRule))
-    this._blockRules = await dedupeBlockRules(this._blockRules)
-
-    return chrome.storage.sync.set({ blockRules: this._blockRules })
+    return this._updateBlockRules(this._blockRules)
   }
 
   async addBlockRules(blockRules: Partial<BlockRule>[]) {
     log.info('addBlockRules', blockRules)
     await this.isReady
 
-    this._blockRules = this._blockRules.concat(blockRules.map(resolveBlockRule))
-    this._blockRules = await dedupeBlockRules(this._blockRules)
+    return this._updateBlockRules(
+      this._blockRules.concat(blockRules.map(resolveBlockRule))
+    )
+  }
+
+  async removeBlockRuleById(id: string) {
+    log.info('removeBlockRuleById', id)
+    await this.isReady
+
+    return this._updateBlockRules(
+      this._blockRules.filter((blockRule) => blockRule.id !== id)
+    )
+  }
+
+  async _updateBlockRules(blockRules: BlockRule[]) {
+    this._blockRules = await dedupeBlockRules(blockRules)
 
     return chrome.storage.sync.set({ blockRules: this._blockRules })
   }
