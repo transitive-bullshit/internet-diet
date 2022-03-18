@@ -1,15 +1,14 @@
-import normalizeUrlImpl from 'normalize-url'
 import pMap from 'p-map'
 import { EventEmitter } from 'events'
 import { nanoid } from 'nanoid'
 
 import { getStableObjectHash } from './utils'
+import { normalizeUrl } from './url-utils'
 import { BlockRule } from './types'
 import * as log from './log'
 
 // TODO: refactor into BlockRulesStore and BlockRulesEngine
 // TODO: cache _blockRulesByHostname map on every update
-// TODO: memoize normalizeUrl
 
 export declare interface BlockRulesEngine {
   on(event: 'update', listener: () => unknown): this
@@ -22,7 +21,7 @@ export class BlockRulesEngine extends EventEmitter {
   constructor() {
     super()
 
-    this._isReadyP = chrome.storage.sync
+    this._isReadyP = chrome.storage.local
       .get(['blockRules'])
       .then(({ blockRules = [] }) => {
         this._blockRules = blockRules
@@ -35,7 +34,7 @@ export class BlockRulesEngine extends EventEmitter {
       })
 
     chrome.storage.onChanged.addListener((changes, area) => {
-      if (area !== 'sync') return
+      if (area !== 'local') return
 
       if (changes.blockRules) {
         this._blockRules = changes.blockRules.newValue
@@ -117,7 +116,7 @@ export class BlockRulesEngine extends EventEmitter {
   async _updateBlockRules(blockRules: BlockRule[]) {
     this._blockRules = await dedupeBlockRules(blockRules)
 
-    return chrome.storage.sync.set({ blockRules: this._blockRules })
+    return chrome.storage.local.set({ blockRules: this._blockRules })
   }
 
   isHostBlocked(url: URL | Location): boolean {
@@ -148,12 +147,10 @@ export class BlockRulesEngine extends EventEmitter {
 
       switch (blockRule.type) {
         case 'host':
-          log.debug('blocking host', url.toString())
           return true
 
         case 'pathname':
           if (url.pathname.includes(blockRule.pathname)) {
-            log.debug('blocking pathname', url.pathname)
             return true
           }
           break
@@ -164,7 +161,6 @@ export class BlockRulesEngine extends EventEmitter {
             normalizedUrl.startsWith(normalizeUrl(blockRule.url)) ||
             normalizedUrl.startsWith(blockRule.url)
           ) {
-            log.debug('blocking url', { url: url.toString(), normalizedUrl })
             return true
           }
           break
@@ -176,6 +172,10 @@ export class BlockRulesEngine extends EventEmitter {
   }
 
   isUrlBlockedAsString(url: string): boolean {
+    if (!url) {
+      return false
+    }
+
     try {
       return this.isUrlBlocked(new URL(url))
     } catch (err) {
@@ -202,11 +202,11 @@ export class BlockRulesEngine extends EventEmitter {
             ) &&
             blockRule.item.length >= sanitizedText.length / 8
           ) {
-            log.debug(
-              'blocking item',
-              `(rule: ${blockRule.item})`,
-              sanitizedText
-            )
+            // log.debug(
+            //   'blocking item',
+            //   `(rule: ${blockRule.item})`,
+            //   sanitizedText
+            // )
             return true
           }
           break
@@ -255,25 +255,4 @@ export async function dedupeBlockRules(
   )
 
   return Object.values(Object.fromEntries(hashEntries))
-}
-
-export function normalizeUrl(url?: string): string {
-  if (!url) {
-    return ''
-  }
-
-  try {
-    return normalizeUrlImpl(url, {
-      forceHttps: true,
-      stripProtocol: true,
-      stripHash: true,
-      stripWWW: true,
-      stripTextFragment: true,
-      normalizeProtocol: true,
-      removeQueryParameters: true,
-      removeDirectoryIndex: true
-    })
-  } catch (err) {
-    return ''
-  }
 }

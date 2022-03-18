@@ -24,6 +24,8 @@ export interface BlockRuleItem extends BlockRuleBase {
   item: string
 }
 
+// TODO: we should probably just remove this use case since it seems redundant
+// and doesn't have any options / store support at the moment
 export interface BlockRuleUrl extends BlockRuleBase {
   type: 'url'
   url: string

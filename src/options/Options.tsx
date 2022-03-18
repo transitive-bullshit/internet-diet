@@ -7,7 +7,7 @@ import toast, { Toaster } from 'react-hot-toast'
 import { Footer } from 'components/Footer/Footer'
 import { BlockRulesTable } from 'components/BlockRulesTable/BlockRulesTable'
 import { BlockRulesEngine } from 'block-rules-engine'
-import { SettingsStore, getNormalizedUrl } from 'settings-store'
+import { SettingsStore, getSanitizedUrl } from 'settings-store'
 import { StatsStore } from 'stats-store'
 import { Settings, Stats, BlockEffect } from 'types'
 
@@ -137,7 +137,7 @@ export const Options = () => {
 
   const isValidCustomBlockUrl = React.useMemo(() => {
     return (
-      !settings?.customBlockUrl || !!getNormalizedUrl(settings.customBlockUrl)
+      !settings?.customBlockUrl || !!getSanitizedUrl(settings.customBlockUrl)
     )
   }, [settings])
 

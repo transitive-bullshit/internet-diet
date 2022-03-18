@@ -2,22 +2,28 @@ import select from 'select-dom'
 import debounce from 'lodash.debounce'
 import throttle from 'lodash.throttle'
 import type toast from 'react-hot-toast'
-import { BlockRulesEngine, normalizeUrl } from './block-rules-engine'
+
+import { BlockRulesEngine } from './block-rules-engine'
 import { SettingsStore } from './settings-store'
 import { StatsStore } from './stats-store'
+import {
+  getBestLinkBlockCandidate,
+  getClosestLinkBlockCandidate,
+  getClosestItemBlockCandidate
+} from './url-utils'
 import {
   contentScriptID,
   selectedNodeClassName,
   blockedNodeClassName,
   blockEffectBlurClassName,
   blockEffectHideClassName
-} from 'definitions'
+} from './definitions'
 import * as log from './log'
 
 /*
-  Make injecting this content script idempotent in case multiple copies are injected.
+  Guard against multiple copies of the content script being dynamically injected.
 
-  When the extension's action is triggered, the popup JS will attempt to send a
+  When the extension's action is triggered, the popup script will attempt to send a
   message to the currently active tab's content script. If it doesn't get a response
   within a brief period of time, it will inject the content script into that page.
 
@@ -30,7 +36,7 @@ import * as log from './log'
   script into pages that either have active blocking rules or where the user has
   manually invoked the extension's page action. In other words, we are trying to
   dynamically inject our content script into as few tabs as possible instead of
-  statically injecting it into every tab.
+  statically injecting it into every tab up front.
 */
 if ((window as any)[contentScriptID]) {
   log.warn('loaded duplicate content script', contentScriptID)
@@ -66,8 +72,9 @@ function hideBlockedLinks() {
 
   for (const link of links) {
     if (blockRulesEngine.isUrlBlockedAsString(link.href)) {
-      // TODO: should getBestLinkBlockCandidate take the original link / href into account?
-      // (not sure it matters, but might be a good way to force using that normalizedUrl)
+      // TODO: should getBestLinkBlockCandidate take the original link / href into
+      // account here? (not sure it matters, but might be a good way to force using
+      // that normalizedUrl)
       const candidate = getBestLinkBlockCandidate(link)
       const element = candidate?.element || getClosestLinkBlockCandidate(link)
       if (hideElement(element)) {
@@ -120,147 +127,17 @@ function hideElement(element: HTMLElement): boolean {
   return !isHidden
 }
 
-// TODO: add caching to this
-function getNormalizedUrlForHost(url: string, hostname: string): string | null {
-  if (!url) {
-    return null
-  }
-
-  try {
-    const urlHostname = new URL(url).hostname
-    if (!hostname.includes(urlHostname) && !urlHostname.includes(hostname)) {
-      return null
-    }
-  } catch (err) {
-    // malformed URL
-    return null
-  }
-
-  const normalizedUrl = normalizeUrl(url)
-  if (normalizedUrl) {
-    if (
-      hostname.includes('amazon') &&
-      normalizedUrl.includes('/customer-reviews/')
-    ) {
-      return ''
-    }
-  }
-
-  return normalizedUrl
-}
-
-interface LinkBlockCandidate {
-  link: HTMLAnchorElement
-  element: HTMLElement
-}
-
-function getBestLinkBlockCandidate(
-  target: HTMLElement
-): LinkBlockCandidate | null {
-  const { hostname } = document.location
-  const containerCandidate = target.closest('li')?.parentElement
-  let link: HTMLAnchorElement | null = null
-  let element: HTMLElement | null = null
-  let currentElement: HTMLElement = target
-
-  /*
-    Traverse up the DOM tree, starting from the target node. On each 
-    iteration, we assess whether the current node could be a viable element 
-    containing a single unique link that's blockable with respect to the 
-    current host.
-    
-    Once we get to a point where the current node contains too many links or
-    list items, we know we've gone too far, so we bail out.
-
-    The resulting candidate represents the highest DOM node that fulfilled
-    our blocking criteria (or null if no valid candidates were found).
-
-    NOTE: I'm sure this algorithm could be optimized, but it doesn't appear
-    to be a problem in practice for the time being. Specifically, we're
-    doing a lot of extra sub-tree traversals with the `select.all` calls 
-    for each iteration of the main loop.
-
-    NOTE: This algorithm is critical for the "smart selection" UX in order
-    to make it feel natural for non-technical users to select element/link 
-    pairs to block.
-  */
-  do {
-    const urls = select
-      .all('a', currentElement)
-      .map((link) => [getNormalizedUrlForHost(link.href, hostname), link])
-      .filter((pair) => !!pair[0])
-    const uniqueUrlsToLinks: { [url: string]: HTMLAnchorElement } =
-      Object.fromEntries(urls)
-    const numUniqueUrls = Object.keys(uniqueUrlsToLinks).length
-
-    const lis = select.all('li', currentElement)
-    const numLis = lis.length
-    const isCurrentElementLi =
-      currentElement.tagName === 'LI' || currentElement === lis[0]
-
-    if (
-      numUniqueUrls > 1 ||
-      numLis >= 2 ||
-      (numLis === 1 && !isCurrentElementLi)
-    ) {
-      // we've traversed too far
-      break
-    }
-
-    if (numUniqueUrls === 1) {
-      // we have a new candidate element / link pair
-      element = currentElement
-      link = Object.values(uniqueUrlsToLinks)?.[0]
-    }
-
-    const { parentElement } = currentElement
-
-    if (
-      !parentElement ||
-      parentElement === containerCandidate ||
-      parentElement === document.body
-    ) {
-      // we've traversed too far
-      break
-    }
-
-    // continue traversing up the DOM tree
-    currentElement = parentElement
-
-    // eslint-disable-next-line no-constant-condition
-  } while (true)
-
-  // return the most recent valid candidate if one exists
-  if (element && link) {
-    return {
-      element,
-      link
-    }
-  } else {
-    return null
-  }
-}
-
-function getClosestLinkBlockCandidate(element: HTMLElement) {
-  return element.closest('li') || element.closest('div') || element
-}
-
-function getClosestItemBlockCandidate(element: HTMLElement) {
-  return element.closest('li') || element.closest('div') || element
-}
-
 async function updateHiddenBlockedLinksAndItemsForce() {
   if (settingsStore.settings.isPaused) {
     return
   }
 
-  log.debug('----------------')
-
+  log.time('update')
   const { numBlockedLinks, numBlockedLinksFresh } = hideBlockedLinks()
   const { numBlockedItems, numBlockedItemsFresh } = hideBlockedItems()
 
-  log.debug('blocked', numBlockedLinks, 'links')
-  log.debug('blocked', numBlockedItems, 'items')
+  log.debug('blocked', numBlockedLinks, 'links and', numBlockedItems, 'items')
+  log.timeEnd('update')
 
   tabBlockInfo = {
     numBlockedItems,
@@ -271,8 +148,6 @@ async function updateHiddenBlockedLinksAndItemsForce() {
     type: 'tabBlockInfo',
     ...tabBlockInfo
   })
-
-  log.debug('----------------')
 
   if (numBlockedLinksFresh > 0 || numBlockedItemsFresh > 0) {
     await statsStore.updateStats({
@@ -286,7 +161,7 @@ async function updateHiddenBlockedLinksAndItemsForce() {
 
 const updateHiddenBlockedLinksAndItems = throttle(
   updateHiddenBlockedLinksAndItemsForce,
-  10,
+  100,
   {
     leading: false
   }
@@ -325,7 +200,7 @@ async function update() {
 
   if (blockRulesEngine.isUrlBlocked(document.location)) {
     log.info('page blocked', document.location.hostname)
-    let blockedRedirectUrl = settingsStore.getNormalizedCustomBlockUrl()
+    let blockedRedirectUrl = settingsStore.getSanitizedCustomBlockUrl()
 
     if (blockedRedirectUrl) {
       log.info('redirecting to custom block url', blockedRedirectUrl)
@@ -365,16 +240,16 @@ async function update() {
 
   updateHiddenBlockedLinksAndItemsForce()
 
+  // TODO: is it too inefficient to recreate the mutation observer on each
+  // database update?
   if (mutationObserver) {
     mutationObserver.disconnect()
     mutationObserver = null
   }
 
-  mutationObserver = new MutationObserver(function () {
-    // TODO: some filtering or targeting of a subtree here would be nice
-    // in order to avoid unnecessary effort
-    updateHiddenBlockedLinksAndItems()
-  })
+  // TODO: some filtering or targeting of a subtree here would be nice
+  // in order to avoid unnecessary effort
+  mutationObserver = new MutationObserver(updateHiddenBlockedLinksAndItems)
 
   mutationObserver.observe(document.body, {
     subtree: true,
@@ -388,18 +263,26 @@ function updateSelectedElementImpl(event: Event) {
   }
 
   const target = event.target as HTMLElement
+  if (selectedElement?.contains(target)) {
+    // log.debug('no need to get candidate', target)
+    return
+  }
+
   const candidate = getBestLinkBlockCandidate(target)
   if (!candidate) {
+    // log.debug('empty candidate', target)
     clearSelectedElement()
     return
   }
 
   const { link, element } = candidate
   if (selectedLink === link || selectedLinkOldHref === link.href) {
+    // log.debug('duplicate candidate')
     return
   }
 
   clearSelectedElement()
+  // log.debug('new element selected', link.href)
 
   selectedLink = link
   selectedElement = element
@@ -445,17 +328,19 @@ async function blockElement(event: Event) {
 
   const url = selectedLinkOldHref!
 
-  await blockRulesEngine.addBlockLinkRule({
+  updateIsAddingLinkBlock(false)
+  clearSelectedElement()
+
+  const addBlockLinkP = blockRulesEngine.addBlockLinkRule({
     hostname: document.location.hostname,
     url
   })
 
-  updateIsAddingLinkBlock(false)
-  clearSelectedElement()
-
   chrome.runtime.sendMessage({
     type: 'event:stopIsAddingLinkBlock'
   })
+
+  await addBlockLinkP
 
   if (createToast) {
     createToast.success('New link blocked')
@@ -473,7 +358,7 @@ function interceptClick(event: Event) {
   return false
 }
 
-const updateSelectedElement = debounce(updateSelectedElementImpl, 1)
+const updateSelectedElement = debounce(updateSelectedElementImpl, 5)
 
 function updateIsAddingLinkBlock(isAddingLinkBlockUpdate: boolean) {
   if (isAddingLinkBlock === isAddingLinkBlockUpdate) {
@@ -483,7 +368,8 @@ function updateIsAddingLinkBlock(isAddingLinkBlockUpdate: boolean) {
   isAddingLinkBlock = isAddingLinkBlockUpdate
   const action = isAddingLinkBlock ? 'addEventListener' : 'removeEventListener'
   document[action]('mouseover', updateSelectedElement)
-  // document[action]('mouseout', updateSelectedElement)
+  // using mousedown instead of click seems to successfully preempt some page
+  // onclick actions such as displaying popups / offers / ads
   document[action]('click', blockElement)
   clearSelectedElement()
 

@@ -15,7 +15,7 @@ export class StatsStore extends EventEmitter {
   constructor() {
     super()
 
-    this._isReadyP = chrome.storage.sync
+    this._isReadyP = chrome.storage.local
       .get(['stats'])
       .then(({ stats }) => {
         this._stats = resolveStats(stats)
@@ -28,7 +28,7 @@ export class StatsStore extends EventEmitter {
       })
 
     chrome.storage.onChanged.addListener((changes, area) => {
-      if (area !== 'sync') return
+      if (area !== 'local') return
 
       if (changes.stats) {
         this._stats = resolveStats(changes.stats.newValue)
@@ -62,7 +62,7 @@ export class StatsStore extends EventEmitter {
     } else {
       this._stats = newStats
       log.debug('updateStats', this._stats)
-      return chrome.storage.sync.set({ stats: this._stats })
+      return chrome.storage.local.set({ stats: this._stats })
     }
   }
 }

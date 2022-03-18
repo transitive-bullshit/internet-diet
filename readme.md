@@ -49,8 +49,7 @@ With that being said, it has been thoroughly tested on the following services:
 - [x] doordash
 - [x] caviar
 - [x] instacart
-- [ ] delivery.com
-  - TODO: seems to have a bug with link selection
+- [x] delivery.com
 
 ## TODO
 
@@ -74,8 +73,8 @@ This project is a WIP and lacks some polish and features.
 - [x] fix popup confirmation modal overflow
 - [x] inject content script dynamically
 - [x] make link selection and blocking logic robust across sites
+- [x] more cross-site testing
 - [ ] add example gifs
-- [ ] more cross-site testing
 - [ ] handle redirects
   - ex: `https://www.doordash.com/store/942804` gets expanded to `https://www.doordash.com/store/country-house-diner-clinton-hill-942804/`
   - popup isn't aware of the change
@@ -90,13 +89,13 @@ This project is a WIP and lacks some polish and features.
   - [ ] add new block rules
 - [ ] add basic website
 - [ ] add support FAQ
-- [ ] add hotkey command for blocking a link
 - [ ] publish to chrome store
 - [ ] add support for firefox
 - [ ] add support for safari
-- [ ] linkify hostname in popup
+- [ ] add hotkey command for blocking a link
 - [ ] add inline tooltip on blocked items for context and pausing
 - [ ] refactor differences between handling of links vs items?
+- [ ] linkify hostname in popup
 - [ ] add context menu integration
 
 ## Development

@@ -33,10 +33,11 @@ async function main() {
           type: 'query:contentScriptID'
         },
         (result) => {
-          console.log('content-script-check result', result)
-          // we know this tab already has the content script loaded
-          // we're ignoring the ID response since there can currently
-          // only be one content script ID
+          console.log(
+            'content-script-check result',
+            result,
+            chrome.runtime.lastError
+          )
           resolve(!!result)
         }
       )

@@ -7,10 +7,10 @@ import { FaPlay } from '@react-icons/all-files/fa/FaPlay'
 import { FaPause } from '@react-icons/all-files/fa/FaPause'
 
 import { ConfirmModal } from 'components/ConfirmModal/ConfirmModal'
-import { normalizeUrl } from '../block-rules-engine'
 import { SettingsStore } from '../settings-store'
 import { StatsStore } from '../stats-store'
 import { Stats, Settings } from '../types'
+import { normalizeUrl } from '../url-utils'
 import { cs } from '../utils'
 import styles from './Popup.module.css'
 

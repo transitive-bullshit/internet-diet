@@ -16,7 +16,7 @@ export class SettingsStore extends EventEmitter {
   constructor() {
     super()
 
-    this._isReadyP = chrome.storage.sync
+    this._isReadyP = chrome.storage.local
       .get(['settings'])
       .then(({ settings }) => {
         this._settings = resolveSettings(settings)
@@ -29,7 +29,7 @@ export class SettingsStore extends EventEmitter {
       })
 
     chrome.storage.onChanged.addListener((changes, area) => {
-      if (area !== 'sync') return
+      if (area !== 'local') return
 
       if (changes.settings) {
         this._settings = resolveSettings(changes.settings.newValue)
@@ -63,12 +63,12 @@ export class SettingsStore extends EventEmitter {
     } else {
       this._settings = newSettings
       log.debug('updateSettings', this._settings)
-      return chrome.storage.sync.set({ settings: this._settings })
+      return chrome.storage.local.set({ settings: this._settings })
     }
   }
 
-  getNormalizedCustomBlockUrl(): string {
-    return getNormalizedUrl(this._settings.customBlockUrl)
+  getSanitizedCustomBlockUrl(): string {
+    return getSanitizedUrl(this._settings.customBlockUrl)
   }
 }
 
@@ -81,7 +81,7 @@ export function resolveSettings(settings?: Partial<Settings>): Settings {
   }
 }
 
-export function getNormalizedUrl(url?: string | null): string {
+export function getSanitizedUrl(url?: string | null): string {
   if (!url) {
     return ''
   }
