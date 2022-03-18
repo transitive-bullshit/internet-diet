@@ -74,7 +74,7 @@ This project is a WIP and lacks some polish and features.
 - [x] fix popup confirmation modal overflow
 - [x] inject content script dynamically
 - [x] make link selection and blocking logic robust across sites
-- [ ] resolve difference between handling of links vs items
+- [ ] add example gifs
 - [ ] more cross-site testing
 - [ ] handle redirects
   - ex: `https://www.doordash.com/store/942804` gets expanded to `https://www.doordash.com/store/country-house-diner-clinton-hill-942804/`
@@ -88,14 +88,16 @@ This project is a WIP and lacks some polish and features.
   - [x] view total stats
   - [x] pause / unpause
   - [ ] add new block rules
-- [ ] add inline tooltip on blocked items for context and pausing
-- [ ] add examples
-- [ ] linkify hostname in popup
-- [ ] publish to chrome store
+- [ ] add basic website
+- [ ] add support FAQ
 - [ ] add hotkey command for blocking a link
-- [ ] add context menu integration
+- [ ] publish to chrome store
 - [ ] add support for firefox
 - [ ] add support for safari
+- [ ] linkify hostname in popup
+- [ ] add inline tooltip on blocked items for context and pausing
+- [ ] refactor differences between handling of links vs items?
+- [ ] add context menu integration
 
 ## Development
 

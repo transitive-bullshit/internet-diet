@@ -1,5 +1,4 @@
 import React from 'react'
-import { FaCog } from '@react-icons/all-files/fa/FaCog'
 import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
 import { FaPlay } from '@react-icons/all-files/fa/FaPlay'
 import { FaPause } from '@react-icons/all-files/fa/FaPause'
@@ -33,10 +32,6 @@ export const Options = () => {
     })
   }, [])
 
-  const onClickOpenOptionsPage = React.useCallback(() => {
-    chrome.runtime.openOptionsPage()
-  }, [])
-
   const onClickToggleIsPaused = React.useCallback(() => {
     const isPaused = !settings?.isPaused
     setSettings({
@@ -49,17 +44,9 @@ export const Options = () => {
     }
 
     if (isPaused) {
-      setToastId(
-        toast.success('Blocking is now paused across all sites', {
-          duration: 5000
-        })
-      )
+      setToastId(toast.success('Blocking is now paused across all sites'))
     } else {
-      setToastId(
-        toast.success('Blocking is now enabled across all sites', {
-          duration: 5000
-        })
-      )
+      setToastId(toast.success('Blocking is now enabled across all sites'))
     }
   }, [settings, toastId])
 
@@ -163,7 +150,17 @@ export const Options = () => {
 
   return (
     <>
-      <Toaster position='top-right' />
+      <Toaster
+        position='top-right'
+        toastOptions={{
+          success: {
+            duration: 5000
+          },
+          error: {
+            duration: 8000
+          }
+        }}
+      />
 
       <div className={styles.container}>
         <div className={styles.header} />
@@ -177,7 +174,7 @@ export const Options = () => {
                 <Col span={8}>
                   {stats?.numBlockedLinksTotal !== undefined && (
                     <Statistic
-                      title='Total Links Blocked'
+                      title='Links blocked in total'
                       value={stats?.numBlockedLinksTotal}
                     />
                   )}
@@ -186,7 +183,7 @@ export const Options = () => {
                 <Col span={8}>
                   {stats?.numBlockedItemsTotal !== undefined && (
                     <Statistic
-                      title='Total Menu Items Blocked'
+                      title='Menu items blocked in total'
                       value={stats?.numBlockedItemsTotal}
                     />
                   )}
@@ -307,14 +304,6 @@ export const Options = () => {
               onClick={onClickOpenSupportPage}
             >
               <FaQuestion />
-            </button>
-
-            <button
-              aria-label='Open settings'
-              className={styles.button}
-              onClick={onClickOpenOptionsPage}
-            >
-              <FaCog />
             </button>
           </div>
         </footer>
