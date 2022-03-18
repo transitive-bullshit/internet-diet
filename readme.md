@@ -48,62 +48,99 @@ The extension is designed to work on any website where you want to restrict acce
 With that being said, it has been thoroughly tested on the following services:
 
 - [x] postmates
-- [x] amazon
 - [x] grubhub
 - [x] seamless
-- [x] uber eats
 - [x] doordash
 - [x] caviar
-- [x] instacart
+- [x] uber eats
 - [x] delivery.com
+- [x] instacart
+- [x] amazon fresh
+- [x] amazon products
 
-## TODO
+#### Postmates
 
-This project is a WIP and lacks some polish and features.
+<p align="center">
+  <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/postmates-before.jpg" width="45%"> 
+&nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/postmates-after.jpg" width="45%">
+</p>
 
-- [x] handle page updates and slow client-side refresh
-- [x] add popup UI
-- [x] add badge UI
-- [x] add styles to default blocked page
-- [x] add icon and design
-- [x] make block rules customizable
-- [x] add UX for adding block link rules
-- [x] dedupe block rules
-- [x] track the number of links and items blocked
-- [x] add block this page button in popup
-- [x] add block this site button in popup
-- [x] add linting
-- [x] add confirmation dialogs for blocking pages and sites
-- [x] add support for pausing / resuming
-- [x] add support for all websites
-- [x] fix popup confirmation modal overflow
-- [x] inject content script dynamically
-- [x] make link selection and blocking logic robust across sites
-- [x] more cross-site testing
-- [ ] fix bug with deduping block rules resulting in incorrect createdAt times
-- [ ] add example gifs
-- [ ] handle redirects
-  - ex: `https://www.doordash.com/store/942804` gets expanded to `https://www.doordash.com/store/country-house-diner-clinton-hill-942804/`
-  - popup isn't aware of the change
-  - references to one don't block references to the other
-  - doordash and caviar both have the same build
-- [x] add options page
-  - [x] view / edit block rules
-  - [x] make block page customizable
-  - [x] make block effect customizable (blur vs removal)
-  - [x] view total stats
-  - [x] pause / unpause
-  - [ ] add new block rules
-- [ ] add basic website
-- [ ] add support FAQ
-- [ ] publish to chrome store
-- [ ] add support for firefox
-- [ ] add support for safari
-- [ ] add hotkey command for blocking a link
-- [ ] add inline tooltip on blocked items for context and pausing
-- [ ] refactor differences between handling of links vs items?
-- [ ] linkify hostname in popup
-- [ ] add context menu integration
+#### Grubhub
+
+<p align="center">
+  <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/grubhub-before.jpg" width="45%"> 
+&nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/grubhub-after.jpg" width="45%">
+</p>
+
+#### Seamless
+
+<p align="center">
+  <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/seamless-before.jpg" width="45%"> 
+&nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/seamless-after.jpg" width="45%">
+</p>
+
+#### Doordash
+
+<p align="center">
+  <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/doordash-before.jpg" width="45%"> 
+&nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/doordash-after.jpg" width="45%">
+</p>
+
+#### Caviar
+
+<p align="center">
+  <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/caviar-before.jpg" width="45%"> 
+&nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/caviar-after.jpg" width="45%">
+</p>
+
+#### Uber Eats
+
+<p align="center">
+  <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/ubereats-before.jpg" width="45%"> 
+&nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/ubereats-after.jpg" width="45%">
+</p>
+
+#### Delivery.com
+
+<p align="center">
+  <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/delivery-com-before.jpg" width="45%"> 
+&nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/delivery-com-after.jpg" width="45%">
+</p>
+
+#### Instacart
+
+<p align="center">
+  <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/instacart-before.jpg" width="45%"> 
+&nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/instacart-after.jpg" width="45%">
+</p>
+
+#### Amazon Fresh
+
+<p align="center">
+  <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/amazon-fresh-before.jpg" width="45%"> 
+&nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/amazon-fresh-after.jpg" width="45%">
+</p>
+
+#### Amazon Products
+
+<p align="center">
+  <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/amazon-products-before.jpg" width="45%"> 
+&nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/amazon-products-after.jpg" width="45%">
+</p>
+
+## Status
+
+This extension is a WIP and has not yet been launched on the Chrome extensions store. Progress towards a v1 launch is being tracked in this [issue](https://github.com/transitive-bullshit/internet-diet/issues/1).
 
 ## Development
 
@@ -113,16 +150,6 @@ npm start
 ```
 
 Then load the unpacked extension into chrome from the `build` folder.
-
-## Examples
-
-#### Postmates
-
-<p align="center">
-  <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/postmates-before.jpg" width="45%"> 
-&nbsp; &nbsp; &nbsp; &nbsp;
-  <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/postmates-after.jpg" width="45%">
-</p>
 
 ## License
 
