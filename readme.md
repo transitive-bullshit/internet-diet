@@ -74,6 +74,7 @@ This project is a WIP and lacks some polish and features.
 - [x] inject content script dynamically
 - [x] make link selection and blocking logic robust across sites
 - [x] more cross-site testing
+- [ ] fix bug with deduping block rules resulting in incorrect createdAt times
 - [ ] add example gifs
 - [ ] handle redirects
   - ex: `https://www.doordash.com/store/942804` gets expanded to `https://www.doordash.com/store/country-house-diner-clinton-hill-942804/`
