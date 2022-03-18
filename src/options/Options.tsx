@@ -1,30 +1,28 @@
 import React from 'react'
 import { FaCog } from '@react-icons/all-files/fa/FaCog'
 import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
+import { Form, Input, Select } from 'antd'
 
 import { BlockRulesEngine } from 'block-rules-engine'
+import { SettingsStore } from 'settings-store'
 import { BlockRulesTable } from 'components/BlockRulesTable/BlockRulesTable'
+import { Settings, BlockEffect } from 'types'
 
 import styles from './Options.module.css'
 
 /*
   TODO:
-    - view and edit blocked hosts
-    - view and edit block links (by host?)
-    - view and edit block items (by host?)
-    - select block effect
-    - custom block link
-
-    /sites - table of hosts
-    /sites/<hostname> - settings for a specific host
-      - block / unblock host
-      - table of blocked links
-      - list of text tags for blocked items
+    - view total stats
+    - pause / unpause
+    - add new block rules
  */
 
 export const Options = () => {
+  const [form] = Form.useForm()
   const [blockRulesEngine, setBlockRulesEngine] =
     React.useState<BlockRulesEngine>()
+  const [settingsStore, setSettingsStore] = React.useState<SettingsStore>()
+  const [settings, setSettings] = React.useState<Partial<Settings>>()
 
   const onClickOpenSupportPage = React.useCallback(() => {
     chrome.tabs.create({
@@ -36,6 +34,7 @@ export const Options = () => {
     chrome.runtime.openOptionsPage()
   }, [])
 
+  // initialize the block rules engine
   React.useEffect(() => {
     ;(async () => {
       const engine = new BlockRulesEngine()
@@ -49,6 +48,60 @@ export const Options = () => {
       setBlockRulesEngine(engine)
     })()
   }, [])
+
+  // initialize the settings store
+  React.useEffect(() => {
+    ;(async () => {
+      const store = new SettingsStore()
+      try {
+        await store.isReady
+      } catch (err) {
+        console.error('error initializing settings store', err)
+        return
+      }
+
+      setSettingsStore(store)
+      setSettings(store.settings)
+    })()
+  }, [])
+
+  const onChangeCustomBlockUrl = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSettings({
+        ...settings,
+        customBlockUrl: e.target.value || ''
+      })
+    },
+    [settings]
+  )
+
+  const onChangeBlockEffect = React.useCallback(
+    (value: BlockEffect) => {
+      setSettings({
+        ...settings,
+        blockEffect: value
+      })
+    },
+    [settings]
+  )
+
+  // sync store settings changes to local
+  React.useEffect(() => {
+    settingsStore?.on('updated', () => {
+      setSettings(settingsStore.settings)
+    })
+  }, [settingsStore])
+
+  // sync local settings changes to store
+  React.useEffect(() => {
+    ;(async () => {
+      if (!settings || !settingsStore) {
+        return
+      }
+
+      await settingsStore.updateSettings(settings)
+    })()
+  }, [settings, settingsStore])
 
   return (
     <div className={styles.container}>
@@ -89,6 +142,41 @@ export const Options = () => {
                 type='item'
               />
             )}
+          </div>
+
+          <div className={styles.section}>
+            <h4>General Options</h4>
+
+            <Form form={form} layout='horizontal' className={styles.form}>
+              <Form.Item
+                label='Custom blocked page URL'
+                tooltip='Use this to override the page you are redirected to after visiting a blocked page.'
+              >
+                <Input
+                  placeholder='Default block page'
+                  value={settings?.customBlockUrl}
+                  onChange={onChangeCustomBlockUrl}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label='Block effect'
+                tooltip='This setting controls how page elements are blocked. They can either be blurred out (default) or hidden entirely.'
+              >
+                <Select
+                  onChange={onChangeBlockEffect}
+                  value={settings?.blockEffect}
+                >
+                  <Select.Option value='blur'>
+                    Blur blocked elements (default)
+                  </Select.Option>
+
+                  <Select.Option value='hide'>
+                    Hide blocked elements
+                  </Select.Option>
+                </Select>
+              </Form.Item>
+            </Form>
           </div>
         </div>
       </div>

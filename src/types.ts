@@ -1,4 +1,5 @@
 export type BlockRuleType = 'host' | 'pathname' | 'item' | 'url'
+export type BlockEffect = 'blur' | 'hide'
 
 export interface BlockRuleBase {
   hostname: string
@@ -33,3 +34,8 @@ export type BlockRule =
   | BlockRulePathname
   | BlockRuleItem
   | BlockRuleUrl
+
+export interface Settings {
+  customBlockUrl: string
+  blockEffect: BlockEffect
+}
