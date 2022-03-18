@@ -188,7 +188,9 @@ export function getSanitizedUrlForHost(
       hostname.includes('amazon') &&
       (normalizedUrl.includes('/customer-reviews') ||
         normalizedUrl.includes('/product-reviews') ||
-        normalizedUrl.includes('/storefront'))
+        normalizedUrl.includes('/storefront') ||
+        normalizedUrl.includes('/goldbox') ||
+        normalizedUrl.includes('/bestsellers'))
     ) {
       return ''
     }

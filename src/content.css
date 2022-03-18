@@ -11,6 +11,10 @@
   filter: blur(16px);
 }
 
+.internet-diet-selected > * {
+  pointer-events: none;
+}
+
 /* seamless.com: disable ratings popup */
 .internet-diet-selected [data-testid='content-ratings'],
 .internet-diet-selected .content-ratings {

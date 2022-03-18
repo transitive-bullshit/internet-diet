@@ -221,15 +221,11 @@ export class BlockRulesEngine extends EventEmitter {
 }
 
 export function resolveBlockRule(blockRule: Partial<BlockRule>): BlockRule {
-  if (!blockRule.id) {
-    blockRule.id = nanoid()
-  }
-
-  if (!blockRule.createdAt) {
-    blockRule.createdAt = new Date().toISOString()
-  }
-
-  return blockRule as BlockRule
+  return {
+    id: blockRule.id || nanoid(),
+    createdAt: blockRule.createdAt || new Date().toISOString(),
+    ...blockRule
+  } as BlockRule
 }
 
 export function resolveBlockRules(
