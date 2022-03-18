@@ -1,13 +1,21 @@
+import select from 'select-dom'
 import normalizeUrlImpl from 'normalize-url'
 import mem from 'mem'
-
-import select from 'select-dom'
 
 export interface LinkBlockCandidate {
   link: HTMLAnchorElement
   element: HTMLElement
 }
 
+/**
+ * Returns a normalized, simplified, sanitized version of a URL that's
+ * meant to be used as a basis for comparisons and clean UI display.
+ *
+ * Examples:
+ * https://t.com/foo/bar/?baz=123&d=1 => t.com/foo/bar
+ * http://www.t.com:80/foo/#hash => t.com/foo
+ * https://cat.dog.t.com:80/foo/index.php => cat.dog.t.com/foo
+ */
 export const normalizeUrl = mem((url?: string) => {
   if (!url) {
     return ''
@@ -29,10 +37,10 @@ export const normalizeUrl = mem((url?: string) => {
   }
 })
 
-/*
-  querySelectorAll doesn't include the base node, which is really useful for
-  the getBestLinkBlockCandidate algorithm, so here is a version which returns
-  results inclusive of the base node.
+/**
+ * querySelectorAll doesn't include the base node, which is really useful for
+ * the getBestLinkBlockCandidate algorithm, so here is a version which returns
+ * results inclusive of the base node.
  */
 export function querySelectorAllInclusive<T extends Element>(
   selector: string,
@@ -250,7 +258,23 @@ export function _getCandidateIdsForUrl(url: string): string[] {
   return []
 }
 
-// goal is to get as specific / unique as possible
+/**
+ * Attempt to extract a unique database-like identifier from the given URL.
+ *
+ * NOTE: this function assumes the input has already been sanitized / normalized
+ * via `normalizeUrl`.
+ *
+ * Examples:
+ *
+ * amazon.com/gp/product/B01ITIOG5Y/ref=pd_alm_fs_merch
+ *  => B01ITIOG5Y
+ *
+ * test.com/store/items/item_51472338984
+ *  => item_51472338984
+ *
+ * postmates.com/store/starbucks/01e381f0-adb1-5fb9-b65b-8414428a5811
+ *  => 01e381f0-adb1-5fb9-b65b-8414428a5811
+ */
 export const getCandidateIdForUrl = mem((url: string) => {
   const candidateIds = _getCandidateIdsForUrl(url)
 
