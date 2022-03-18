@@ -114,6 +114,16 @@ npm start
 
 Then load the unpacked extension into chrome from the `build` folder.
 
+## Examples
+
+#### Postmates
+
+<p align="center">
+  <img alt="Before" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/postmates-before.jpg" width="45%"> 
+&nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/postmates-before.jpg" width="45%">
+</p>
+
 ## License
 
 MIT © [Travis Fischer](https://transitivebullsh.it)
