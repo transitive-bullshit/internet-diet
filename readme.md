@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="Internet Diet" src="assets/banner.jpg">
+  <img alt="Internet Diet" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/main/assets/banner.jpg"> 
 </p>
 
 # Internet Diet
@@ -19,7 +19,7 @@ So I built an easy way to block all of the unwanted crap.
 ## Amazon Demo
 
 <p align="center">
-  <img alt="Internet Diet" src="media/amazon-demo.gif">
+  <img alt="Internet Diet" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/main/.github/media/amazon-demo.gif" width="689">
 </p>
 
 ## What can it block?
