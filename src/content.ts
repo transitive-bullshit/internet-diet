@@ -389,11 +389,13 @@ function updateIsAddingLinkBlock(isAddingLinkBlockUpdate: boolean) {
 
 async function initReact() {
   try {
-    // All react-related features used by the content script are imported dynamically
-    // via a separate entry bundle. This keeps the core content bundle small and
-    // allows us to only load the react features once the initial DOM has been loaded.
-    // This is also important because some of the react libraries we're using assume
-    // that important DOM nodes like `document.head` and `document.body` always exist.
+    /*
+      All react-related features used by the content script are imported dynamically
+      via a separate entry bundle. This keeps the core content bundle small and
+      allows us to only load the react features once the initial DOM has been loaded.
+      This is also important because some of the react libraries we're using assume
+      that important DOM nodes like `document.head` and `document.body` always exist.
+    */
     await import(/*webpackIgnore: true*/ chrome.runtime.getURL('toast.js'))
   } catch (err) {
     console.info('toast load error', err)

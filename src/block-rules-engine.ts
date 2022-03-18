@@ -7,8 +7,8 @@ import { normalizeUrl } from './url-utils'
 import { BlockRule } from './types'
 import * as log from './log'
 
-// TODO: refactor into BlockRulesStore and BlockRulesEngine
-// TODO: cache _blockRulesByHostname map on every update
+// TODO: refactor into BlockRulesStore and BlockRulesEngine?
+// TODO: cache _blockRulesByHostname map on every update?
 
 export declare interface BlockRulesEngine {
   on(event: 'update', listener: () => unknown): this
