@@ -1,9 +1,12 @@
 import { BlockRulesEngine } from './block-rules-engine'
+import { SettingsStore } from './settings-store'
 import { defaultBlockRules } from './default-block-rules'
 import { getStableObjectHash } from './utils'
+import { ensureContentScriptLoadedInActiveTab } from './chrome-utils'
 import { contentScriptID } from './definitions'
 
 const blockRulesEngine = new BlockRulesEngine()
+const settingsStore = new SettingsStore()
 let cachedHostnamesHash: string
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -71,11 +74,47 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return true
 })
 
+chrome.commands.onCommand.addListener(async (command) => {
+  console.log('received command', command)
+
+  switch (command) {
+    case 'toggle-blocking':
+      await settingsStore.toggleIsPaused()
+      break
+
+    case 'add-block-link-rule-to-page': {
+      const activeTab = await ensureContentScriptLoadedInActiveTab()
+      console.debug('command', command, activeTab)
+
+      chrome.tabs.sendMessage(
+        activeTab.id!,
+        {
+          type: 'event:updateIsAddingLinkBlock',
+          isAddingLinkBlock: true
+        },
+        () => {
+          // TODO
+        }
+      )
+      break
+    }
+
+    case 'remove-block-link-rule-from-page': {
+      const activeTab = await ensureContentScriptLoadedInActiveTab()
+      console.debug('command', command, activeTab)
+
+      // TODO
+      console.warn('TODO', command)
+      break
+    }
+  }
+})
+
 async function updateRegisteredContentScripts() {
   const hostnames = blockRulesEngine.getHostnames()
   const hostnamesHash = await getStableObjectHash(hostnames)
   if (hostnamesHash === cachedHostnamesHash) {
-    console.log('updateRegisteredContentScripts deduped', cachedHostnamesHash)
+    console.debug('updateRegisteredContentScripts deduped', cachedHostnamesHash)
     return
   }
   await (chrome.scripting as any).unregisterContentScripts()
@@ -84,7 +123,7 @@ async function updateRegisteredContentScripts() {
     // we can't register a content script with an empty array of matches,
     // so just leave the content scripts as unregistered until we have
     // some block rules to enforce
-    console.log('updateRegisteredContentScripts empty hosts', hostnamesHash)
+    console.debug('updateRegisteredContentScripts empty hosts', hostnamesHash)
     cachedHostnamesHash = hostnamesHash
     return
   }

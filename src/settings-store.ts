@@ -47,6 +47,11 @@ export class SettingsStore extends EventEmitter {
     return this._settings
   }
 
+  async toggleIsPaused() {
+    await this.isReady
+    await this.updateSettings({ isPaused: !this._settings.isPaused })
+  }
+
   async updateSettings(settings: Partial<Settings>) {
     await this.isReady
 

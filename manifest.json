@@ -31,5 +31,25 @@
     "32": "/assets/icon@32.png",
     "48": "/assets/icon@48.png",
     "128": "/assets/icon@128.png"
+  },
+  "commands": {
+    "toggle-blocking": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+P"
+      },
+      "description": "Toggle blocking"
+    },
+    "add-block-link-rule-to-page": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Period"
+      },
+      "description": "Block a link on the current page"
+    },
+    "remove-block-link-rule-from-page": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Comma"
+      },
+      "description": "Unblock a link on the current page"
+    }
   }
 }

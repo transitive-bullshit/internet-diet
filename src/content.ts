@@ -441,6 +441,20 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
   }
 })
 
+/*
+  The content script may be loaded as a registered content script, in which
+  case it will be loaded at `document_start` before the DOM is initialized.
+
+  It may also be loaded dynamically via a user action like opening the popup
+  or invoking a keyboard command. In this case, we can't be sure when in the
+  page lifecycle the content script is being initialized.
+
+  For this reason, we try to make as few assumptions as possible bout how
+  and when things get initialized, using both immediate and event-based
+  methods.
+
+  This is also the reason that all initialization logic must be idempotent.
+*/
 init()
 update()
 window.addEventListener('load', update)
