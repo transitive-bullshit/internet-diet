@@ -184,38 +184,33 @@ export const Options = () => {
               </Row>
             </section>
 
-            <section className={styles.section}>
-              <h4>Blocked Links</h4>
+            {blockRulesEngine && (
+              <>
+                <section className={styles.section}>
+                  <BlockRulesTable
+                    blockRulesEngine={blockRulesEngine}
+                    type='pathname'
+                    title='Block Link Rules'
+                  />
+                </section>
 
-              {blockRulesEngine && (
-                <BlockRulesTable
-                  blockRulesEngine={blockRulesEngine}
-                  type='pathname'
-                />
-              )}
-            </section>
+                <section className={styles.section}>
+                  <BlockRulesTable
+                    blockRulesEngine={blockRulesEngine}
+                    type='host'
+                    title='Blocked Host Rules'
+                  />
+                </section>
 
-            <section className={styles.section}>
-              <h4>Blocked Hosts</h4>
-
-              {blockRulesEngine && (
-                <BlockRulesTable
-                  blockRulesEngine={blockRulesEngine}
-                  type='host'
-                />
-              )}
-            </section>
-
-            <section className={styles.section}>
-              <h4>Blocked Menu Items</h4>
-
-              {blockRulesEngine && (
-                <BlockRulesTable
-                  blockRulesEngine={blockRulesEngine}
-                  type='item'
-                />
-              )}
-            </section>
+                <section className={styles.section}>
+                  <BlockRulesTable
+                    blockRulesEngine={blockRulesEngine}
+                    type='item'
+                    title='Blocked Menu Items'
+                  />
+                </section>
+              </>
+            )}
 
             <section className={styles.section}>
               <h4>General Options</h4>

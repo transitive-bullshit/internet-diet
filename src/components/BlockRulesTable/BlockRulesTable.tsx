@@ -1,16 +1,31 @@
 import React from 'react'
 import { format } from 'date-fns'
-import { Table, Tooltip, Space, Button, Tag, TableColumnType } from 'antd'
+import escapeStringRegex from 'escape-string-regexp'
 import toast from 'react-hot-toast'
+import {
+  Table,
+  Tooltip,
+  Space,
+  Button,
+  Tag,
+  TableColumnType,
+  Input
+} from 'antd'
 
 import type { BlockRulesEngine } from 'block-rules-engine'
 import { BlockRule, BlockRuleType } from 'types'
+import { cs } from 'utils'
+
+import styles from './BlockRulesTable.module.css'
 
 export const BlockRulesTable: React.FC<{
   blockRulesEngine: BlockRulesEngine
   type?: BlockRuleType
-}> = ({ blockRulesEngine, type }) => {
+  title?: string
+  className?: string
+}> = ({ blockRulesEngine, type, className, title = 'Block Rules' }) => {
   const [blockRules, setBlockRules] = React.useState<BlockRule[]>([])
+  const [searchQuery, setSearchQuery] = React.useState('')
 
   const filter = React.useMemo(
     () => (blockRule: BlockRule) => {
@@ -22,6 +37,36 @@ export const BlockRulesTable: React.FC<{
     },
     [type]
   )
+
+  const filteredBlockRules = React.useMemo(() => {
+    if (!searchQuery) {
+      return blockRules
+    }
+
+    const searchQueryRe = new RegExp(
+      escapeStringRegex(searchQuery.toLowerCase()),
+      'i'
+    )
+
+    return blockRules.filter((blockRule) => {
+      if (searchQueryRe.test(blockRule.hostname)) {
+        return true
+      }
+
+      if (
+        blockRule.type === 'pathname' &&
+        searchQueryRe.test(blockRule.pathname)
+      ) {
+        return true
+      }
+
+      if (blockRule.type === 'item' && searchQueryRe.test(blockRule.item)) {
+        return true
+      }
+
+      return false
+    })
+  }, [blockRules, searchQuery])
 
   const updateBlockRules = React.useCallback(() => {
     setBlockRules(blockRulesEngine.blockRules.filter(filter))
@@ -41,6 +86,17 @@ export const BlockRulesTable: React.FC<{
     },
     [blockRulesEngine]
   )
+
+  const onChangeSearchQuery = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(e.target.value)
+    },
+    []
+  )
+
+  const onSearch = React.useCallback((value: string) => {
+    setSearchQuery(value)
+  }, [])
 
   const columns = React.useMemo<TableColumnType<BlockRule>[]>(
     () =>
@@ -170,6 +226,25 @@ export const BlockRulesTable: React.FC<{
   )
 
   return (
-    <Table columns={columns} dataSource={blockRules} rowKey='id' size='small' />
+    <div className={cs(styles.container, className)}>
+      <div className={styles.header}>
+        <h4>{title}</h4>
+
+        <Input.Search
+          placeholder='search rules'
+          allowClear
+          onChange={onChangeSearchQuery}
+          onSearch={onSearch}
+          className={styles.search}
+        />
+      </div>
+
+      <Table
+        columns={columns}
+        dataSource={filteredBlockRules}
+        rowKey='id'
+        size='small'
+      />
+    </div>
   )
 }

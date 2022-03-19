@@ -32,6 +32,7 @@
     "antd": "^4.19.2",
     "crypto-hash": "^2.0.1",
     "date-fns": "^2.28.0",
+    "escape-string-regexp": "^5.0.0",
     "fast-json-stable-stringify": "^2.1.0",
     "lodash.debounce": "^4.0.8",
     "lodash.omit": "^4.5.0",
