@@ -1,13 +1,13 @@
 import { BlockRulesEngine } from './block-rules-engine'
 import { SettingsStore } from './settings-store'
 import { defaultBlockRules } from './default-block-rules'
-import { getStableObjectHash } from './utils'
-import { ensureContentScriptLoadedInActiveTab } from './chrome-utils'
-import { contentScriptID } from './definitions'
+import {
+  ensureContentScriptLoadedInActiveTab,
+  updateRegisteredContentScripts
+} from './chrome-utils'
 
 const blockRulesEngine = new BlockRulesEngine()
 const settingsStore = new SettingsStore()
-let cachedHostnamesHash: string
 
 chrome.runtime.onInstalled.addListener(() => {
   blockRulesEngine.addBlockRules(defaultBlockRules)
@@ -110,43 +110,6 @@ chrome.commands.onCommand.addListener(async (command) => {
   }
 })
 
-async function updateRegisteredContentScripts() {
-  const hostnames = blockRulesEngine.getHostnames()
-  const hostnamesHash = await getStableObjectHash(hostnames)
-  if (hostnamesHash === cachedHostnamesHash) {
-    console.debug('updateRegisteredContentScripts deduped', cachedHostnamesHash)
-    return
-  }
-  await (chrome.scripting as any).unregisterContentScripts()
-
-  if (!hostnames.length) {
-    // we can't register a content script with an empty array of matches,
-    // so just leave the content scripts as unregistered until we have
-    // some block rules to enforce
-    console.debug('updateRegisteredContentScripts empty hosts', hostnamesHash)
-    cachedHostnamesHash = hostnamesHash
-    return
-  }
-
-  const script = {
-    id: contentScriptID,
-    // matches: ['<all_urls>'], // useful for debugging
-    matches: hostnames.flatMap((hostname) => [
-      `*://${hostname}/*`,
-      `*://*.${hostname}/*`
-    ]),
-    js: ['content.js'],
-    css: ['content.css'],
-    runAt: 'document_start'
-  }
-
-  console.log(
-    'updateRegisteredContentScripts registering script',
-    script,
-    hostnamesHash
-  )
-  await (chrome.scripting as any).registerContentScripts([script])
-  cachedHostnamesHash = hostnamesHash
-}
-
-blockRulesEngine.on('update', updateRegisteredContentScripts)
+blockRulesEngine.on('update', () =>
+  updateRegisteredContentScripts(blockRulesEngine)
+)

@@ -1,4 +1,8 @@
 import { contentScriptID } from './definitions'
+import { getStableObjectHash } from './utils'
+import { BlockRulesEngine } from './block-rules-engine'
+
+let cachedHostnamesHash: string
 
 /**
  * Checks if our content script has been injected into the current active tab.
@@ -82,4 +86,46 @@ export async function ensureContentScriptLoadedInTab(tab: chrome.tabs.Tab) {
       }
     }
   }
+}
+
+export async function updateRegisteredContentScripts(
+  blockRulesEngine: BlockRulesEngine,
+  { force = false }: { force?: boolean } = {}
+) {
+  const hostnames = blockRulesEngine.getHostnames()
+  const hostnamesHash = await getStableObjectHash(hostnames)
+  if (!force && hostnamesHash === cachedHostnamesHash) {
+    console.debug('updateRegisteredContentScripts deduped', cachedHostnamesHash)
+    return
+  }
+  await (chrome.scripting as any).unregisterContentScripts()
+
+  if (!hostnames.length) {
+    // we can't register a content script with an empty array of matches,
+    // so just leave the content scripts as unregistered until we have
+    // some block rules to enforce
+    console.debug('updateRegisteredContentScripts empty hosts', hostnamesHash)
+    cachedHostnamesHash = hostnamesHash
+    return
+  }
+
+  const script = {
+    id: contentScriptID,
+    // matches: ['<all_urls>'], // useful for debugging
+    matches: hostnames.flatMap((hostname) => [
+      `*://${hostname}/*`,
+      `*://*.${hostname}/*`
+    ]),
+    js: ['content.js'],
+    css: ['content.css'],
+    runAt: 'document_start'
+  }
+
+  console.log(
+    'updateRegisteredContentScripts registering script',
+    script,
+    hostnamesHash
+  )
+  await (chrome.scripting as any).registerContentScripts([script])
+  cachedHostnamesHash = hostnamesHash
 }
