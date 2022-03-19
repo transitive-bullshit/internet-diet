@@ -1,5 +1,6 @@
 import {
   normalizeUrl,
+  normalizeUrlLight,
   getCandidateIdForUrl,
   querySelectorAllInclusive
 } from './url-utils'
@@ -202,7 +203,8 @@ export function getSanitizedUrlForHost(
     return null
   }
 
-  if (url.startsWith(`${document.location.href}#`)) {
+  const normalizedDocumentUrl = normalizeUrlLight(document.location.href)
+  if (normalizedDocumentUrl && url.startsWith(`${normalizedDocumentUrl}#`)) {
     // disregard hash links
     return null
   }
@@ -223,20 +225,22 @@ export function getSanitizedUrlForHost(
   }
 
   const normalizedUrl = normalizeUrl(url)
-  if (normalizedUrl) {
-    // TODO: this sort of special-casing should be avoided if at all possible.
-    // Leaning on list-item elements would potentially help more with sites
-    // like amazon which utilize them properly.
-    if (
-      hostname.includes('amazon') &&
-      (normalizedUrl.includes('/customer-reviews') ||
-        normalizedUrl.includes('/product-reviews') ||
-        normalizedUrl.includes('/storefront') ||
-        normalizedUrl.includes('/goldbox') ||
-        normalizedUrl.includes('/bestsellers'))
-    ) {
-      return ''
-    }
+  if (!normalizedUrl) {
+    return null
+  }
+
+  // TODO: this sort of special-casing should be avoided if at all possible.
+  // Leaning on list-item elements would potentially help more with sites
+  // like amazon which utilize them properly.
+  if (
+    hostname.includes('amazon') &&
+    (normalizedUrl.includes('/customer-reviews') ||
+      normalizedUrl.includes('/product-reviews') ||
+      normalizedUrl.includes('/storefront') ||
+      normalizedUrl.includes('/goldbox') ||
+      normalizedUrl.includes('/bestsellers'))
+  ) {
+    return ''
   }
 
   return normalizedUrl

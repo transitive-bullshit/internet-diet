@@ -35,6 +35,7 @@ for (const fixture of fixtures) {
     if (verbose) {
       console.log(fixture.path, fixture.hostname)
     }
+
     const candidate = getBestLinkBlockCandidate(root, {
       document: dom.window.document,
       log: !!verbose

@@ -32,6 +32,26 @@ export const normalizeUrl = mem((url?: string) => {
   }
 })
 
+export const normalizeUrlLight = mem((url?: string) => {
+  if (!url) {
+    return ''
+  }
+
+  try {
+    return normalizeUrlImpl(url, {
+      forceHttps: false,
+      stripProtocol: false,
+      stripWWW: false,
+      stripHash: true,
+      stripTextFragment: true,
+      removeQueryParameters: true,
+      removeDirectoryIndex: false
+    })
+  } catch (err) {
+    return ''
+  }
+})
+
 /**
  * querySelectorAll doesn't include the base node, which is really useful for
  * the getBestLinkBlockCandidate algorithm, so here is a version which returns
