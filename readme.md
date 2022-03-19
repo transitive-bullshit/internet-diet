@@ -24,8 +24,8 @@ So I built an easy way to block all of the unwanted crap.
 
 ## What can you block?
 
-- individual restaurants
-- specific menu items
+- restaurants
+- menu items
 - grocery items
 - specific URLs
 - entire websites
@@ -141,13 +141,13 @@ With that being said, it has been thoroughly tested on the following services:
 
 ## Status
 
-This extension is a WIP and has not been launched publicly on the Chrome extensions store yet.
+This extension is in beta and has not been launched publicly on the Chrome extension store yet.
 
-Progress towards a v1 launch is being tracked in this [issue](https://github.com/transitive-bullshit/internet-diet/issues/1).
+Progress towards an initial pubic launch is being tracked [here](https://github.com/transitive-bullshit/internet-diet/issues/1).
 
 ## Development
 
-If you want to check out the repo locally, make sure you're running a recent version of Node.js.
+To develop the extension locally, first clone the repo and make sure you're running a recent version of Node.js.
 
 ```bash
 npm install
