@@ -55,6 +55,7 @@ With that being said, it has been thoroughly tested on the following services:
 - [x] uber eats
 - [x] delivery.com
 - [x] instacart
+- [x] walmart
 - [x] amazon fresh
 - [x] amazon products
 
