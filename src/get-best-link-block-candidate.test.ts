@@ -40,7 +40,11 @@ const fixtures = [
   { path: 'fixtures/delivery-com-0.html', hostname: 'delivery.com' },
   { path: 'fixtures/delivery-com-1.html', hostname: 'delivery.com' },
   { path: 'fixtures/delivery-com-2.html', hostname: 'delivery.com' },
-  { path: 'fixtures/delivery-com-3.html', hostname: 'delivery.com' }
+  { path: 'fixtures/delivery-com-3.html', hostname: 'delivery.com' },
+  { path: 'fixtures/instacart-0.html', hostname: 'instacart.com' },
+  { path: 'fixtures/instacart-1.html', hostname: 'instacart.com' },
+  { path: 'fixtures/instacart-2.html', hostname: 'instacart.com' },
+  { path: 'fixtures/instacart-3.html', hostname: 'instacart.com' }
 
   // TODO: includes a single link to a separate domain u.cornershopapp.com/store/5200
   // { path: 'fixtures/ubereats-1.html', hostname: 'ubereats.com' },
