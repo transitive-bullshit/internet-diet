@@ -6,8 +6,8 @@ import type toast from 'react-hot-toast'
 import { BlockRulesEngine } from './block-rules-engine'
 import { SettingsStore } from './settings-store'
 import { StatsStore } from './stats-store'
+import { getBestLinkBlockCandidate } from './get-best-link-block-candidate'
 import {
-  getBestLinkBlockCandidate,
   getClosestLinkBlockCandidate,
   getClosestItemBlockCandidate
 } from './url-utils'
