@@ -19,7 +19,7 @@ So I built an easy way to block all of the unwanted crap.
 ## Amazon Demo
 
 <p align="center">
-  <img alt="Internet Diet" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/amazon-demo.gif" width="689">
+  <img alt="Internet Diet" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/amazon-demo.gif" width="617">
 </p>
 
 ## What can you block?
