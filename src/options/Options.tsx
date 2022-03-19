@@ -190,7 +190,7 @@ export const Options = () => {
                   <BlockRulesTable
                     blockRulesEngine={blockRulesEngine}
                     type='pathname'
-                    title='Block Link Rules'
+                    title='Link Block Rules'
                   />
                 </section>
 
@@ -198,7 +198,7 @@ export const Options = () => {
                   <BlockRulesTable
                     blockRulesEngine={blockRulesEngine}
                     type='host'
-                    title='Blocked Host Rules'
+                    title='Host Block Rules'
                   />
                 </section>
 
@@ -206,7 +206,7 @@ export const Options = () => {
                   <BlockRulesTable
                     blockRulesEngine={blockRulesEngine}
                     type='item'
-                    title='Blocked Menu Items'
+                    title='Menu Item Block Rules'
                   />
                 </section>
               </>
