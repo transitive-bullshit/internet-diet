@@ -1,8 +1,6 @@
 import React from 'react'
 import { FaCog } from '@react-icons/all-files/fa/FaCog'
 import { FaQuestion } from '@react-icons/all-files/fa/FaQuestion'
-import { FaUnlink } from '@react-icons/all-files/fa/FaUnlink'
-import { FaBan } from '@react-icons/all-files/fa/FaBan'
 import { FaPlay } from '@react-icons/all-files/fa/FaPlay'
 import { FaPause } from '@react-icons/all-files/fa/FaPause'
 
@@ -399,13 +397,9 @@ export const Popup = () => {
               disabled={!isBlockPageEnabled}
             >
               {isAddingLinkBlock && isBlockPageEnabled ? (
-                <>
-                  Select link on page to block <FaUnlink />
-                </>
+                <>Select link on page to block</>
               ) : (
-                <>
-                  Block a link on this page <FaUnlink />
-                </>
+                <>Block a link on this page</>
               )}
             </button>
           </div>
@@ -422,7 +416,7 @@ export const Popup = () => {
               }
               disabled={!isBlockPageEnabled}
             >
-              Block this page <FaUnlink />
+              Block this page
             </button>
           </div>
 
@@ -439,13 +433,9 @@ export const Popup = () => {
               disabled={!isBlockHostEnabled}
             >
               {isBlockHostEnabled ? (
-                <>
-                  Block all of {tabInfo?.hostname} <FaBan />
-                </>
+                <>Block all of {tabInfo?.hostname}</>
               ) : (
-                <>
-                  Block this site <FaBan />
-                </>
+                <>Block this site</>
               )}
             </button>
           </div>
