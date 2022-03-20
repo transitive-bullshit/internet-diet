@@ -1,6 +1,5 @@
 {
   "name": "Internet Diet",
-  "version": "0.0.0",
   "manifest_version": 3,
   "minimum_chrome_version": "88",
   "description": "Remove unhealthy foods from the web.",

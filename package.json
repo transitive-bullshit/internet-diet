@@ -2,7 +2,7 @@
   "name": "internet-diet",
   "type": "module",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Chrome extension to remove unhealthy foods from the web.",
   "repository": "transitive-bullshit/internet-diet",
   "author": "Travis Fischer <travis@transitivebullsh.it>",

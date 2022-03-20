@@ -107,10 +107,17 @@ const config: Configuration = {
   },
   optimization: {
     minimizer: [
+      // keeps things somewhat readable for extension store reviewers
       new TerserPlugin({
         parallel: true,
         exclude: 'browser-polyfill.min.js',
-        extractComments: false
+        terserOptions: {
+          mangle: false,
+          output: {
+            beautify: true,
+            indent_level: 2
+          }
+        }
       })
     ]
   }
