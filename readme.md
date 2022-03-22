@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="Internet Diet" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/assets/banner.jpg"> 
+  <img alt="Internet Diet" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/assets/banner.jpg">
 </p>
 
 # Internet Diet
@@ -21,6 +21,16 @@ So I built an easy way to block all of the unwanted crap.
 <p align="center">
   <img alt="Internet Diet" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/amazon-demo.gif" width="617">
 </p>
+
+## Install
+
+[link-chrome]: https://chrome.google.com/webstore/detail/internet-diet/efoocnakkngnkpaeonmmcfjigaoocmja 'Version published on Chrome Web Store'
+
+[<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/chrome/chrome.svg" width="48" alt="Chrome" valign="middle">][link-chrome] [<img valign="middle" src="https://img.shields.io/chrome-web-store/v/efoocnakkngnkpaeonmmcfjigaoocmja.svg?label=%20">][link-chrome] also compatible with other Chromium browsers
+
+<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/firefox/firefox.svg" width="48" alt="Firefox" valign="middle"> coming soon!
+
+<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/safari/safari_128x128.png" width="48" alt="Safari" valign="middle"> coming soon!
 
 ## What can you block?
 
@@ -138,12 +148,6 @@ With that being said, it has been thoroughly tested on the following services:
 &nbsp; &nbsp; &nbsp; &nbsp;
   <img alt="After" src="https://raw.githubusercontent.com/transitive-bullshit/internet-diet/master/.github/media/amazon-products-after.jpg" width="45%">
 </p>
-
-## Status
-
-This extension is in beta and has not been launched publicly on the Chrome extension store yet.
-
-Progress towards an initial pubic launch is being tracked [here](https://github.com/transitive-bullshit/internet-diet/issues/1).
 
 ## Development
 
